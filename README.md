@@ -40,7 +40,7 @@ Registers:
  0xD030 | | LED&KEys input register for the buttons 1 to 8. [7] is button 1, [0] is button 8
  0xFF00 | 0xFFFF | Woz Mon pointed to by the RESET vector
  
- ## Setup
+ ## Building
  
  This project should just build with IceCube2 without any issue, and I will figure out how to make it work with Yosys shortly.
  
