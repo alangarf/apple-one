@@ -44,6 +44,16 @@ Registers:
  
  This project should just build with IceCube2 without any issue, and I will figure out how to make it work with Yosys shortly.
  
+ ## External Devices / Hook-up
+ 
+ To connect the LED&KEYs to the breakout board the following pins are defined in the constraints file.
+ 
+ Pin | ID | Description
+ --- | -- | -----------
+ P1  | CLK | The clock used to clock data in and out of the LED&KEYs
+ P2  | DIO | The tristate digital I/O pin
+ R1  | STB | The "chipselect" / strobe line
+ 
  ## Serial Setup
  
  To communicate with the Apple 1 you need to use the second channel serial interface for the iCE40HX8K-B-EVN board. This should appear as a COM port on you PC. This project is configured to use the 12MHz onboard clock to generate the baud rate, and as such I've selected 4800 baud (8/N/1) as this was the only baud rate that rounded nicely to 12MHz without an error rate.
