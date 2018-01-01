@@ -21,7 +21,7 @@ Registers:
  PLLs:                       0     out of 2      (0%)
  ```
  
- ##Memory Map
+ ## Memory Map
  
  The memory is as basic as basic can be. 50% of the iCE40HX8K is used currently, but this gives the Apple 1 basically 8K of memory which is plenty to start with.
  
@@ -40,17 +40,17 @@ Registers:
  0xD030 | | LED&KEys input register for the buttons 1 to 8. [7] is button 1, [0] is button 8
  0xFF00 | 0xFFFF | Woz Mon pointed to by the RESET vector
  
- ##Setup
+ ## Setup
  
  This project should just build with IceCube2 without any issue, and I will figure out how to make it work with Yosys shortly.
  
- ##Serial Setup
+ ## Serial Setup
  
  To communicate with the Apple 1 you need to use the second channel serial interface for the iCE40HX8K-B-EVN board. This should appear as a COM port on you PC. This project is configured to use the 12MHz onboard clock to generate the baud rate, and as such I've selected 4800 baud (8/N/1) as this was the only baud rate that rounded nicely to 12MHz without an error rate.
  
  A very very basic hardware flow control is implemented too. You should turn on CTS support as this will allow you to cut and paste code into the Woz Mon without the Apple 1 missing any bytes.
  
- ##Helping
+ ## Helping
  
  All PRs and suggestions happily accepted! Please any support us most welcome, and it would be good to have this as feature complete as possible with the real Apple1. I'd like to implement the cassette interface next with the basic electronics to talk to the headphone/mic jack of a mobile phone to upload and download recordings as a means to save programs.
  
