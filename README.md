@@ -34,9 +34,9 @@ Registers:
  0xD010 | | UART RX register used by Woz Mon
  0xD011  || UART RX control register. Woz Mon checks the MSB for received flag
  0xD012 | | UART TX register and control. The TX register only writes 7 bits to the remote host. The MSB is read by Woz Mon to confirm the UART isn't busy sending
- 0xD020 | | The LED&KEYs display register. [4] is display on/off, [3:0] is brightness
- 0xD021|0xD028| The LED&KEYs digit data for digit 1 to 8
- 0xD029 | | The LED&KEYs LEDs 1 to 8
- 0xD030 | | The LED&KEys input register for the buttons 1 to 8. [7] is button 1, [0] is button 8
- 0xFF00 | 0xFFFF | The Woz Mon
+ 0xD020 | | LED&KEYs display register. [4] is display on/off, [3:0] is brightness
+ 0xD021|0xD028| LED&KEYs digit data for digit 1 to 8
+ 0xD029 | | LED&KEYs LEDs 1 to 8
+ 0xD030 | | LED&KEys input register for the buttons 1 to 8. [7] is button 1, [0] is button 8
+ 0xFF00 | 0xFFFF | Woz Mon pointed to by the RESET vector
  
