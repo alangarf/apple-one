@@ -54,6 +54,8 @@ Registers:
  P2  | DIO | The tristate digital I/O pin
  R1  | STB | The "chipselect" / strobe line
  
+ ![LED&KEYs board being silly](https://github.com/alangarf/apple-one/raw/master/media/apple-one.png)
+ 
  ## Serial Setup
  
  To communicate with the Apple 1 you need to use the second channel serial interface for the iCE40HX8K-B-EVN board. This should appear as a COM port on you PC. This project is configured to use the 12MHz onboard clock to generate the baud rate, and as such I've selected 4800 baud (8/N/1) as this was the only baud rate that rounded nicely to 12MHz without an error rate.
