@@ -1,5 +1,7 @@
 # apple-one
 
+![Apple One](https://github.com/alangarf/apple-one/raw/master/media/apple-one.jpg)
+
 This is a very untested and very basic implementation of an Apple 1 in a iCE40HX FPGA. It has enough to run Woz Mon via the serial USB interface which is available on the iCE40HX8K-B-EVN breakout board, which makes this a very compact little set up.
 
 I've also wired up support for a LED&KEYS IO board using my TM1638 verilog module.
@@ -54,7 +56,7 @@ Registers:
  P2  | DIO | The tristate digital I/O pin
  R1  | STB | The "chipselect" / strobe line
  
- ![LED&KEYs board being silly](https://github.com/alangarf/apple-one/raw/master/media/apple-one.png)
+![LED&KEYs](https://github.com/alangarf/apple-one/raw/master/media/ledandkeys.jpg)
  
  ## Serial Setup
  
