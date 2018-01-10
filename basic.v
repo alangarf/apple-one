@@ -1,33 +1,43 @@
+`define LED_KEYS
+
 module top(
-    input  clk12,
+    input  clk,
 
     input  uart_rx,
     output uart_tx,
     output uart_cts,
 
+    `ifdef LED_KEYS
     output tm_cs,
     output tm_clk,
     inout  tm_dio,
+    `endif
 
     output reg [7:0] led
 );
 
+    wire        res, rw, irq, nmi;
+    wire [15:0] ab;
+    wire [7:0]  dbo;
+    reg  [7:0]  dbi;
+
     //////////////////////////////////////////////////////////////////////////
     // CLK DIVIDER
 
+    /*
     wire clk;
     clk_div u_clk_div(
         .clk     (clk12),
         .clk_out (clk)
     );
+    */
 
     //////////////////////////////////////////////////////////////////////////
     // 6502 reset
-
+    
     reg [7:0] start;
     always @(posedge clk)
-        if (~start[7]) start <= start + 1;
-
+	if (~start[7]) start <= start + 1;
     assign res = start[7];
 
     //////////////////////////////////////////////////////////////////////////
@@ -37,25 +47,18 @@ module top(
     always @(posedge clk)
         div <= div + 1;
 
-    assign phi0 = div[3];
-
     wire clk_phi;
     SB_GB bg_phi (
-        .USER_SIGNAL_TO_GLOBAL_BUFFER(phi0),
+        .USER_SIGNAL_TO_GLOBAL_BUFFER(div[3]),
         .GLOBAL_BUFFER_OUTPUT(clk_phi)
     );
 
     //////////////////////////////////////////////////////////////////////////
     // 6502
 
-    wire        rw, res, irq, nmi, phi0;
-    wire [15:0] ab;
-    wire [7:0]  dbo;
-    reg  [7:0]  dbi;
-
     chip_6502 chip_6502 (
         .clk    (clk),
-        .phi    (phi0),
+        .phi    (clk_phi),
         .res    (res),
         .so     (1'b0),
         .rdy    (1'b1),
@@ -72,16 +75,16 @@ module top(
     // USB UART
     
     wire received, is_receiving, rx_error, is_transmitting, transmit;
-    reg  [7:0] tx_byte;
+    reg  [6:0] tx_byte;
     wire [7:0] rx_byte;
 
     uart #(.CLOCK_DIVIDE( 625 )) my_uart (
-        clk12,              // master clock for this component
+        clk,              // master clock for this component
         ~res,               // synchronous reset line (resets if high)
         uart_rx,            // receive data on this line
         uart_tx,            // transmit data on this line
         transmit,           // signal to indicate that the UART should start a transmission
-        tx_byte,            // 8-bit bus with byte to be transmitted when transmit is raised high
+        {1'b0, tx_byte},    // 8-bit bus with byte to be transmitted when transmit is raised high
         received,           // output flag raised high for one cycle of clk when a byte is received
         rx_byte,            // byte which has just been received when received is raise
         is_receiving,       // indicates that we are currently receiving data on the rx lin
@@ -89,21 +92,24 @@ module top(
         rx_error            // rx packet corrupt
     );
 
-    // sync the TX latch to the clk12 domain
+    // sync the TX latch to the clk domain
     reg apple_tx;
+    /*
     Flag_CrossDomain tx_flag (
         .clkA(clk_phi),
         .FlagIn_clkA(apple_tx),
-        .clkB(clk12),
+        .clkB(clk),
         .FlagOut_clkB(transmit)
     );
+    */
+    assign transmit = apple_tx;
 
     // sync the RX flag, using flag and ack
     reg [6:0] apple_rx_buf;
     reg apple_rx_ack;
     reg apple_rx_flag;
 
-    always @(posedge clk12)
+    always @(posedge clk)
     begin
         if (received && !apple_rx_flag && !apple_rx_ack) begin
             apple_rx_flag <= 1;
@@ -120,13 +126,14 @@ module top(
     //////////////////////////////////////////////////////////////////////////
     // TM1638 Display
 
+    `ifdef LED_KEYS
     reg  [3:0] display;
     reg  [7:0] digits[7:0];
     reg  [7:0] leds;
     wire [7:0] keys;
 
     ledAndKey my_led_and_keys (
-        .clk        (clk12),
+        .clk        (clk_phi),
         .rst        (~res),
         .display    (display),
         .digit1     (digits[0]),
@@ -143,6 +150,7 @@ module top(
         .tm_clk     (tm_clk),
         .tm_dio     (tm_dio)
     );
+    `endif
     
     //////////////////////////////////////////////////////////////////////////
     // I/O locations
@@ -153,25 +161,20 @@ module top(
     localparam LED_KEYS =   16'hD020; // Start address of the Led&Keys module
     localparam LED =        16'hD000; // Breakout board LEDs
   
-    /*
-    0x77 - A
-    0X73 - P
-    0X73 - P
-    0X38 - L
-    0X79 - E
-    0X40 - -
-    0X06 - 1
-    */
-
     //////////////////////////////////////////////////////////////////////////
     // RAM and ROM
 
-    reg [7:0] ram[0:8191];
+    reg [7:0] ram[0:8191] /* synthesis syn_ramstyle = "block_ram" */;
+    reg [7:0] basic[0:4091] /* synthesis syn_ramstyle = "block_ram" */;
+    reg [7:0] rom[0:255] /* synthesis syn_ramstyle = "block_ram" */;
+    
     initial begin
-        $readmemh("../ram.hex", ram,        0, 8191);
-        $readmemh("../rom.hex", ram, 8192-256, 8191);
+        $readmemh("../ram.hex", ram, 0, 8191);
+        $readmemh("../rom.hex", rom, 0, 255);
+        $readmemh("../basic.hex", basic, 0, 4091);
     end
 
+    //always @(posedge clk_phi)
     always @(posedge clk_phi)
     begin
         // clear the UART RX ack if set
@@ -194,7 +197,7 @@ module top(
                     begin
                         // Apple 1 terminal only uses 7 bits, MSB indicates
                         // terminal has ack'd RX
-                        tx_byte <= {1'b0, dbo[6:0]};
+                        tx_byte <= dbo[6:0];
                         apple_tx <= 1;
                     end
                 end
@@ -218,6 +221,7 @@ module top(
                     end
                 end
 
+                `ifdef LED_KEYS
                 // LED&KEYS registers
                 LED_KEYS:      if (rw) dbi <= {4'b0, display}; else display <= dbo[3:0];
                 LED_KEYS + 1:  if (rw) dbi <= digits[0]; else digits[0] <= dbo;
@@ -230,23 +234,28 @@ module top(
                 LED_KEYS + 8:  if (rw) dbi <= digits[7]; else digits[7] <= dbo;
                 LED_KEYS + 9:  if (rw) dbi <= leds; else leds <= dbo;
                 LED_KEYS + 10: if (rw) dbi <= keys;
+                `endif
 
                 // breakout board LED registers
                 LED: if (rw) dbi <= led; else led <= dbo;
 
                 default:
                 begin
-                    // RAM 0x0000 -> 0x1FFF, ROM 0xFF00 -> 0xFFFF
-                    //
-                    // !!!! ROM also at 0x1F00 -> 0x1FFF but writeable!!!!
-                    //
-                    // All other addresses return zero.
-                    //
-                    if (ab[15:13] == 3'b0 || ab[15:8] == 8'b11111111)
+                    if (ab[15:12] == 4'b0000 || ab[15:12] == 4'b0001)
                     begin
-                        // handle RAM/ROM address
+                        // 0x0000 -> 0x1FFF - RAM
                         dbi <= ram[ab[12:0]];
-                        if (~rw && ~ab[15]) ram[ab[12:0]] <= dbo;
+                        if (~rw) ram[ab[12:0]] <= dbo;
+                    end
+                    else if (ab[15:12] == 4'b1110)
+                    begin
+                        // 0xE000 -> 0xEFFF - BASIC
+                        dbi <= basic[ab[11:0]];
+                    end
+                    else if (ab[15:8] == 8'b11111111)
+                    begin
+                        // 0xFF00 -> 0xFFFF - ROM
+                        dbi <= rom[ab[7:0]];
                     end
                     else
                         // unknown address return zero

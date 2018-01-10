@@ -4,7 +4,7 @@ Version=Lattice Semiconductor Corporation iCEcube - Release: 2017.08.27940 - Bui
 ProjectName=apple1
 Vendor=SiliconBlue
 Synthesis=synplify
-ProjectVFiles=MUX.v=work,basic.v=work,chip_6502.v=work,clk_div.v=work,uart.v=work,flag.v=work,tm1638.v=work,led_and_key.v
+ProjectVFiles=basic.v=work,uart.v=work,tm1638.v=work,led_and_key.v=work,chip_6502.v,MUX.v
 ProjectCFiles=
 CurImplementation=apple1_Implmnt
 Implementations=apple1_Implmnt
@@ -16,11 +16,11 @@ DeviceFamily=iCE40
 Device=HX8K
 DevicePackage=CT256
 DevicePower=
-NetlistFile=apple1_Implmnt/apple1.edf
+NetlistFile=
 AdditionalEDIFFile=
 IPEDIFFile=
 DesignLib=apple1_Implmnt/sbt/netlist/oadb-top
-DesignView=_rt
+DesignView=
 DesignCell=top
 SynthesisSDCFile=apple1_Implmnt/apple1.scf
 UserPinConstraintFile=

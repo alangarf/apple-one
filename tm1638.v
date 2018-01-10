@@ -10,7 +10,7 @@ module tm1638(
 
     output sclk,
     input  dio_in,
-    output dio_out
+    output reg dio_out
     );
 
     localparam CLK_DIV = 3; // seems happy at 12MHz with 3
@@ -23,7 +23,7 @@ module tm1638(
     reg [1:0] cur_state, next_state;
     reg [CLK_DIV1:0] sclk_d, sclk_q;
     reg [7:0] data_d, data_q, data_out_d, data_out_q;
-    reg dio_out, dio_out_d;
+    reg dio_out_d;
     reg [2:0] ctr_d, ctr_q;
 
     // output read data if we're reading

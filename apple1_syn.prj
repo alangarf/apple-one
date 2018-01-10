@@ -8,14 +8,12 @@
 
 
 
-add_file -verilog -lib work "MUX.v" 
 add_file -verilog -lib work "basic.v" 
-add_file -verilog -lib work "chip_6502.v" 
-add_file -verilog -lib work "clk_div.v" 
 add_file -verilog -lib work "uart.v" 
-add_file -verilog -lib work "flag.v" 
 add_file -verilog -lib work "tm1638.v" 
 add_file -verilog -lib work "led_and_key.v" 
+add_file -verilog -lib work "chip_6502.v" 
+add_file -verilog -lib work "MUX.v" 
 #implementation: "apple1_Implmnt"
 impl -add apple1_Implmnt -type fpga
 
