@@ -16,67 +16,18 @@ module top(
     output reg [7:0] led
 );
 
+    wire        clk_phi;
     wire        res, rw, irq, nmi;
     wire [15:0] ab;
     wire [7:0]  dbo;
     reg  [7:0]  dbi;
 
     //////////////////////////////////////////////////////////////////////////
-    // CLK DIVIDER
-
-    /*
-    wire clk;
-    clk_div u_clk_div(
-        .clk     (clk12),
-        .clk_out (clk)
-    );
-    */
-
-    //////////////////////////////////////////////////////////////////////////
-    // 6502 reset
-    
-    reg [7:0] start;
-    always @(posedge clk)
-	if (~start[7]) start <= start + 1;
-    assign res = start[7];
-
-    //////////////////////////////////////////////////////////////////////////
-    // 6502 phi0 clock
-
-    reg [3:0] div;
-    always @(posedge clk)
-        div <= div + 1;
-
-    wire clk_phi;
-    SB_GB bg_phi (
-        .USER_SIGNAL_TO_GLOBAL_BUFFER(div[3]),
-        .GLOBAL_BUFFER_OUTPUT(clk_phi)
-    );
-
-    //////////////////////////////////////////////////////////////////////////
-    // 6502
-
-    chip_6502 chip_6502 (
-        .clk    (clk),
-        .phi    (clk_phi),
-        .res    (res),
-        .so     (1'b0),
-        .rdy    (1'b1),
-        .nmi    (nmi),
-        .irq    (irq),
-        .rw     (rw),
-        .dbi    (dbi),
-        .dbo    (dbo),
-        .sync   (),
-        .ab     (ab)
-    );
-
-    //////////////////////////////////////////////////////////////////////////
     // USB UART
     
-    wire received, is_receiving, rx_error, is_transmitting, transmit;
-    reg  [6:0] tx_byte;
-    wire [7:0] rx_byte;
+    wire 	received, is_receiving, rx_error, is_transmitting, transmit;
+    reg  [6:0] 	tx_byte;
+    wire [7:0] 	rx_byte;
 
     uart #(.CLOCK_DIVIDE( 625 )) my_uart (
         clk,              // master clock for this component
@@ -94,14 +45,6 @@ module top(
 
     // sync the TX latch to the clk domain
     reg apple_tx;
-    /*
-    Flag_CrossDomain tx_flag (
-        .clkA(clk_phi),
-        .FlagIn_clkA(apple_tx),
-        .clkB(clk),
-        .FlagOut_clkB(transmit)
-    );
-    */
     assign transmit = apple_tx;
 
     // sync the RX flag, using flag and ack
@@ -153,28 +96,65 @@ module top(
     `endif
     
     //////////////////////////////////////////////////////////////////////////
+    // 6502 reset
+    
+    reg [7:0] start;
+    always @(posedge clk)
+	if (~start[7]) start <= start + 1;
+
+    assign res = start[7];
+
+    //////////////////////////////////////////////////////////////////////////
+    // 6502 phi0 clock
+
+    reg [3:0] div;
+    always @(posedge clk)
+        div <= div + 1;
+
+    SB_GB bg_phi (
+        .USER_SIGNAL_TO_GLOBAL_BUFFER(div[3]),
+        .GLOBAL_BUFFER_OUTPUT(clk_phi)
+    );
+
+    //////////////////////////////////////////////////////////////////////////
+    // 6502
+
+    chip_6502 chip_6502 (
+        .clk    (clk),
+        .phi    (clk_phi),
+        .res    (res && ~keys[0]),
+        .so     (1'b0),
+        .rdy    (1'b1),
+        .nmi    (nmi),
+        .irq    (irq),
+        .rw     (rw),
+        .dbi    (dbi),
+        .dbo    (dbo),
+        .ab     (ab)
+    );
+
+    //////////////////////////////////////////////////////////////////////////
     // I/O locations
 
-    localparam UART_RX =    16'hD010; // PIA.A register on Apple 1 - RX byte
-    localparam UART_RXCR =  16'hD011; // PIA.A register on Apple 1 - RX control
-    localparam UART_TX =    16'hD012; // PIA.B register on Apple 1 - TX byte
-    localparam LED_KEYS =   16'hD020; // Start address of the Led&Keys module
-    localparam LED =        16'hD000; // Breakout board LEDs
+    localparam UART_RX      = 16'hD010; // PIA.A register on Apple 1 - RX byte
+    localparam UART_RXCR    = 16'hD011; // PIA.A register on Apple 1 - RX control
+    localparam UART_TX 	    = 16'hD012; // PIA.B register on Apple 1 - TX byte
+    localparam LED_KEYS	    = 16'hD020; // Start address of the Led&Keys module
+    localparam LED          = 16'hD000; // Breakout board LEDs
   
     //////////////////////////////////////////////////////////////////////////
     // RAM and ROM
 
     reg [7:0] ram[0:8191] /* synthesis syn_ramstyle = "block_ram" */;
-    reg [7:0] basic[0:4091] /* synthesis syn_ramstyle = "block_ram" */;
     reg [7:0] rom[0:255] /* synthesis syn_ramstyle = "block_ram" */;
+    reg [7:0] basic[0:4095] /* synthesis syn_ramstyle = "block_ram" */;
     
     initial begin
         $readmemh("../ram.hex", ram, 0, 8191);
         $readmemh("../rom.hex", rom, 0, 255);
-        $readmemh("../basic.hex", basic, 0, 4091);
+        $readmemh("../basic.hex", basic, 0, 4095);
     end
 
-    //always @(posedge clk_phi)
     always @(posedge clk_phi)
     begin
         // clear the UART RX ack if set
@@ -259,7 +239,7 @@ module top(
                     end
                     else
                         // unknown address return zero
-                        dbi <= 8'b0;
+                        dbi <= 8'h0;
                 end
 
             endcase

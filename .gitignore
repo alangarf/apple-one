@@ -2,3 +2,6 @@
 *.xcf
 *.log
 synlog.tcl
+*~
+*.bak
+*.swp
