@@ -7,17 +7,14 @@ This project borrows heavily from the *awesome* work of Andrew Holme and his ["P
  ## Memory Map
  
 The iCE40HX8K has 16KB of available block RAM, this is currently set up to have:
-- 8KB of system RAM (0x0000 -> 0x1FFF)
-- 4KB of Integer Basic ROM (0xE000 -> 0xEFFF)
-- 512B of WozMON ROM (0xFF00 -> 0xFFFF)
-
-The remaining 3.5KB is being earmarked for character ROMs and video RAM when I start implementing that (any help greatfully accepted). The basic ROM could be removed which would allow for 12KB of system RAM if needs be.
 
  Start | End | Description
  ----- | --- | -----------
  0x0000 | 0x1FFF | 8KB of block RAM for system
  0xE000 | 0xEFFF | 4KB of block RAM for basic ROM
  0xFF00 | 0xFFFF | 512B of block RAM for WozMon ROM
+
+The remaining 3.5KB is being earmarked for character ROMs and video RAM when I start implementing that (any help greatfully accepted). The basic ROM could be removed which would allow for 12KB of system RAM if needs be.
  
 ## Hardware Map
 
