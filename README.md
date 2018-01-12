@@ -1,6 +1,6 @@
 # apple-one
 
-![Apple One](https://github.com/alangarf/apple-one/raw/master/media/apple-one_sml.jpg)
+![Apple One](https://github.com/alangarf/apple-one/raw/master/media/apple-logo.png)
 
 This is a very untested and very basic implementation of an Apple 1 in a iCE40HX FPGA. It has enough to run Woz Mon via the serial USB interface which is available on the iCE40HX8K-B-EVN breakout board, which makes this a very compact little set up.
 
