@@ -8,9 +8,9 @@
 
 
 
-add_file -verilog -lib work "rtl/MUX.v" 
-add_file -verilog -lib work "rtl/basic.v" 
+add_file -verilog -lib work "rtl/apple1_top.v" 
 add_file -verilog -lib work "rtl/chip_6502.v" 
+add_file -verilog -lib work "rtl/chip_6502_mux.v" 
 add_file -verilog -lib work "rtl/led_and_key.v" 
 add_file -verilog -lib work "rtl/tm1638.v" 
 add_file -verilog -lib work "rtl/uart.v" 
