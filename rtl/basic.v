@@ -150,9 +150,9 @@ module top(
     reg [7:0] basic[0:4095] /* synthesis syn_ramstyle = "block_ram" */;
     
     initial begin
-        $readmemh("../ram.hex", ram, 0, 8191);
-        $readmemh("../rom.hex", rom, 0, 255);
-        $readmemh("../basic.hex", basic, 0, 4095);
+        $readmemh("../roms/ram.hex", ram, 0, 8191);
+        $readmemh("../roms/rom.hex", rom, 0, 255);
+        $readmemh("../roms/basic.hex", basic, 0, 4095);
     end
 
     always @(posedge clk_phi)
