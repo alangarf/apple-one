@@ -1,21 +1,27 @@
 #--  Synopsys, Inc.
 #--  Version L-2016.09L+ice40
-#--  Project file C:\Users\Alan\Desktop\projects\apple1\apple1_syn.prj
-#--  Written on Mon Jan 01 00:45:12 2018
+#--  Project file C:\Users\Alan\Documents\GitHub\apple-one\appleone\appleone_syn.prj
+#--  Written on Tue Jan 23 23:49:24 2018
 
 
 #project files
+add_file -fpga_constraint "appleone_Implmnt/appleone_synplify.fdc"
+add_file -fpga_constraint "appleone_Implmnt/appleone.fdc"
 
 
 
-add_file -verilog -lib work "rtl/apple1_top.v" 
-add_file -verilog -lib work "rtl/chip_6502.v" 
-add_file -verilog -lib work "rtl/chip_6502_mux.v" 
-add_file -verilog -lib work "rtl/led_and_key.v" 
-add_file -verilog -lib work "rtl/tm1638.v" 
-add_file -verilog -lib work "rtl/uart.v" 
-#implementation: "apple1_Implmnt"
-impl -add apple1_Implmnt -type fpga
+add_file -verilog -lib work "../rtl/apple1_top.v" 
+add_file -verilog -lib work "../rtl/chip_6502.v" 
+add_file -verilog -lib work "../rtl/chip_6502_mux.v" 
+add_file -verilog -lib work "../rtl/led_and_key.v" 
+add_file -verilog -lib work "../rtl/tm1638.v" 
+add_file -verilog -lib work "../rtl/uart.v" 
+add_file -verilog -lib work "../rtl/vga.v" 
+add_file -verilog -lib work "../rtl/clock_pll.v" 
+add_file -verilog -lib work "../rtl/ALU.v" 
+add_file -verilog -lib work "../rtl/cpu.v" 
+#implementation: "appleone_Implmnt"
+impl -add appleone_Implmnt -type fpga
 
 #
 #implementation attributes
@@ -66,11 +72,12 @@ set_option -resource_sharing 1
 
 # Compiler Options
 set_option -auto_infer_blackbox 0
+set_option -fpga_constraint ""
 
 #automatic place and route (vendor) options
 set_option -write_apr_constraint 1
 
 #set result format/file last
-project -result_file "apple1_Implmnt/apple1.edf"
-impl -active apple1_Implmnt
+project -result_file "appleone_Implmnt/appleone.edf"
+impl -active appleone_Implmnt
 project -run synthesis -clean

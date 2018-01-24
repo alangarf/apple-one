@@ -1,42 +1,42 @@
 [Project]
 ProjectVersion=2.0
 Version=Lattice Semiconductor Corporation iCEcube - Release: 2017.08.27940 - Build Date: Sep 11 2017 17:40:01
-ProjectName=apple1
+ProjectName=appleone
 Vendor=SiliconBlue
 Synthesis=synplify
-ProjectVFiles=rtl/apple1_top.v,rtl/chip_6502.v,rtl/chip_6502_mux.v,rtl/led_and_key.v,rtl/tm1638.v,rtl/uart.v
+ProjectVFiles=../rtl/apple1_top.v=work,../rtl/chip_6502.v=work,../rtl/chip_6502_mux.v=work,../rtl/led_and_key.v=work,../rtl/tm1638.v=work,../rtl/uart.v=work,../rtl/vga.v=work,../rtl/clock_pll.v=work,../rtl/ALU.v=work,../rtl/cpu.v=work
 ProjectCFiles=
-CurImplementation=apple1_Implmnt
-Implementations=apple1_Implmnt
+CurImplementation=appleone_Implmnt
+Implementations=appleone_Implmnt
 StartFromSynthesis=yes
 IPGeneration=false
 
-[apple1_Implmnt]
+[appleone_Implmnt]
 DeviceFamily=iCE40
 Device=HX8K
 DevicePackage=CT256
 DevicePower=
-NetlistFile=apple1_Implmnt/apple1.edf
+NetlistFile=appleone_Implmnt/appleone.edf
 AdditionalEDIFFile=
 IPEDIFFile=
-DesignLib=
-DesignView=
-DesignCell=
-SynthesisSDCFile=apple1_Implmnt/apple1.scf
+DesignLib=appleone_Implmnt/sbt/netlist/oadb-top
+DesignView=_rt
+DesignCell=top
+SynthesisSDCFile=appleone_Implmnt/appleone.scf
 UserPinConstraintFile=
 UserSDCFile=
-PhysicalConstraintFile=ice40hx8k.pcf
+PhysicalConstraintFile=../ice40hx8k.pcf
 BackendImplPathName=
-Devicevoltage=1.14
+Devicevoltage=1.2
 DevicevoltagePerformance=+/-5%(datasheet default)
-DeviceTemperature=85
-TimingAnalysisBasedOn=Worst
+DeviceTemperature=25
+TimingAnalysisBasedOn=Typical
 OperationRange=Commercial
 TypicalCustomTemperature=25
 WorstCustomTemperature=85
 BestCustomTemperature=0
 IOBankVoltages=topBank,3.3 bottomBank,3.3 leftBank,3.3 rightBank,3.3
-derValue=0.701346
+derValue=0.623363
 TimingPathNumberStick=0
 
 [lse options]

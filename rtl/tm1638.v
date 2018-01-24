@@ -1,5 +1,6 @@
 module tm1638(
     input clk,
+    input clk_en,
     input rst,
 
     input data_latch,
@@ -96,23 +97,26 @@ module tm1638(
 
     always @(posedge clk)
     begin
-        if (rst)
+        if (clk_en)
         begin
-            cur_state <= S_IDLE;
-            sclk_q <= 0;
-            ctr_q <= 0;
-            dio_out <= 0;
-            data_q <= 0;
-            data_out_q <= 0;
-        end
-        else
-        begin
-            cur_state <= next_state;
-            sclk_q <= sclk_d;
-            ctr_q <= ctr_d;
-            dio_out <= dio_out_d;
-            data_q <= data_d;
-            data_out_q <= data_out_d;
+            if (rst)
+            begin
+                cur_state <= S_IDLE;
+                sclk_q <= 0;
+                ctr_q <= 0;
+                dio_out <= 0;
+                data_q <= 0;
+                data_out_q <= 0;
+            end
+            else
+            begin
+                cur_state <= next_state;
+                sclk_q <= sclk_d;
+                ctr_q <= ctr_d;
+                dio_out <= dio_out_d;
+                data_q <= data_d;
+                data_out_q <= data_out_d;
+            end
         end
     end
 endmodule
