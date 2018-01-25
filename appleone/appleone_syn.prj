@@ -20,6 +20,7 @@ add_file -verilog -lib work "../rtl/vga.v"
 add_file -verilog -lib work "../rtl/clock_pll.v" 
 add_file -verilog -lib work "../rtl/ALU.v" 
 add_file -verilog -lib work "../rtl/cpu.v" 
+add_file -constraint -lib work "appleone_syn.sdc"
 #implementation: "appleone_Implmnt"
 impl -add appleone_Implmnt -type fpga
 
