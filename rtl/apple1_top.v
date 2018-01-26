@@ -10,7 +10,7 @@
 module top(
     input  clk25,           // 25 MHz master clock
     input  rst_n,           // active low synchronous reset (needed for simulation)
-    
+
     input  uart_rx,
     output uart_tx,
     output uart_cts,
@@ -50,10 +50,17 @@ module top(
     // 25 clocks. This will (hopefully) make
     // the 6502 run at 1 MHz or 1Hz
     //
+    // the clock division counter is synchronously
+    // reset using rst_n to avoid undefined signals
+    // in simulation
+    //
+
     reg [4:0] clk_div;
     always @(posedge clk25)
     begin
-        if ((clk_div == 25) || (rst_n == 1'b0))
+        // note: clk_div should be compared to
+        //       N-1, where N is the clock divisor
+        if ((clk_div == 24) || (rst_n == 1'b0))
             clk_div <= 0;
         else
             clk_div <= clk_div + 1'b1;
@@ -70,7 +77,12 @@ module top(
 
     always @(posedge clk25)
     begin
-        if (cpu_clken)
+        if (rst_n == 1'b0)
+        begin
+            reset_cnt  <= 6'b0;
+            //hard_reset <= 1'b0; we should init hard_reset here too..
+        end
+        else if (cpu_clken)
         begin
             if (!pwr_up_reset)
                 reset_cnt <= reset_cnt + 1;
