@@ -1,4 +1,11 @@
-`define ICE40
+// 
+// FIXME:
+// there defines must be enabled in the project
+// settings to avoid conflicts with different
+// development platforms
+//
+//`define ICE40
+//
 
 module top(
     input  clk,
@@ -23,6 +30,11 @@ module top(
     wire clk25;
     wire cpu_clken;
 
+    // FIXME:
+    // the clocks here should come from higher up 
+    // the hierarchy, i.e. generated at the board
+    // level.
+    
     `ifdef ICE40
     clocks my_clocks(
         .clk(clk),
