@@ -10,7 +10,7 @@ module ram(
     reg [7:0] ram[0:8191];
 
     initial
-        $readmemh("../../../roms/ram.hex", ram, 0, 8191);
+        $readmemh("../roms/ram.hex", ram, 0, 8191);
 
     always @(posedge clk)
     begin
