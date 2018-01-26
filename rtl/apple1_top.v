@@ -9,6 +9,8 @@
 
 module top(
     input  clk25,           // 25 MHz master clock
+    input  rst_n,           // active low synchronous reset (needed for simulation)
+    
     input  uart_rx,
     output uart_tx,
     output uart_cts,
@@ -51,7 +53,7 @@ module top(
     reg [4:0] clk_div;
     always @(posedge clk25)
     begin
-        if (clk_div == 25)
+        if ((clk_div == 25) || (rst_n == 1'b0))
             clk_div <= 0;
         else
             clk_div <= clk_div + 1'b1;

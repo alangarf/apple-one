@@ -25,7 +25,7 @@
 
 module apple1_top_tb;
 
-    reg clk25, uart_rx;
+    reg clk25, uart_rx, rst_n;
     wire uart_tx, uart_cts;
 
     //////////////////////////////////////////////////////////////////////////    
@@ -33,7 +33,9 @@ module apple1_top_tb;
 
     initial begin
         clk25 = 1'b0;
-        uart_rx = 1'b0;  
+        uart_rx = 1'b0;
+        rst_n = 1'b0;         
+        #40 rst_n = 1'b1;
 
         $display("Starting...");
         $dumpfile("apple1_top_tb.vcd");
@@ -48,15 +50,11 @@ module apple1_top_tb;
     always
         #20 clk25 = !clk25;
 
-    always 
-    begin
-        #10000 $finish;
-    end
-
     //////////////////////////////////////////////////////////////////////////    
     // Core of system
     top core_top(
         .clk25(clk25),
+        .rst_n(rst_n),
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
         .uart_cts(uart_cts)
