@@ -8,14 +8,13 @@
 //
 
 module top(
-    input  clk,
-
+    input  clk25,           // 25 MHz master clock
     input  uart_rx,
     output uart_tx,
     output uart_cts,
 
-    output [7:0] led,
-    output [7:0] ledx
+    output [7:0] led,       // what do these do?
+    output [7:0] ledx       // what do these do?
 );
     //////////////////////////////////////////////////////////////////////////
     // Registers and Wires
@@ -27,13 +26,15 @@ module top(
 
     //////////////////////////////////////////////////////////////////////////
     // Clocks
-    wire clk25;
     wire cpu_clken;
 
     // FIXME:
     // the clocks here should come from higher up 
     // the hierarchy, i.e. generated at the board
     // level.
+    //
+    // if cpu_clken is a simple block,
+    // keep it here but make it generic.
     
     `ifdef ICE40
     clocks my_clocks(
@@ -43,6 +44,21 @@ module top(
     );
     `endif
     
+    // generate clock enable once every 
+    // 25 clocks. This will (hopefully) make
+    // the 6502 run at 1 MHz or 1Hz
+    //
+    reg [4:0] clk_div;
+    always @(posedge clk25)
+    begin
+        if (clk_div == 25)
+            clk_div <= 0;
+        else
+            clk_div <= clk_div + 1'b1;
+
+        cpu_clken <= (clk_div[4:0] == 0);
+    end
+
     //////////////////////////////////////////////////////////////////////////
     // Reset
     wire reset;
