@@ -26,7 +26,7 @@ module top(
 
     //////////////////////////////////////////////////////////////////////////
     // Clocks
-    wire cpu_clken;
+    reg cpu_clken;
 
     // FIXME:
     // the clocks here should come from higher up 
