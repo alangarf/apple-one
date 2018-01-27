@@ -23,7 +23,7 @@ module uart(
     parameter Baud = 115200;
     parameter Oversampling = 8;
 
-    reg uart_tx_stb;
+    reg uart_tx_stb, uart_tx_init;
     reg [7:0] uart_tx_byte;
     wire uart_tx_status;
 
@@ -86,9 +86,10 @@ module uart(
         begin
             dout <= 8'd0;
 
+            uart_tx_init <= 0; // flag to ignore the DDR setup from Wozmon PIA call
             uart_tx_stb <= 0;
-            uart_rx_ack <= 0;
             uart_tx_byte <= 8'd0;
+            uart_rx_ack <= 0;
         end
         else
         begin
@@ -108,11 +109,13 @@ module uart(
                     begin
                         // Apple 1 terminal only uses 7 bits, MSB indicates
                         // terminal has ack'd RX
-                        if (~uart_tx_status)
+                        if (~uart_tx_status && uart_tx_init)
                         begin
                             uart_tx_byte <= {1'b0, din[6:0]};
                             uart_tx_stb <= 1;
                         end
+                        else
+                            uart_tx_init <= 1;
                     end
                 end
 
