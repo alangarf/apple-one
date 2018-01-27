@@ -105,7 +105,7 @@ module apple1(
 
     // RAM
     wire [7:0] ram_dout;
-    ram my_ram (
+    ram #("../../roms/ram.hex") my_ram (
         .clk(clk25),
         .address(ab[12:0]),
         .w_en(we & ram_cs),
@@ -115,7 +115,7 @@ module apple1(
 
     // WozMon ROM
     wire [7:0] rom_dout;
-    rom_wozmon my_rom_wozmon (
+    rom_wozmon #("../../roms/wozmon.hex") my_rom_wozmon (
         .clk(clk25),
         .address(ab[7:0]),
         .dout(rom_dout)

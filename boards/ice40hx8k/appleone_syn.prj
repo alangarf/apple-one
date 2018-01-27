@@ -1,11 +1,16 @@
-#-- Synopsys, Inc.
-#-- Project file C:\Users\Alan\Documents\GitHub\apple-one\boards\ice40hx8k\appleone_syn.prj
+#--  Synopsys, Inc.
+#--  Version L-2016.09L+ice40
+#--  Project file C:\Users\Alan\Documents\GitHub\apple-one\boards\ice40hx8k\appleone_syn.prj
+#--  Written on Sat Jan 27 14:24:00 2018
+
+
 #project files
+
+
 
 add_file -verilog -lib work "../../rtl/rom_wozmon.v" 
 add_file -verilog -lib work "../../rtl/apple1.v" 
 add_file -verilog -lib work "../../rtl/ram.v" 
-add_file -verilog -lib work "../../rtl/boards/ice40hx8k/apple1_top.v" 
 add_file -verilog -lib work "../../rtl/boards/ice40hx8k/clock_pll.v" 
 add_file -verilog -lib work "../../rtl/cpu/ALU.v" 
 add_file -verilog -lib work "../../rtl/cpu/cpu.v" 
@@ -15,7 +20,9 @@ add_file -constraint -lib work "appleone_syn.sdc"
 #implementation: "appleone_Implmnt"
 impl -add appleone_Implmnt -type fpga
 
+#
 #implementation attributes
+
 set_option -vlog_std v2001
 set_option -project_relative_includes 1
 
@@ -28,24 +35,29 @@ set_option -part_companion ""
 
 #compilation/mapping options
 
-# mapper_options
+# hdl_compiler_options
+set_option -distributed_compile 0
+
+# mapper_without_write_options
 set_option -frequency auto
+set_option -srs_instrumentation 1
+
+# mapper_options
 set_option -write_verilog 0
 set_option -write_vhdl 0
 
-# Silicon Blue iCE40
+# Lattice iCE40
 set_option -maxfan 10000
+set_option -rw_check_on_ram 1
 set_option -disable_io_insertion 0
 set_option -pipe 1
 set_option -retiming 0
 set_option -update_models_cp 0
-set_option -fixgatedclocks 2
-set_option -fixgeneratedclocks 0
+set_option -fix_gated_and_generated_clocks 1
+set_option -run_prop_extract 1
 
 # NFilter
-set_option -popfeed 0
-set_option -constprop 0
-set_option -createhierarchy 0
+set_option -no_sequential_opt 0
 
 # sequential_optimization_options
 set_option -symbolic_fsm_compiler 1
@@ -54,12 +66,13 @@ set_option -symbolic_fsm_compiler 1
 set_option -compiler_compatible 0
 set_option -resource_sharing 1
 
+# Compiler Options
+set_option -auto_infer_blackbox 0
+
 #automatic place and route (vendor) options
 set_option -write_apr_constraint 1
 
 #set result format/file last
-project -result_format "edif"
-project -result_file ./appleone_Implmnt/appleone.edf
-project -log_file "./appleone_Implmnt/appleone.srr"
+project -result_file "appleone_Implmnt/appleone.edf"
 impl -active appleone_Implmnt
 project -run synthesis -clean

@@ -6,11 +6,12 @@ module ram(
     output reg [7:0] dout
     );
 
-    /* synthesis syn_ramstyle = rw_check */
+    parameter RAM_FILENAME = "../roms/ram.hex";
+
     reg [7:0] ram[0:8191];
 
     initial
-        $readmemh("../roms/ram.hex", ram, 0, 8191);
+        $readmemh(RAM_FILENAME, ram, 0, 8191);
 
     always @(posedge clk)
     begin
