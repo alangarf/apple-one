@@ -39,7 +39,7 @@ module apple1(
         begin
             // note: clk_div should be compared to
             //       N-1, where N is the clock divisor
-            if ((clk_div == 4999999) || (rst_n == 1'b0))
+            if ((clk_div == 24999999) || (rst_n == 1'b0))
                 clk_div <= 0;
             else
                 clk_div <= clk_div + 1'b1;
