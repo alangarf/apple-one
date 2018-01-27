@@ -344,6 +344,10 @@ set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_RO
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_CTS
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_RXD
+set_global_assignment -name VERILOG_FILE ../../rtl/cpu/arlet/cpu.v
+set_global_assignment -name VERILOG_FILE ../../rtl/cpu/arlet/ALU.v
+set_global_assignment -name VERILOG_FILE ../../rtl/cpu/arlet_6502.v
+set_global_assignment -name VERILOG_FILE ../../rtl/apple1.v
 set_global_assignment -name SDC_FILE "apple-one.sdc"
 set_global_assignment -name VERILOG_FILE ../../rtl/boards/terasic_de0/apple1_de0_top.v
 set_global_assignment -name VERILOG_FILE ../../rtl/cpu/cpu.v
@@ -352,5 +356,4 @@ set_global_assignment -name VERILOG_FILE ../../rtl/uart/uart.v
 set_global_assignment -name VERILOG_FILE ../../rtl/uart/async_tx_rx.v
 set_global_assignment -name VERILOG_FILE ../../rtl/rom_wozmon.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ram.v
-set_global_assignment -name VERILOG_FILE ../../rtl/apple1_top.v
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

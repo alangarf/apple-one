@@ -43,7 +43,7 @@ module apple1_de0_top(
 
     //////////////////////////////////////////////////////////////////////////    
     // Core of system
-    top core_top(
+    apple1 apple1_top(
         .clk25(clk25),
         .rst_n(1'b1),       // we don't have any reset pulse..
         .uart_rx(UART_RXD),
