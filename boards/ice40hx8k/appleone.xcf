@@ -19,13 +19,14 @@
 				<BScanLen>1</BScanLen>
 				<BScanVal>0</BScanVal>
 			</Bypass>
-			<File>C:/Users/Alan/Documents/GitHub/apple-one/boards/ice40hx8k/appleone/appleone_Implmnt/sbt/outputs/bitmap/top_bitmap.bin</File>
-			<FileTime>01/26/18 18:17:10</FileTime>
+			<File>C:/Users/Alan/Documents/GitHub/apple-one/boards/ice40hx8k/appleone_Implmnt/sbt/outputs/bitmap/apple1_top_bitmap.bin</File>
+			<FileTime>01/27/18 23:59:33</FileTime>
 			<Operation>Fast Program</Operation>
 			<Option>
 				<SVFVendor>JTAG STANDARD</SVFVendor>
 				<IOState>HighZ</IOState>
 				<TCKFrequency>1.000000 MHz</TCKFrequency>
+				<SVFProcessor>SVF Processor</SVFProcessor>
 				<AccessMode>CRAM</AccessMode>
 			</Option>
 		</Device>
@@ -45,7 +46,6 @@
 		<PortAdd>FTUSB-0</PortAdd>
 		<USBID>Lattice FTUSB Interface Cable A Location 0000 Serial A</USBID>
 		<JTAGPinSetting>
-			TRST	ABSENT;
 			ISPEN	ABSENT;
 		</JTAGPinSetting>
 	</CableOptions>
