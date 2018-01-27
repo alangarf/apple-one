@@ -9,6 +9,7 @@
 ////////////////////////////////////////////////////////
 module async_transmitter(
     input clk,
+    input reset,
     input TxD_start,
     input [7:0] TxD_data,
     output TxD,
@@ -31,29 +32,37 @@ module async_transmitter(
     wire TxD_ready = (TxD_state==0);
     assign TxD_busy = ~TxD_ready;
 
-    always @(posedge clk)
+    always @(posedge clk or posedge reset)
     begin
-        if(TxD_ready & TxD_start)
-            TxD_shift <= TxD_data;
+        if (reset)
+        begin
+            TxD_state <= 0;
+            TxD_shift <= 0;
+        end
         else
-            if(TxD_state[3] & BitTick)
-                TxD_shift <= (TxD_shift >> 1);
+        begin
+            if(TxD_ready & TxD_start)
+                TxD_shift <= TxD_data;
+            else
+                if(TxD_state[3] & BitTick)
+                    TxD_shift <= (TxD_shift >> 1);
 
-        case(TxD_state)
-            4'b0000: if(TxD_start) TxD_state <= 4'b0100;
-            4'b0100: if(BitTick) TxD_state <= 4'b1000;  // start bit
-            4'b1000: if(BitTick) TxD_state <= 4'b1001;  // bit 0
-            4'b1001: if(BitTick) TxD_state <= 4'b1010;  // bit 1
-            4'b1010: if(BitTick) TxD_state <= 4'b1011;  // bit 2
-            4'b1011: if(BitTick) TxD_state <= 4'b1100;  // bit 3
-            4'b1100: if(BitTick) TxD_state <= 4'b1101;  // bit 4
-            4'b1101: if(BitTick) TxD_state <= 4'b1110;  // bit 5
-            4'b1110: if(BitTick) TxD_state <= 4'b1111;  // bit 6
-            4'b1111: if(BitTick) TxD_state <= 4'b0010;  // bit 7
-            4'b0010: if(BitTick) TxD_state <= 4'b0011;  // stop1
-            4'b0011: if(BitTick) TxD_state <= 4'b0000;  // stop2
-            default: if(BitTick) TxD_state <= 4'b0000;
-        endcase
+            case(TxD_state)
+                4'b0000: if(TxD_start) TxD_state <= 4'b0100;
+                4'b0100: if(BitTick) TxD_state <= 4'b1000;  // start bit
+                4'b1000: if(BitTick) TxD_state <= 4'b1001;  // bit 0
+                4'b1001: if(BitTick) TxD_state <= 4'b1010;  // bit 1
+                4'b1010: if(BitTick) TxD_state <= 4'b1011;  // bit 2
+                4'b1011: if(BitTick) TxD_state <= 4'b1100;  // bit 3
+                4'b1100: if(BitTick) TxD_state <= 4'b1101;  // bit 4
+                4'b1101: if(BitTick) TxD_state <= 4'b1110;  // bit 5
+                4'b1110: if(BitTick) TxD_state <= 4'b1111;  // bit 6
+                4'b1111: if(BitTick) TxD_state <= 4'b0010;  // bit 7
+                4'b0010: if(BitTick) TxD_state <= 4'b0011;  // stop1
+                4'b0011: if(BitTick) TxD_state <= 4'b0000;  // stop2
+                default: if(BitTick) TxD_state <= 4'b0000;
+            endcase
+        end
     end
 
     assign TxD = (TxD_state<4) | (TxD_state[3] & TxD_shift[0]);

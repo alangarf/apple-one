@@ -1,5 +1,6 @@
 module rom_wozmon(
     input clk,
+    input reset,
     input [7:0] address,
     output reg [7:0] dout
     );
@@ -13,7 +14,7 @@ module rom_wozmon(
 
     always @(posedge clk)
     begin
-        dout <= rom[address];
+        dout <= reset ? 8'h0 : rom[address];
     end
 
 endmodule

@@ -1,5 +1,6 @@
 module ram(
     input clk,
+    input reset,
     input [12:0] address,
     input w_en,
     input [7:0] din,
@@ -15,8 +16,8 @@ module ram(
 
     always @(posedge clk)
     begin
-        dout <= ram[address];
-        if (w_en) ram[address] <= din;
+        dout <= reset ? 8'h0 : ram[address];
+        if (w_en && ~reset) ram[address] <= din;
     end
 
 endmodule

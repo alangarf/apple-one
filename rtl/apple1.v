@@ -78,8 +78,8 @@ module apple1(
         .dbi    (dbi),
         .dbo    (dbo),
         .we     (we),
-        .irq    (1'b1),
-        .nmi    (1'b1),
+        .irq_n  (1'b1),
+        .nmi_n  (1'b1),
         .ready  (cpu_clken)
     );
 
@@ -95,6 +95,7 @@ module apple1(
     wire [7:0] ram_dout;
     ram #(RAM_FILENAME) my_ram (
         .clk(clk25),
+        .reset(reset),
         .address(ab[12:0]),
         .w_en(we & ram_cs),
         .din(dbo),
@@ -105,6 +106,7 @@ module apple1(
     wire [7:0] rom_dout;
     rom_wozmon #(WOZ_FILENAME) my_rom_wozmon (
         .clk(clk25),
+        .reset(reset),
         .address(ab[7:0]),
         .dout(rom_dout)
     );
@@ -113,6 +115,7 @@ module apple1(
     wire [7:0] uart_dout;
     uart my_uart (
         .clk(clk25),
+        .reset(reset),
 
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),

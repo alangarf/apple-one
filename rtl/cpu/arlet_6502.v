@@ -6,8 +6,8 @@ module arlet_6502(
     input [7:0] dbi,
     output reg [7:0] dbo,
     output reg we,
-    input irq,
-    input nmi,
+    input irq_n,
+    input nmi_n,
     input ready
 );
 
@@ -27,13 +27,20 @@ module arlet_6502(
         .RDY(ready) 
     );
 
-    always @(posedge clk)
+    always @(posedge clk or posedge reset)
     begin
-        if (enable)
+        if (reset)
         begin
-            ab <= ab_c;
-            dbo <= dbo_c;
-            we <= we_c;
+            ab <= 16'd0;
+            dbo <= 8'd0;
+            we <= 1'b0;
         end
+        else
+            if (enable)
+            begin
+                ab <= ab_c;
+                dbo <= dbo_c;
+                we <= we_c;
+            end
     end
 endmodule
