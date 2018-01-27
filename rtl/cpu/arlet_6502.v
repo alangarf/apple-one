@@ -23,8 +23,8 @@ module arlet_6502(
         .DI(dbi),
         .DO(dbo_c),
         .WE(we_c),
-        .IRQ(irq_n),
-        .NMI(nmi_n),
+        .IRQ(~irq_n),
+        .NMI(~nmi_n),
         .RDY(ready),
         .PC_MONITOR(pc_monitor)
     );
