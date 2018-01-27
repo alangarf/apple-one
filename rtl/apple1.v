@@ -113,7 +113,13 @@ module apple1(
 
     // UART
     wire [7:0] uart_dout;
-    uart my_uart (
+    uart #(
+        25000000, 115200, 8
+// FIXME:
+// If simulated, need to reduce baud rate etc down
+// else the UARTs don't work.
+//        100, 10, 2
+    )my_uart (
         .clk(clk25),
         .reset(reset),
 

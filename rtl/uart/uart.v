@@ -43,6 +43,7 @@ module uart(
 
     async_receiver #(ClkFrequency, Baud, Oversampling) my_rx(
         .clk(clk),
+        .reset(reset),
         .RxD(uart_rx),
         .RxD_data_ready(uart_rx_stb),
         .RxD_data(rx_data),
@@ -96,49 +97,44 @@ module uart(
             uart_tx_stb <= 0;
             uart_rx_ack <= 0;
 
-            if (enable)
+            case (address)
+
+            UART_TX:
             begin
-                case (address)
+                // UART TX - 0xD012
+                dout <= {uart_tx_status, 7'd0};
 
-                UART_TX:
+                if (w_en)
                 begin
-                    // UART TX - 0xD012
-                    dout <= {uart_tx_status, 7'd0};
-
-                    if (w_en)
+                    // Apple 1 terminal only uses 7 bits, MSB indicates
+                    // terminal has ack'd RX
+                    if (~uart_tx_status && uart_tx_init)
                     begin
-                        // Apple 1 terminal only uses 7 bits, MSB indicates
-                        // terminal has ack'd RX
-                        if (~uart_tx_status && uart_tx_init)
-                        begin
-                            uart_tx_byte <= {1'b0, din[6:0]};
-                            uart_tx_stb <= 1;
-                        end
-                        else
-                            uart_tx_init <= 1;
+                        uart_tx_byte <= {1'b0, din[6:0]};
+                        uart_tx_stb <= 1;
                     end
+                    else
+                        uart_tx_init <= 1;
                 end
-
-                UART_RXCR:
-                begin
-                    // UART RX CR - 0xD011
-                    dout <= {uart_rx_status, 7'b0};
-                end
-
-                UART_RX:
-                begin
-                    // UART RX - 0xD010
-                    dout <= {uart_rx_status, uart_rx_byte[6:0]};
-                    if (~w_en)
-                        uart_rx_ack <= 1'b1;
-                end
-
-                default:
-                    dout <= 8'b0;
-                endcase
             end
-            else
-                    dout <= 8'b0;
+
+            UART_RXCR:
+            begin
+                // UART RX CR - 0xD011
+                dout <= {uart_rx_status, 7'b0};
+            end
+
+            UART_RX:
+            begin
+                // UART RX - 0xD010
+                dout <= {uart_rx_status, uart_rx_byte[6:0]};
+                if (~w_en && ~uart_rx_ack && enable)
+                    uart_rx_ack <= 1'b1;
+            end
+
+            default:
+                dout <= 8'b0;
+            endcase
         end
     end
 endmodule

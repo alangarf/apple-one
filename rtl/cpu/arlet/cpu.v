@@ -18,7 +18,8 @@
  * on the output pads if external memory is required.
  */
 
-`define SIM
+// FIXME - Need to make this flag reach out to test bench
+//`define SIM
 
 module cpu( clk, reset, AB, DI, DO, WE, IRQ, NMI, RDY );
 
