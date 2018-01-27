@@ -32,7 +32,7 @@ output WE;              // write enable
 input IRQ;              // interrupt request
 input NMI;              // non-maskable interrupt request
 input RDY;              // Ready signal. Pauses CPU when RDY=0 
-output PC_MONITOR;      // signal to spy / monitor the program counter for debugging
+output [15:0] PC_MONITOR;      // signal to spy / monitor the program counter for debugging
 
 /*
  * internal signals
