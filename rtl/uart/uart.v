@@ -15,8 +15,7 @@ module uart(
 
     input uart_rx,
     output uart_tx,
-    output uart_cts,
-    output reg [7:0] led
+    output uart_cts
     );
 
     parameter ClkFrequency = 25000000;	// 25MHz
@@ -76,8 +75,6 @@ module uart(
         uart_tx_stb <= 0;
         uart_rx_ack <= 0; 
 
-        led[7] <= uart_rx_status;
-
         if (enable)
         begin
             case (address)
@@ -113,7 +110,6 @@ module uart(
                 begin
                     dout <= {uart_rx_status, uart_rx_byte[6:0]};
                     uart_rx_ack <= 1'b1;
-                    led[6:0] <= uart_rx_byte[6:0];
                 end
             end
             endcase

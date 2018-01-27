@@ -1,22 +1,10 @@
-// 
-// FIXME:
-// there defines must be enabled in the project
-// settings to avoid conflicts with different
-// development platforms
-//
-//`define ICE40
-//
-
-module top(
+module apple1(
     input  clk25,           // 25 MHz master clock
     input  rst_n,           // active low synchronous reset (needed for simulation)
 
     input  uart_rx,
     output uart_tx,
-    output uart_cts,
-
-    output [7:0] led,       // what do these do?
-    output [7:0] ledx       // what do these do?
+    output uart_cts
 );
     //////////////////////////////////////////////////////////////////////////
     // Registers and Wires
@@ -28,23 +16,6 @@ module top(
 
     //////////////////////////////////////////////////////////////////////////
     // Clocks
-    reg cpu_clken;
-
-    // FIXME:
-    // the clocks here should come from higher up 
-    // the hierarchy, i.e. generated at the board
-    // level.
-    //
-    // if cpu_clken is a simple block,
-    // keep it here but make it generic.
-    
-    `ifdef ICE40
-    clocks my_clocks(
-        .clk(clk),
-        .clk25(clk25),
-        .cpu_clken(cpu_clken)
-    );
-    `endif
     
     // generate clock enable once every 
     // 25 clocks. This will (hopefully) make
@@ -56,6 +27,7 @@ module top(
     //
 
     reg [4:0] clk_div;
+    reg cpu_clken;
     always @(posedge clk25)
     begin
         // note: clk_div should be compared to
@@ -107,8 +79,8 @@ module top(
         .DI     (dbi_c),
         .DO     (dbo_c),
         .WE     (we_c),
-        .IRQ    (1'b0),
-        .NMI    (1'b0),
+        .IRQ    (1'b1),
+        .NMI    (1'b1),
         .RDY    (cpu_clken)
     );
 
@@ -162,8 +134,7 @@ module top(
         .address(ab[1:0]),
         .w_en(we & uart_cs),
         .din(dbo),
-        .dout(uart_dout),
-        .led(led)
+        .dout(uart_dout)
     );
 
     // link up chip selected device to cpu input
@@ -171,60 +142,4 @@ module top(
                  rom_cs  ? rom_dout :
                  uart_cs ? uart_dout :
                  8'hFF;
-
-    assign ledx = ab[7:0];
-
-//    always @(posedge clk25)
-//    begin
-//        if (cpu_clken)
-//        begin
-//            led <= ab[7:0];
-//            ledx <= ~ab[15:8];
-//        end
-//    end
-
-//    reg [7:0] ram[0:8191] /* synthesis syn_ramstyle = "block_ram" */;
-//    reg [7:0] rom[0:255] /* synthesis syn_ramstyle = "block_ram" */;
-//    reg [7:0] basic[0:4095] /* synthesis syn_ramstyle = "block_ram" */;
-//    
-//    initial begin
-//        $readmemh("../roms/ram.hex", ram, 0, 8191);
-//        $readmemh("../roms/rom.hex", rom, 0, 255);
-//        $readmemh("../roms/basic.hex", basic, 0, 4095);
-//    end
-//
-//    always @(posedge clk_25)
-//    begin
-//        if (phi_clk_en)
-//        begin
-//            if (res)
-//            begin
-//                case(ab)
-//                    default:
-//                    begin
-//                        if (ab[15:12] == 4'b0000 || ab[15:12] == 4'b0001)
-//                        begin
-//                            // 0x0000 -> 0x1FFF - RAM
-//                            dbi <= ram[ab[12:0]];
-//                            if (~rw) ram[ab[12:0]] <= dbo;
-//                        end
-//                        else if (ab[15:12] == 4'b1110)
-//                        begin
-//                            // 0xE000 -> 0xEFFF - BASIC
-//                            dbi <= basic[ab[11:0]];
-//                        end
-//                        else if (ab[15:8] == 8'b11111111)
-//                        begin
-//                            // 0xFF00 -> 0xFFFF - ROM
-//                            dbi <= rom[ab[7:0]];
-//                        end
-//                        else
-//                            // unknown address return zero
-//                            dbi <= 8'h0;
-//                    end
-//
-//                endcase
-//            end
-//        end
-//    end
 endmodule
