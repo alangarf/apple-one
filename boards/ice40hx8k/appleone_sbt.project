@@ -4,7 +4,7 @@ Version=Lattice Semiconductor Corporation iCEcube - Release: 2017.08.27940 - Bui
 ProjectName=appleone
 Vendor=SiliconBlue
 Synthesis=synplify
-ProjectVFiles=../../../rtl/apple1_top.v=work,../../../rtl/boards/ice40hx8k/clocks.v=work,../../../rtl/boards/ice40hx8k/clock_pll.v=work,../../../rtl/cpu/ALU.v=work,../../../rtl/cpu/cpu.v=work,../../../rtl/rom_wozmon.v,../../../rtl/uart/uart.v,../../../rtl/ram.v
+ProjectVFiles=../../rtl/rom_wozmon.v=work,../../rtl/apple1.v=work,../../rtl/ram.v=work,../../rtl/boards/ice40hx8k/clock_pll.v=work,../../rtl/uart/async_tx_rx.v=work,../../rtl/uart/uart.v=work,../../rtl/boards/ice40hx8k/apple1_hx8k.v=work,../../rtl/cpu/arlet_6502.v=work,../../rtl/cpu/arlet/ALU.v=work,../../rtl/cpu/arlet/cpu.v=work
 ProjectCFiles=appleone_syn.sdc
 CurImplementation=appleone_Implmnt
 Implementations=appleone_Implmnt
@@ -19,13 +19,13 @@ DevicePower=
 NetlistFile=appleone_Implmnt/appleone.edf
 AdditionalEDIFFile=
 IPEDIFFile=
-DesignLib=appleone_Implmnt/sbt/netlist/oadb-top
+DesignLib=appleone_Implmnt/sbt/netlist/oadb-apple1_top
 DesignView=_rt
-DesignCell=top
+DesignCell=apple1_top
 SynthesisSDCFile=appleone_Implmnt/appleone.scf
 UserPinConstraintFile=
 UserSDCFile=
-PhysicalConstraintFile=../../../ice40hx8k.pcf
+PhysicalConstraintFile=ice40hx8k.pcf
 BackendImplPathName=
 Devicevoltage=1.14
 DevicevoltagePerformance=+/-5%(datasheet default)
@@ -84,5 +84,5 @@ BitmapSetSecurity=no
 BitmapSetNoUsedIONoPullup=no
 FloorPlannerShowFanInNets=yes
 FloorPlannerShowFanOutNets=yes
-HookTo3rdPartyTextEditor=
+HookTo3rdPartyTextEditor=no
 

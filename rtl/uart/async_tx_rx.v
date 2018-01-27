@@ -9,6 +9,7 @@
 ////////////////////////////////////////////////////////
 module async_transmitter(
     input clk,
+    input reset,
     input TxD_start,
     input [7:0] TxD_data,
     output TxD,
@@ -23,7 +24,7 @@ module async_transmitter(
 
     ////////////////////////////////
     wire BitTick;
-    BaudTickGen #(ClkFrequency, Baud) tickgen(.clk(clk), .enable(TxD_busy), .tick(BitTick));
+    BaudTickGen #(ClkFrequency, Baud) tickgen(.clk(clk), .reset(reset), .enable(TxD_busy), .tick(BitTick));
 
     reg [3:0] TxD_state;
     reg [7:0] TxD_shift;
@@ -31,29 +32,37 @@ module async_transmitter(
     wire TxD_ready = (TxD_state==0);
     assign TxD_busy = ~TxD_ready;
 
-    always @(posedge clk)
+    always @(posedge clk or posedge reset)
     begin
-        if(TxD_ready & TxD_start)
-            TxD_shift <= TxD_data;
+        if (reset)
+        begin
+            TxD_state <= 0;
+            TxD_shift <= 0;
+        end
         else
-            if(TxD_state[3] & BitTick)
-                TxD_shift <= (TxD_shift >> 1);
+        begin
+            if(TxD_ready & TxD_start)
+                TxD_shift <= TxD_data;
+            else
+                if(TxD_state[3] & BitTick)
+                    TxD_shift <= (TxD_shift >> 1);
 
-        case(TxD_state)
-            4'b0000: if(TxD_start) TxD_state <= 4'b0100;
-            4'b0100: if(BitTick) TxD_state <= 4'b1000;  // start bit
-            4'b1000: if(BitTick) TxD_state <= 4'b1001;  // bit 0
-            4'b1001: if(BitTick) TxD_state <= 4'b1010;  // bit 1
-            4'b1010: if(BitTick) TxD_state <= 4'b1011;  // bit 2
-            4'b1011: if(BitTick) TxD_state <= 4'b1100;  // bit 3
-            4'b1100: if(BitTick) TxD_state <= 4'b1101;  // bit 4
-            4'b1101: if(BitTick) TxD_state <= 4'b1110;  // bit 5
-            4'b1110: if(BitTick) TxD_state <= 4'b1111;  // bit 6
-            4'b1111: if(BitTick) TxD_state <= 4'b0010;  // bit 7
-            4'b0010: if(BitTick) TxD_state <= 4'b0011;  // stop1
-            4'b0011: if(BitTick) TxD_state <= 4'b0000;  // stop2
-            default: if(BitTick) TxD_state <= 4'b0000;
-        endcase
+            case(TxD_state)
+                4'b0000: if(TxD_start) TxD_state <= 4'b0100;
+                4'b0100: if(BitTick) TxD_state <= 4'b1000;  // start bit
+                4'b1000: if(BitTick) TxD_state <= 4'b1001;  // bit 0
+                4'b1001: if(BitTick) TxD_state <= 4'b1010;  // bit 1
+                4'b1010: if(BitTick) TxD_state <= 4'b1011;  // bit 2
+                4'b1011: if(BitTick) TxD_state <= 4'b1100;  // bit 3
+                4'b1100: if(BitTick) TxD_state <= 4'b1101;  // bit 4
+                4'b1101: if(BitTick) TxD_state <= 4'b1110;  // bit 5
+                4'b1110: if(BitTick) TxD_state <= 4'b1111;  // bit 6
+                4'b1111: if(BitTick) TxD_state <= 4'b0010;  // bit 7
+                4'b0010: if(BitTick) TxD_state <= 4'b0011;  // stop1
+                4'b0011: if(BitTick) TxD_state <= 4'b0000;  // stop2
+                default: if(BitTick) TxD_state <= 4'b0000;
+            endcase
+        end
     end
 
     assign TxD = (TxD_state<4) | (TxD_state[3] & TxD_shift[0]);
@@ -63,6 +72,7 @@ endmodule
 ////////////////////////////////////////////////////////
 module async_receiver(
     input clk,
+    input reset,
     input RxD,
     output reg RxD_data_ready,
     output reg [7:0] RxD_data,  // data received, valid only (for one clock cycle) when RxD_data_ready is asserted
@@ -85,24 +95,38 @@ module async_receiver(
     reg [3:0] RxD_state;
 
     wire OversamplingTick;
-    BaudTickGen #(ClkFrequency, Baud, Oversampling) tickgen(.clk(clk), .enable(1'b1), .tick(OversamplingTick));
+    BaudTickGen #(ClkFrequency, Baud, Oversampling) tickgen(.clk(clk), .reset(reset), .enable(1'b1), .tick(OversamplingTick));
 
     // synchronize RxD to our clk domain
     reg [1:0] RxD_sync;   // 2'b11
-    always @(posedge clk) if(OversamplingTick) RxD_sync <= {RxD_sync[0], RxD};
+    always @(posedge clk or posedge reset)
+    begin
+        if (reset)
+            RxD_sync <= 2'b11;
+        else
+            if(OversamplingTick) RxD_sync <= {RxD_sync[0], RxD};
+    end
 
     // and filter it
     reg [1:0] Filter_cnt; // 2'b11
     reg RxD_bit;          // 1'b1
-    always @(posedge clk)
-        if(OversamplingTick)
+    always @(posedge clk or posedge reset)
+    begin
+        if (reset)
         begin
-            if(RxD_sync[1]==1'b1 && Filter_cnt!=2'b11) Filter_cnt <= Filter_cnt + 1'd1;
-            else if(RxD_sync[1]==1'b0 && Filter_cnt!=2'b00) Filter_cnt <= Filter_cnt - 1'd1;
-
-            if(Filter_cnt==2'b11) RxD_bit <= 1'b1;
-            else if(Filter_cnt==2'b00) RxD_bit <= 1'b0;
+            Filter_cnt <= 2'b11;
+            RxD_bit <= 1'b1;
         end
+        else
+            if(OversamplingTick)
+            begin
+                if(RxD_sync[1]==1'b1 && Filter_cnt!=2'b11) Filter_cnt <= Filter_cnt + 1'd1;
+                else if(RxD_sync[1]==1'b0 && Filter_cnt!=2'b00) Filter_cnt <= Filter_cnt - 1'd1;
+
+                if(Filter_cnt==2'b11) RxD_bit <= 1'b1;
+                else if(Filter_cnt==2'b00) RxD_bit <= 1'b0;
+            end
+    end
 
     // and decide when is the good time to sample the RxD line
     function integer log2(input integer v);
@@ -122,30 +146,51 @@ module async_receiver(
     wire sampleNow = OversamplingTick && (OversamplingCnt==Oversampling/2-1);
 
     // now we can accumulate the RxD bits in a shift-register
-    always @(posedge clk)
-        case(RxD_state)
-            4'b0000: if(~RxD_bit) RxD_state <=  4'b0001;  // start bit found?
-            4'b0001: if(sampleNow) RxD_state <= 4'b1000;  // sync start bit to sampleNow
-            4'b1000: if(sampleNow) RxD_state <= 4'b1001;  // bit 0
-            4'b1001: if(sampleNow) RxD_state <= 4'b1010;  // bit 1
-            4'b1010: if(sampleNow) RxD_state <= 4'b1011;  // bit 2
-            4'b1011: if(sampleNow) RxD_state <= 4'b1100;  // bit 3
-            4'b1100: if(sampleNow) RxD_state <= 4'b1101;  // bit 4
-            4'b1101: if(sampleNow) RxD_state <= 4'b1110;  // bit 5
-            4'b1110: if(sampleNow) RxD_state <= 4'b1111;  // bit 6
-            4'b1111: if(sampleNow) RxD_state <= 4'b0010;  // bit 7
-            4'b0010: if(sampleNow) RxD_state <= 4'b0000;  // stop bit
-            default: RxD_state <= 4'b0000;
-        endcase
+    always @(posedge clk or posedge reset)
+    begin
+        if (reset)
+            RxD_state <= 0;
+        else
+            case(RxD_state)
+                4'b0000: if(~RxD_bit) RxD_state <=  4'b0001;  // start bit found?
+                4'b0001: if(sampleNow) RxD_state <= 4'b1000;  // sync start bit to sampleNow
+                4'b1000: if(sampleNow) RxD_state <= 4'b1001;  // bit 0
+                4'b1001: if(sampleNow) RxD_state <= 4'b1010;  // bit 1
+                4'b1010: if(sampleNow) RxD_state <= 4'b1011;  // bit 2
+                4'b1011: if(sampleNow) RxD_state <= 4'b1100;  // bit 3
+                4'b1100: if(sampleNow) RxD_state <= 4'b1101;  // bit 4
+                4'b1101: if(sampleNow) RxD_state <= 4'b1110;  // bit 5
+                4'b1110: if(sampleNow) RxD_state <= 4'b1111;  // bit 6
+                4'b1111: if(sampleNow) RxD_state <= 4'b0010;  // bit 7
+                4'b0010: if(sampleNow) RxD_state <= 4'b0000;  // stop bit
+                default: RxD_state <= 4'b0000;
+            endcase
+    end
 
-    always @(posedge clk)
-        if (sampleNow && RxD_state[3]) RxD_data <= {RxD_bit, RxD_data[7:1]};
-    always @(posedge clk)
-        RxD_data_ready <= (sampleNow && RxD_state==4'b0010 && RxD_bit);  // make sure a stop bit is received
+    always @(posedge clk or posedge reset)
+    begin
+        if (reset)
+            RxD_data <= 0;
+        else
+            if (sampleNow && RxD_state[3]) RxD_data <= {RxD_bit, RxD_data[7:1]};
+    end
+
+    always @(posedge clk or posedge reset)
+    begin
+        if (reset)
+            RxD_data_ready <= 0;
+        else
+            RxD_data_ready <= (sampleNow && RxD_state==4'b0010 && RxD_bit);  // make sure a stop bit is received
+    end
 
     reg [l2o+1:0] GapCnt;
-    always @(posedge clk)
-        if (RxD_state!=0) GapCnt<=0; else if(OversamplingTick & ~GapCnt[log2(Oversampling)+1]) GapCnt <= GapCnt + 1'h1;
+    always @(posedge clk or posedge reset)
+    begin
+        if (reset)
+            GapCnt <= 0;
+        else
+            if (RxD_state!=0) GapCnt<=0; else if(OversamplingTick & ~GapCnt[log2(Oversampling)+1]) GapCnt <= GapCnt + 1'h1;
+    end
 
     assign RxD_idle = GapCnt[l2o+1];
     always @(posedge clk)
@@ -155,7 +200,7 @@ endmodule
 
 ////////////////////////////////////////////////////////
 module BaudTickGen(
-    input clk, enable,
+    input clk, reset, enable,
     output tick  // generate a tick at the specified baud rate * oversampling
     );
 
@@ -170,7 +215,13 @@ module BaudTickGen(
     localparam ShiftLimiter = log2(Baud*Oversampling >> (31-AccWidth));  // this makes sure Inc calculation doesn't overflow
     localparam Inc = ((Baud*Oversampling << (AccWidth-ShiftLimiter))+(ClkFrequency>>(ShiftLimiter+1)))/(ClkFrequency>>ShiftLimiter);
 
-    always @(posedge clk) if(enable) Acc <= Acc[AccWidth-1:0] + Inc[AccWidth:0]; else Acc <= Inc[AccWidth:0];
+    always @(posedge clk)
+    begin
+        if (reset)
+            Acc <= 0;
+        else
+            if(enable) Acc <= Acc[AccWidth-1:0] + Inc[AccWidth:0]; else Acc <= Inc[AccWidth:0];
+    end
     assign tick = Acc[AccWidth];
 
 endmodule

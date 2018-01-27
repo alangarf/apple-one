@@ -18,7 +18,8 @@
  * on the output pads if external memory is required.
  */
 
-`define SIM
+// FIXME - Need to make this flag reach out to test bench
+//`define SIM
 
 module cpu( clk, reset, AB, DI, DO, WE, IRQ, NMI, RDY );
 
@@ -530,9 +531,19 @@ end
  * the PCL. This is possible, because the S register itself is stored in
  * the ALU during those cycles.
  */
-always @(posedge clk)
-    if( write_register & RDY )
-        AXYS[regsel] <= (state == JSR0) ? DIMUX : { ADD[7:4] + ADJH, ADD[3:0] + ADJL };
+always @(posedge clk or posedge reset)
+begin
+    if (reset)
+    begin
+        AXYS[SEL_A] <= 8'b0;
+        AXYS[SEL_X] <= 8'b0;
+        AXYS[SEL_Y] <= 8'b0;
+        AXYS[SEL_S] <= 8'b0;
+    end
+    else
+        if( write_register & RDY )
+            AXYS[regsel] <= (state == JSR0) ? DIMUX : { ADD[7:4] + ADJH, ADD[3:0] + ADJL };
+end
 
 /*
  * register select logic. This determines which of the A, X, Y or
