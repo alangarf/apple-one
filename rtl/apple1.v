@@ -6,13 +6,16 @@ module apple1(
     output uart_tx,
     output uart_cts
 );
+    parameter RAM_FILENAME = "../../roms/ram.hex";
+    parameter WOZ_FILENAME = "../../roms/wozmon.hex";
+
     //////////////////////////////////////////////////////////////////////////
     // Registers and Wires
 
-    reg [15:0] ab;
+    wire [15:0] ab;
     wire [7:0] dbi;
-    reg [7:0] dbo;
-    reg we;
+    wire [7:0] dbo;
+    wire we;
 
     //////////////////////////////////////////////////////////////////////////
     // Clocks
@@ -67,33 +70,18 @@ module apple1(
 
     //////////////////////////////////////////////////////////////////////////
     // 6502
-    wire [7:0] dbo_c;
-    wire [15:0] ab_c;
-    wire we_c;
-    reg [7:0] dbi_c;
-
-    cpu my_cpu (
+    arlet_6502 my_cpu(
         .clk    (clk25),
+        .enable (cpu_clken),
         .reset  (reset),
-        .AB     (ab_c),
-        .DI     (dbi_c),
-        .DO     (dbo_c),
-        .WE     (we_c),
-        .IRQ    (1'b1),
-        .NMI    (1'b1),
-        .RDY    (cpu_clken)
+        .ab     (ab),
+        .dbi    (dbi),
+        .dbo    (dbo),
+        .we     (we),
+        .irq    (1'b1),
+        .nmi    (1'b1),
+        .ready  (cpu_clken)
     );
-
-    always @(posedge clk25)
-    begin
-        if (cpu_clken)
-        begin
-            ab <= ab_c;
-            dbo <= dbo_c;
-            dbi_c <= dbi;
-            we <= we_c;
-        end
-    end
 
     //////////////////////////////////////////////////////////////////////////
     // RAM and ROM
@@ -105,7 +93,7 @@ module apple1(
 
     // RAM
     wire [7:0] ram_dout;
-    ram #("../../roms/ram.hex") my_ram (
+    ram #(RAM_FILENAME) my_ram (
         .clk(clk25),
         .address(ab[12:0]),
         .w_en(we & ram_cs),
@@ -115,7 +103,7 @@ module apple1(
 
     // WozMon ROM
     wire [7:0] rom_dout;
-    rom_wozmon #("../../roms/wozmon.hex") my_rom_wozmon (
+    rom_wozmon #(WOZ_FILENAME) my_rom_wozmon (
         .clk(clk25),
         .address(ab[7:0]),
         .dout(rom_dout)

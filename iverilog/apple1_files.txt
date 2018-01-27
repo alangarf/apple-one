@@ -1,8 +1,9 @@
-../rtl/cpu/ALU.v
-../rtl/cpu/cpu.v
+../rtl/cpu/arlet_6502.v
+../rtl/cpu/arlet/cpu.v
+../rtl/cpu/arlet/ALU.v
 ../rtl/uart/async_tx_rx.v
 ../rtl/uart/uart.v
 ../rtl/ram.v
 ../rtl/rom_wozmon.v
-../rtl/apple1_top.v
-apple1_top_tb.v
+../rtl/apple1.v
+apple1_tb.v
