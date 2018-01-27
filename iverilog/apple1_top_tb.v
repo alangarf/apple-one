@@ -32,10 +32,20 @@ module apple1_top_tb;
     // Setup dumping of data for inspection
 
     initial begin
+        force core_top.my_cpu.DIHOLD = 0;
+        force core_top.my_cpu.ALU.OUT = 0;
+        force core_top.my_cpu.PC = 0;
+        force core_top.my_cpu.ALU.temp_logic = 0;
+
         clk25 = 1'b0;
         uart_rx = 1'b0;
         rst_n = 1'b0;         
         #40 rst_n = 1'b1;
+
+        release core_top.my_cpu.DIHOLD;
+        release core_top.my_cpu.PC;
+        release core_top.my_cpu.ALU.OUT;
+        release core_top.my_cpu.ALU.temp_logic;
 
         $display("Starting...");
         $dumpfile("apple1_top_tb.vcd");

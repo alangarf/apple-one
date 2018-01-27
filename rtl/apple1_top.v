@@ -80,7 +80,7 @@ module top(
         if (rst_n == 1'b0)
         begin
             reset_cnt  <= 6'b0;
-            //hard_reset <= 1'b0; we should init hard_reset here too..
+            hard_reset <= 1'b0;
         end
         else if (cpu_clken)
         begin
