@@ -1,14 +1,22 @@
-`define ICE40
+// 
+// FIXME:
+// there defines must be enabled in the project
+// settings to avoid conflicts with different
+// development platforms
+//
+//`define ICE40
+//
 
 module top(
-    input  clk,
+    input  clk25,           // 25 MHz master clock
+    input  rst_n,           // active low synchronous reset (needed for simulation)
 
     input  uart_rx,
     output uart_tx,
     output uart_cts,
 
-    output [7:0] led,
-    output [7:0] ledx
+    output [7:0] led,       // what do these do?
+    output [7:0] ledx       // what do these do?
 );
     //////////////////////////////////////////////////////////////////////////
     // Registers and Wires
@@ -20,9 +28,16 @@ module top(
 
     //////////////////////////////////////////////////////////////////////////
     // Clocks
-    wire clk25;
-    wire cpu_clken;
+    reg cpu_clken;
 
+    // FIXME:
+    // the clocks here should come from higher up 
+    // the hierarchy, i.e. generated at the board
+    // level.
+    //
+    // if cpu_clken is a simple block,
+    // keep it here but make it generic.
+    
     `ifdef ICE40
     clocks my_clocks(
         .clk(clk),
@@ -31,6 +46,28 @@ module top(
     );
     `endif
     
+    // generate clock enable once every 
+    // 25 clocks. This will (hopefully) make
+    // the 6502 run at 1 MHz or 1Hz
+    //
+    // the clock division counter is synchronously
+    // reset using rst_n to avoid undefined signals
+    // in simulation
+    //
+
+    reg [4:0] clk_div;
+    always @(posedge clk25)
+    begin
+        // note: clk_div should be compared to
+        //       N-1, where N is the clock divisor
+        if ((clk_div == 24) || (rst_n == 1'b0))
+            clk_div <= 0;
+        else
+            clk_div <= clk_div + 1'b1;
+
+        cpu_clken <= (clk_div[4:0] == 0);
+    end
+
     //////////////////////////////////////////////////////////////////////////
     // Reset
     wire reset;
@@ -40,7 +77,12 @@ module top(
 
     always @(posedge clk25)
     begin
-        if (cpu_clken)
+        if (rst_n == 1'b0)
+        begin
+            reset_cnt  <= 6'b0;
+            hard_reset <= 1'b0;
+        end
+        else if (cpu_clken)
         begin
             if (!pwr_up_reset)
                 reset_cnt <= reset_cnt + 1;

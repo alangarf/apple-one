@@ -18,6 +18,8 @@
  * on the output pads if external memory is required.
  */
 
+`define SIM
+
 module cpu( clk, reset, AB, DI, DO, WE, IRQ, NMI, RDY );
 
 input clk;              // CPU clock 

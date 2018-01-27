@@ -1,4 +1,8 @@
-`include "./async_tx_rx.v"
+//
+// Just add the .v file to the project
+//
+//
+//`include "./async_tx_rx.v"
 
 module uart(
     input clk,

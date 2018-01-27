@@ -7,7 +7,7 @@ module rom_wozmon(
     reg [7:0] rom[0:255];
 
     initial
-        $readmemh("../../../roms/rom.hex", rom, 0, 255);
+        $readmemh("../roms/rom.hex", rom, 0, 255);
 
     always @(posedge clk)
     begin
