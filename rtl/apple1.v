@@ -4,7 +4,9 @@ module apple1(
 
     input  uart_rx,
     output uart_tx,
-    output uart_cts
+    output uart_cts,
+    
+    output [15:0] pc_monitor    // spy for program counter / debugging
 );
     parameter RAM_FILENAME = "../../roms/ram.hex";
     parameter WOZ_FILENAME = "../../roms/wozmon.hex";
@@ -16,7 +18,7 @@ module apple1(
     wire [7:0] dbi;
     wire [7:0] dbo;
     wire we;
-
+    
     //////////////////////////////////////////////////////////////////////////
     // Clocks
     
@@ -29,19 +31,36 @@ module apple1(
     // in simulation
     //
 
-    reg [4:0] clk_div;
-    reg cpu_clken;
-    always @(posedge clk25)
-    begin
-        // note: clk_div should be compared to
-        //       N-1, where N is the clock divisor
-        if ((clk_div == 24) || (rst_n == 1'b0))
-            clk_div <= 0;
-        else
-            clk_div <= clk_div + 1'b1;
+    //`define SLOWCPU
+    `ifdef SLOWCPU
+        reg [25:0] clk_div;
+        reg cpu_clken;
+        always @(posedge clk25)
+        begin
+            // note: clk_div should be compared to
+            //       N-1, where N is the clock divisor
+            if ((clk_div == 4999999) || (rst_n == 1'b0))
+                clk_div <= 0;
+            else
+                clk_div <= clk_div + 1'b1;
 
-        cpu_clken <= (clk_div[4:0] == 0);
-    end
+            cpu_clken <= (clk_div[25:0] == 0);
+        end    
+    `else
+        reg [4:0] clk_div;
+        reg cpu_clken;
+        always @(posedge clk25)
+        begin
+            // note: clk_div should be compared to
+            //       N-1, where N is the clock divisor
+            if ((clk_div == 24) || (rst_n == 1'b0))
+                clk_div <= 0;
+            else
+                clk_div <= clk_div + 1'b1;
+
+            cpu_clken <= (clk_div[4:0] == 0);
+        end
+    `endif
 
     //////////////////////////////////////////////////////////////////////////
     // Reset
@@ -80,7 +99,8 @@ module apple1(
         .we     (we),
         .irq_n  (1'b1),
         .nmi_n  (1'b1),
-        .ready  (cpu_clken)
+        .ready  (cpu_clken),
+        .pc_monitor (pc_monitor)
     );
 
     //////////////////////////////////////////////////////////////////////////

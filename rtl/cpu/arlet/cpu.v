@@ -21,7 +21,7 @@
 // FIXME - Need to make this flag reach out to test bench
 //`define SIM
 
-module cpu( clk, reset, AB, DI, DO, WE, IRQ, NMI, RDY );
+module cpu( clk, reset, AB, DI, DO, WE, IRQ, NMI, RDY, PC_MONITOR );
 
 input clk;              // CPU clock 
 input reset;            // reset signal
@@ -32,6 +32,7 @@ output WE;              // write enable
 input IRQ;              // interrupt request
 input NMI;              // non-maskable interrupt request
 input RDY;              // Ready signal. Pauses CPU when RDY=0 
+output PC_MONITOR;      // signal to spy / monitor the program counter for debugging
 
 /*
  * internal signals
@@ -71,6 +72,8 @@ reg  CI;                // Carry In
 wire CO;                // Carry Out 
 wire [7:0] PCH = PC[15:8];
 wire [7:0] PCL = PC[7:0];
+
+assign PC_MONITOR = PC; // generate PC monitor signal
 
 reg NMI_edge = 0;       // captured NMI edge
 

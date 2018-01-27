@@ -1,14 +1,15 @@
 module arlet_6502(
-    input clk,
-    input enable,
-    input reset,
-    output reg [15:0] ab,
-    input [7:0] dbi,
-    output reg [7:0] dbo,
-    output reg we,
-    input irq_n,
-    input nmi_n,
-    input ready
+    input clk,              // clock signal
+    input enable,           // clock enable strobe
+    input reset,            // active high reset signal
+    output reg [15:0] ab,   // address bus
+    input [7:0] dbi,        // 8-bit data bus (input)
+    output reg [7:0] dbo,   // 8-bit data bus (output)
+    output reg we,          // active high write enable strobe
+    input irq_n,            // active low interrupt request
+    input nmi_n,            // active low non-maskable interrupt
+    input ready,            // CPU updates when ready = 1
+    output [15:0] pc_monitor    // program counter monitor signal for debugging
 );
 
     wire [7:0] dbo_c;
@@ -24,7 +25,8 @@ module arlet_6502(
         .WE(we_c),
         .IRQ(irq_n),
         .NMI(nmi_n),
-        .RDY(ready) 
+        .RDY(ready),
+        .PC_MONITOR(pc_monitor)
     );
 
     always @(posedge clk or posedge reset)
