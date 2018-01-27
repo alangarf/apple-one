@@ -19,7 +19,7 @@
 //
 // Author.....: Niels A. Moseley
 // Date.......: 26-1-2018
-// 
+//
 
 `timescale 1ns/1ps
 
@@ -28,7 +28,7 @@ module apple1_tb;
     reg clk25, uart_rx, rst_n;
     wire uart_tx, uart_cts;
 
-    //////////////////////////////////////////////////////////////////////////    
+    //////////////////////////////////////////////////////////////////////////
     // Setup dumping of data for inspection
 
     initial begin
@@ -106,8 +106,8 @@ module apple1_tb;
         force core_top.my_cpu.arlet_cpu.ALU.temp_h = 0;
 
         clk25 = 1'b0;
-        uart_rx = 1'b0;
-        rst_n = 1'b0;         
+        uart_rx = 1'b1;
+        rst_n = 1'b0;
         #40 rst_n = 1'b1;
 
         release core_top.clk_div;
@@ -185,18 +185,33 @@ module apple1_tb;
 
         $display("Starting...");
         $dumpfile("apple1_top_tb.vcd");
-        $dumpvars;                
+        $dumpvars;
+
+        #180000
+        uart_rx = 1'b0;
+        #400
+        uart_rx = 1'b1;
+        #400
+        uart_rx = 1'b0;
+        #400
+        uart_rx = 1'b1;
+        #800
+        uart_rx = 1'b0;
+        #1600
+        uart_rx = 1'b1;
+ 
+
         #1000000 $display("Stopping...");
         $finish;
     end
 
-    //////////////////////////////////////////////////////////////////////////    
+    //////////////////////////////////////////////////////////////////////////
     // Clock
 
     always
         #20 clk25 = !clk25;
 
-    //////////////////////////////////////////////////////////////////////////    
+    //////////////////////////////////////////////////////////////////////////
     // Core of system
     apple1 #(
         "../roms/ram.hex",
