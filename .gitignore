@@ -5,3 +5,5 @@ synlog.tcl
 *~
 *.bak
 *.swp
+*_tb
+*.vcd
