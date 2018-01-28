@@ -134,7 +134,7 @@ module apple1(
     wire [7:0] basic_dout;
     rom_basic #(BASIC_FILENAME) my_rom_basic (
         .clk(clk25),
-        .address(ab[7:0]),
+        .address(ab[11:0]),
         .dout(basic_dout)
     );
 
