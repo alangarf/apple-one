@@ -10,9 +10,9 @@ set_io uart_cts A15
 #set_io uart_rts B13
 
 ### TM1638 Display
-set_io tm_clk P1
-set_io tm_dio P2
-set_io tm_cs R1
+#set_io tm_clk P1
+#set_io tm_dio P2
+#set_io tm_cs R1
 
 ### LEDs
 set_io led[7] B5
@@ -24,14 +24,14 @@ set_io led[2] C4
 set_io led[1] B3
 set_io led[0] C3
 
-#set_io ledx[7] J1
-#set_io ledx[6] J2
-#set_io ledx[5] K1
-#set_io ledx[4] K3
-#set_io ledx[3] L1
-#set_io ledx[2] L3
-#set_io ledx[1] M1
-#set_io ledx[0] M2
+set_io ledx[7] J1
+set_io ledx[6] J2
+set_io ledx[5] K1
+set_io ledx[4] K3
+set_io ledx[3] L1
+set_io ledx[2] L3
+set_io ledx[1] M1
+set_io ledx[0] M2
 
 #set_io d[0] B1
 #set_io d[1] B2
