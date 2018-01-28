@@ -59,6 +59,8 @@ module apple1_de0_top(
         .uart_rx(UART_RXD),
         .uart_tx(UART_TXD),
         .uart_cts(UART_CTS),
+        .ps2_clk(PS2_KBCLK),
+        .ps2_din(PS2_KBDAT),
         .pc_monitor(pc_monitor)
     );
 
@@ -91,19 +93,6 @@ module apple1_de0_top(
         .latch(1'b1),
         .hexdigit_in(pc_monitor[15:12]),
         .display_out(HEX3_D)
-    );
-    
-    //////////////////////////////////////////////////////////////////////////    
-    // Experimental PS/2 interface
-
-    ps2keyboard keys(
-        .clk25(clk25),
-        .reset(~BUTTON[0]),
-        .key_clk(PS2_KBCLK),
-        .key_din(PS2_KBDAT),
-        .cs(1'b1),
-        .address(1'b0),
-        .dout(LEDG[7:0])
     );
 
 endmodule

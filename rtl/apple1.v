@@ -6,6 +6,9 @@ module apple1(
     output uart_tx,
     output uart_cts,
 
+    input ps2_clk,          // PS/2 keyboard serial clock input
+    input ps2_din,          // PS/2 keyboard serial data input
+
     output [15:0] pc_monitor    // spy for program counter / debugging
 );
     parameter RAM_FILENAME = "../../roms/ram.hex";
@@ -109,6 +112,9 @@ module apple1(
 
     wire ram_cs =   (ab[15:13] ==  3'b000);            // 0x0000 -> 0x1FFF
     wire uart_cs =  (ab[15:2]  == 14'b11010000000100); // 0xD010 -> 0xD013
+    wire ps2kb_cs = 1'b0;
+    //wire uart_cs =  (ab[15:1]  == 15'b110100000001001); // 0xD012 -> 0xD013
+    //wire ps2kb_cs = (ab[15:1]  == 15'b110100000001000); // 0xD010 -> 0xD011
     wire basic_cs = (ab[15:12] ==  4'b1110);           // 0xE000 -> 0xEFFF
     wire rom_cs =   (ab[15:8]  ==  8'b11111111);       // 0xFF00 -> 0xFFFF
 
@@ -155,10 +161,24 @@ module apple1(
         .uart_cts(uart_cts),
 
         .enable(uart_cs & cpu_clken),
+        //.address({1'b1, ab[0]}),  // for ps/2
         .address(ab[1:0]),
         .w_en(we & uart_cs),
         .din(dbo),
         .dout(uart_dout)
+    );
+
+    // PS/2 keyboard interface
+    wire [7:0] ps2_dout;
+    ps2keyboard keyboard
+    (
+        .clk25(clk25),
+        .reset(reset),
+        .key_clk(ps2_clk),
+        .key_din(ps2_din),
+        .cs(ps2kb_cs),
+        .address(ab[0]),
+        .dout(ps2_dout)
     );
 
     // link up chip selected device to cpu input
@@ -166,5 +186,6 @@ module apple1(
                  rom_cs   ? rom_dout :
                  basic_cs ? basic_dout :
                  uart_cs  ? uart_dout :
+                 ps2kb_cs ? ps2_dout :
                  8'hFF;
 endmodule

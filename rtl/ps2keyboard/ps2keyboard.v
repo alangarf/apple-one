@@ -142,7 +142,7 @@ begin
             if (address == 1'b0)
             begin
                 // RX buffer address
-                dout <= ascii;
+                dout <= {1'b1, ascii[6:0]};
                 ascii_rdy <= 1'b0;
             end
             else
