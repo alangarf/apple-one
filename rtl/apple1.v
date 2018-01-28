@@ -79,7 +79,7 @@ module apple1(
         else if (cpu_clken)
         begin
             if (!pwr_up_reset)
-                reset_cnt <= reset_cnt + 1;
+                reset_cnt <= reset_cnt + 6'b1;
 
             hard_reset <= pwr_up_reset;
         end

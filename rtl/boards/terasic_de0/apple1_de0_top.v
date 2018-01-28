@@ -35,7 +35,9 @@ module apple1_de0_top(
     output  [6:0] HEX0_D,
     output  [6:0] HEX1_D,
     output  [6:0] HEX2_D,
-    output  [6:0] HEX3_D
+    output  [6:0] HEX3_D,
+    input   PS2_KBCLK,
+    input   PS2_KBDAT
 );
 
     //////////////////////////////////////////////////////////////////////////    
@@ -91,4 +93,17 @@ module apple1_de0_top(
         .display_out(HEX3_D)
     );
     
+    //////////////////////////////////////////////////////////////////////////    
+    // Experimental PS/2 interface
+
+    ps2keyboard keys(
+        .clk25(clk25),
+        .reset(~BUTTON[0]),
+        .key_clk(PS2_KBCLK),
+        .key_din(PS2_KBDAT),
+        .cs(1'b1),
+        .address(1'b0),
+        .dout(LEDG[7:0])
+    );
+
 endmodule
