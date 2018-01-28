@@ -202,7 +202,8 @@ module apple1_tb;
         uart_rx = 1'b1;
  
 
-        #1000000 $display("Stopping...");
+        //#1000000 $display("Stopping...");
+        #1000 $display("Stopping...");
         $finish;
     end
 

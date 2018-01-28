@@ -49,8 +49,9 @@ module apple1(
         end
     `else
         reg [4:0] clk_div;
+        reg [10:0] cpu_clk;
         reg cpu_clken;
-        always @(posedge clk25)
+        always @(posedge clk25 or reset)
         begin
             // note: clk_div should be compared to
             //       N-1, where N is the clock divisor
@@ -59,7 +60,21 @@ module apple1(
             else
                 clk_div <= clk_div + 1'b1;
 
-            cpu_clken <= (clk_div[4:0] == 0);
+            //cpu_clken <= (clk_div[4:0] == 0);
+            cpu_clk[0] <= (clk_div[4:0] == 0);
+
+            cpu_clk[1] <= cpu_clk[0];
+            cpu_clk[2] <= cpu_clk[1];
+            cpu_clk[3] <= cpu_clk[2];
+            cpu_clk[4] <= cpu_clk[3];
+            cpu_clk[5] <= cpu_clk[4];
+            cpu_clk[6] <= cpu_clk[5];
+            cpu_clk[7] <= cpu_clk[6];
+            cpu_clk[8] <= cpu_clk[7];
+            cpu_clk[9] <= cpu_clk[8];
+            cpu_clk[10] <= cpu_clk[9];
+
+            cpu_clken <= (clk_div[4:0] == 0) || |cpu_clk;
         end
     `endif
 
@@ -90,6 +105,21 @@ module apple1(
 
     //////////////////////////////////////////////////////////////////////////
     // 6502
+    aholme_6502 my_cpu(
+        .clk    (clk25),
+        .enable (cpu_clken),
+        .reset  (reset),
+        .ab     (ab),
+        .dbi    (dbi),
+        .dbo    (dbo),
+        .we     (we),
+        .irq_n  (1'b1),
+        .nmi_n  (1'b1),
+        .ready  (1'b1),
+        .pc_monitor (pc_monitor)
+    );
+
+    /*
     arlet_6502 my_cpu(
         .clk    (clk25),
         .enable (cpu_clken),
@@ -103,6 +133,7 @@ module apple1(
         .ready  (cpu_clken),
         .pc_monitor (pc_monitor)
     );
+    */
 
     //////////////////////////////////////////////////////////////////////////
     // RAM and ROM

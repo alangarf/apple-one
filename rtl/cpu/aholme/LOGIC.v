@@ -1,3 +1,9 @@
+`define NUM_NODES 1725
+
+module LOGIC (
+    input  [`NUM_NODES-1:0] i,
+    output [`NUM_NODES-1:0] o);
+
 assign o[674] = i[192]|i[256];
 assign o[928] = i[1077]|i[829];
 assign o[522] = i[197]|i[403];
@@ -870,3 +876,4 @@ assign o[1527] = i[943] ? i[1347] : i[1527];
 assign o[348] = i[710] ? i[1495] : i[348];
 assign o[1162] = i[943] ? i[272] : i[1162];
 assign o[32] = i[710] ? i[1082] : i[32];
+endmodule
