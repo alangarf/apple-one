@@ -1,6 +1,7 @@
-../rtl/cpu/arlet_6502.v
-../rtl/cpu/arlet/cpu.v
-../rtl/cpu/arlet/ALU.v
+../rtl/cpu/aholme_6502.v
+../rtl/cpu/aholme/cpu.v
+../rtl/cpu/aholme/MUX.v
+../rtl/cpu/aholme/LOGIC.v
 ../rtl/uart/async_tx_rx.v
 ../rtl/uart/uart.v
 ../rtl/ram.v
