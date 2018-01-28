@@ -5,11 +5,12 @@ module apple1(
     input  uart_rx,
     output uart_tx,
     output uart_cts,
-    
+
     output [15:0] pc_monitor    // spy for program counter / debugging
 );
     parameter RAM_FILENAME = "../../roms/ram.hex";
     parameter WOZ_FILENAME = "../../roms/wozmon.hex";
+    parameter BASIC_FILENAME = "../../roms/basic.hex";
 
     //////////////////////////////////////////////////////////////////////////
     // Registers and Wires
@@ -18,11 +19,11 @@ module apple1(
     wire [7:0] dbi;
     wire [7:0] dbo;
     wire we;
-    
+
     //////////////////////////////////////////////////////////////////////////
     // Clocks
-    
-    // generate clock enable once every 
+
+    // generate clock enable once every
     // 25 clocks. This will (hopefully) make
     // the 6502 run at 1 MHz or 1Hz
     //
@@ -45,7 +46,7 @@ module apple1(
                 clk_div <= clk_div + 1'b1;
 
             cpu_clken <= (clk_div[25:0] == 0);
-        end    
+        end
     `else
         reg [4:0] clk_div;
         reg cpu_clken;
@@ -115,7 +116,6 @@ module apple1(
     wire [7:0] ram_dout;
     ram #(RAM_FILENAME) my_ram (
         .clk(clk25),
-        .reset(reset),
         .address(ab[12:0]),
         .w_en(we & ram_cs),
         .din(dbo),
@@ -126,19 +126,26 @@ module apple1(
     wire [7:0] rom_dout;
     rom_wozmon #(WOZ_FILENAME) my_rom_wozmon (
         .clk(clk25),
-        .reset(reset),
         .address(ab[7:0]),
         .dout(rom_dout)
+    );
+
+    // Basic ROM
+    wire [7:0] basic_dout;
+    rom_basic #(BASIC_FILENAME) my_rom_basic (
+        .clk(clk25),
+        .address(ab[7:0]),
+        .dout(basic_dout)
     );
 
     // UART
     wire [7:0] uart_dout;
     uart #(
+        `ifdef SIM
+        100, 10, 2 // for simulation don't need real baud rates
+        `else
         25000000, 115200, 8
-// FIXME:
-// If simulated, need to reduce baud rate etc down
-// else the UARTs don't work.
-//        100, 10, 2
+        `endif
     )my_uart (
         .clk(clk25),
         .reset(reset),
@@ -155,8 +162,9 @@ module apple1(
     );
 
     // link up chip selected device to cpu input
-    assign dbi = ram_cs  ? ram_dout : 
-                 rom_cs  ? rom_dout :
-                 uart_cs ? uart_dout :
+    assign dbi = ram_cs   ? ram_dout :
+                 rom_cs   ? rom_dout :
+                 basic_cs ? basic_dout :
+                 uart_cs  ? uart_dout :
                  8'hFF;
 endmodule

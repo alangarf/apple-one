@@ -216,7 +216,8 @@ module apple1_tb;
     // Core of system
     apple1 #(
         "../roms/ram.hex",
-        "../roms/wozmon.hex"
+        "../roms/wozmon.hex",
+        "../roms/basic.hex"
     ) core_top (
         .clk25(clk25),
         .rst_n(rst_n),

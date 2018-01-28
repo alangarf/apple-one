@@ -108,13 +108,18 @@ module uart(
                 begin
                     // Apple 1 terminal only uses 7 bits, MSB indicates
                     // terminal has ack'd RX
+                    //
+                    // uart_tx_init is a flag to stop the first character
+                    // sent to the UART from being sent. Wozmon initializes
+                    // the PIA which normally isn't sent to the terminal.
+                    // This causes the UART to ignore the very first byte sent.
                     if (~uart_tx_status && uart_tx_init)
                     begin
                         uart_tx_byte <= {1'b0, din[6:0]};
                         uart_tx_stb <= 1;
                     end
-                    else
-                        uart_tx_init <= 1;
+                    else if (~uart_tx_init)
+                        uart_tx_init <= 1 && enable;
                 end
             end
 

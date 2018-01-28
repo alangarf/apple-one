@@ -9,12 +9,7 @@ set_io uart_tx B12
 set_io uart_cts A15
 #set_io uart_rts B13
 
-### TM1638 Display
-#set_io tm_clk P1
-#set_io tm_dio P2
-#set_io tm_cs R1
-
-### LEDs
+### Breakout Board LEDs
 set_io led[7] B5
 set_io led[6] B4
 set_io led[5] A2
@@ -24,25 +19,23 @@ set_io led[2] C4
 set_io led[1] B3
 set_io led[0] C3
 
-set_io ledx[7] J1
-set_io ledx[6] J2
-set_io ledx[5] K1
-set_io ledx[4] K3
-set_io ledx[3] L1
-set_io ledx[2] L3
-set_io ledx[1] M1
-set_io ledx[0] M2
+### YL-4 Switch Matrix LEDs (inverted)
+set_io led[15] J1
+set_io led[14] J2
+set_io led[13] K1
+set_io led[12] K3
+set_io led[11] L1
+set_io led[10] L3
+set_io led[9] M1
+set_io led[8] M2
 
-#set_io d[0] B1
-#set_io d[1] B2
-#set_io d[2] C1
-#set_io d[3] C2
-#set_io d[4] D1
-#set_io d[5] D2
-#set_io d[6] E2
-#set_io d[7] F1
-#set_io d[8] F2
-#set_io d[9] G1
-#set_io d[10] G2
-#set_io d[11] H1
-#set_io d[12] H2
+### YL-4 Switch Marix Buttons
+set_io button[3] E2
+set_io button[2] F1
+set_io button[1] F2
+set_io button[0] G1
+
+### TM1638 Display
+#set_io tm_clk P1
+#set_io tm_dio P2
+#set_io tm_cs R1

@@ -18,6 +18,7 @@ add_file -verilog -lib work "../../rtl/boards/ice40hx8k/apple1_hx8k.v"
 add_file -verilog -lib work "../../rtl/cpu/arlet_6502.v" 
 add_file -verilog -lib work "../../rtl/cpu/arlet/ALU.v" 
 add_file -verilog -lib work "../../rtl/cpu/arlet/cpu.v" 
+add_file -verilog -lib work "../../rtl/rom_basic.v" 
 add_file -constraint -lib work "appleone_syn.sdc"
 #implementation: "appleone_Implmnt"
 impl -add appleone_Implmnt -type fpga

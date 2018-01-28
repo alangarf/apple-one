@@ -4,7 +4,7 @@ Version=Lattice Semiconductor Corporation iCEcube - Release: 2017.08.27940 - Bui
 ProjectName=appleone
 Vendor=SiliconBlue
 Synthesis=synplify
-ProjectVFiles=../../rtl/rom_wozmon.v=work,../../rtl/apple1.v=work,../../rtl/ram.v=work,../../rtl/boards/ice40hx8k/clock_pll.v=work,../../rtl/uart/async_tx_rx.v=work,../../rtl/uart/uart.v=work,../../rtl/boards/ice40hx8k/apple1_hx8k.v=work,../../rtl/cpu/arlet_6502.v=work,../../rtl/cpu/arlet/ALU.v=work,../../rtl/cpu/arlet/cpu.v=work
+ProjectVFiles=../../rtl/rom_wozmon.v=work,../../rtl/apple1.v=work,../../rtl/ram.v=work,../../rtl/boards/ice40hx8k/clock_pll.v=work,../../rtl/uart/async_tx_rx.v=work,../../rtl/uart/uart.v=work,../../rtl/boards/ice40hx8k/apple1_hx8k.v=work,../../rtl/cpu/arlet_6502.v=work,../../rtl/cpu/arlet/ALU.v=work,../../rtl/cpu/arlet/cpu.v=work,../../rtl/rom_basic.v
 ProjectCFiles=appleone_syn.sdc
 CurImplementation=appleone_Implmnt
 Implementations=appleone_Implmnt
@@ -19,9 +19,9 @@ DevicePower=
 NetlistFile=appleone_Implmnt/appleone.edf
 AdditionalEDIFFile=
 IPEDIFFile=
-DesignLib=
-DesignView=
-DesignCell=
+DesignLib=appleone_Implmnt/sbt/netlist/oadb-apple1_top
+DesignView=_rt
+DesignCell=apple1_top
 SynthesisSDCFile=appleone_Implmnt/appleone.scf
 UserPinConstraintFile=
 UserSDCFile=
