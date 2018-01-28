@@ -46,6 +46,12 @@ module ps2keyboard (
     reg rxflag_ff;          // flip-flop state for clk domain xing
     reg rx_rdy;             // data ready to be read
 
+    // keyboard translation signals
+    reg [7:0]  ascii;       // ASCII code of received character
+    reg ascii_rdy;          // new ASCII character received
+    reg [2:0] cur_state;
+    reg [2:0] next_state;
+
 //
 // PS/2 data from a device changes when the clock
 // is low, so we latch when the clock transitions
@@ -93,13 +99,27 @@ end
 // '1' for exactly one (high-speed) clock cycle.
 //
 
+//
+// IBM Keyboard code page translation
+// state machine for US keyboard layout
+//
+// http://www.computer-engineering.org/ps2keyboard/scancodes2.html
+//
+
+localparam S_KEYNORMAL  = 3'b000;
+localparam S_KEYF0      = 3'b001;   // regular key release state
+localparam S_KEYE0      = 3'b010;   // extended key state
+localparam S_KEYE0F0    = 3'b011;   // extended release state
+
 always @(posedge clk25 or posedge reset)
 begin
     if (reset)
     begin
-        rxflag_ff <= 0;
-        rx <= 0;
-        rx_rdy <= 0;
+        rxflag_ff   <= 0;
+        rx          <= 0;
+        rx_rdy      <= 0;
+        ascii_rdy   <= 0;
+        cur_state   <= S_KEYNORMAL;
     end
     else
     begin
@@ -120,15 +140,106 @@ begin
             if (address == 1'b0)
             begin
                 // RX buffer address
-                dout <= rx;
-                rx_rdy <= 1'b0;
+                dout <= ascii;
+                ascii_rdy <= 1'b0;
             end
             else
             begin
                 // RX status register
-                dout <= {rx_rdy, 7'b0};
+                dout <= {ascii_rdy, 7'b0};
             end
         end
+
+        // keyboard translation state machine
+        if (rx_rdy == 1'b1)
+        begin
+            rx_rdy <= 1'b0;
+            case(cur_state)
+                S_KEYNORMAL:
+                    begin
+                        if (rx == 8'hF0)
+                            next_state = S_KEYF0;
+                        else if (rx == 8'hE0)
+                            next_state = S_KEYE0;
+                        else
+                        begin
+                            ascii_rdy <= 1'b1;  // new key has arrived!
+                            case(rx)
+                                8'h1C:  ascii <= "A";
+                                8'h32:  ascii <= "B";
+                                8'h21:  ascii <= "C";
+                                8'h23:  ascii <= "D";
+                                8'h24:  ascii <= "E";
+                                8'h2B:  ascii <= "F";
+                                8'h34:  ascii <= "G";
+                                8'h33:  ascii <= "H";
+                                8'h43:  ascii <= "I";
+                                8'h3B:  ascii <= "J";
+                                8'h42:  ascii <= "K";
+                                8'h4B:  ascii <= "L";
+                                8'h3A:  ascii <= "M";
+                                8'h31:  ascii <= "N";
+                                8'h44:  ascii <= "O";
+                                8'h4D:  ascii <= "P";
+                                8'h15:  ascii <= "Q";
+                                8'h2D:  ascii <= "R";
+                                8'h1B:  ascii <= "S";
+                                8'h2C:  ascii <= "T";
+                                8'h3C:  ascii <= "U";
+                                8'h2A:  ascii <= "V";
+                                8'h1D:  ascii <= "W";
+                                8'h22:  ascii <= "X";
+                                8'h35:  ascii <= "Y";
+                                8'h1A:  ascii <= "Z";
+
+                                8'h45:  ascii <= "0";
+                                8'h16:  ascii <= "1";
+                                8'h1E:  ascii <= "2";
+                                8'h26:  ascii <= "3";
+                                8'h25:  ascii <= "4";
+                                8'h2E:  ascii <= "5";
+                                8'h36:  ascii <= "6";
+                                8'h3D:  ascii <= "7";
+                                8'h3E:  ascii <= "8";
+                                8'h46:  ascii <= "9";
+
+                                8'h4E:  ascii <= "-";
+                                8'h55:  ascii <= "=";
+                                8'h5D:  ascii <= "\\ ";
+                                8'h66:  ascii <= 8'd8;      // backspace
+                                8'h29:  ascii <= " ";
+
+                                8'h5A:  ascii <= 8'd13;     // enter
+                                8'h54:  ascii <= "[";
+                                8'h5B:  ascii <= "]";
+                                8'h52:  ascii <= "'";
+                                8'h41:  ascii <= ",";
+                                8'h49:  ascii <= ".";
+                                8'h4A:  ascii <= "/";        
+                            endcase                              
+                        end
+                    end
+                S_KEYF0:
+                    next_state = S_KEYNORMAL;
+                S_KEYE0:
+                    begin
+                        if (rx == 8'hF0)
+                            next_state = S_KEYE0F0;
+                        else
+                            next_state = S_KEYNORMAL;
+                    end
+                S_KEYE0F0:
+                    begin
+                        next_state = S_KEYNORMAL;
+                    end
+            endcase;
+        end
+        else
+        begin
+            next_state = cur_state;
+        end
+
+        cur_state <= next_state;
     end
 end
 
