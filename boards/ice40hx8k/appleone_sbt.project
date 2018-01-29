@@ -4,7 +4,7 @@ Version=Lattice Semiconductor Corporation iCEcube - Release: 2017.08.27940 - Bui
 ProjectName=appleone
 Vendor=SiliconBlue
 Synthesis=synplify
-ProjectVFiles=../../rtl/rom_wozmon.v=work,../../rtl/apple1.v=work,../../rtl/ram.v=work,../../rtl/boards/ice40hx8k/clock_pll.v=work,../../rtl/uart/async_tx_rx.v=work,../../rtl/uart/uart.v=work,../../rtl/boards/ice40hx8k/apple1_hx8k.v=work,../../rtl/cpu/arlet_6502.v=work,../../rtl/cpu/arlet/ALU.v=work,../../rtl/cpu/arlet/cpu.v=work,../../rtl/rom_basic.v
+ProjectVFiles=../../rtl/rom_wozmon.v=work,../../rtl/apple1.v=work,../../rtl/ram.v=work,../../rtl/boards/ice40hx8k/clock_pll.v=work,../../rtl/uart/async_tx_rx.v=work,../../rtl/uart/uart.v=work,../../rtl/boards/ice40hx8k/apple1_hx8k.v=work,../../rtl/cpu/arlet_6502.v=work,../../rtl/cpu/arlet/ALU.v=work,../../rtl/cpu/arlet/cpu.v=work,../../rtl/rom_basic.v=work,../../rtl/pwr_reset.v=work,../../rtl/clock.v=work,../../rtl/ps2keyboard/ps2keyboard.v=work
 ProjectCFiles=appleone_syn.sdc
 CurImplementation=appleone_Implmnt
 Implementations=appleone_Implmnt

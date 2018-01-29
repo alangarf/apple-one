@@ -4,10 +4,10 @@ module rom_basic(
     output reg [7:0] dout
     );
 
-    `ifdef YOSYS
-    parameter BASIC_FILENAME = "../../roms/basic.hex";
-    `else
+    `ifdef SIM
     parameter BASIC_FILENAME = "../roms/basic.hex";
+    `else
+    parameter BASIC_FILENAME = "../../roms/basic.hex";
     `endif
 
     reg [7:0] rom_data[0:4095];

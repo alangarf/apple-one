@@ -4,10 +4,10 @@ module rom_wozmon(
     output reg [7:0] dout
     );
 
-    `ifdef YOSYS
-    parameter ROM_FILENAME = "../../roms/wozmon.hex";
-    `else
+    `ifdef SIM
     parameter ROM_FILENAME = "../roms/wozmon.hex";
+    `else
+    parameter ROM_FILENAME = "../../roms/wozmon.hex";
     `endif
 
     reg [7:0] rom_data[0:255];

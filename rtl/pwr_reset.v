@@ -5,7 +5,6 @@ module pwr_reset(
     output rst
     );
 
-    wire rst;
     reg hard_reset;
     reg [5:0] reset_cnt;
     wire pwr_up_flag = &reset_cnt;
