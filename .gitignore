@@ -7,3 +7,4 @@ synlog.tcl
 *.swp
 *_tb
 *.vcd
+build

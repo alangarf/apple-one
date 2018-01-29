@@ -4,15 +4,19 @@ module rom_wozmon(
     output reg [7:0] dout
     );
 
+    `ifdef YOSYS
+    parameter ROM_FILENAME = "../../roms/wozmon.hex";
+    `else
     parameter ROM_FILENAME = "../roms/wozmon.hex";
+    `endif
 
-    reg [7:0] rom[0:255];
+    reg [7:0] rom_data[0:255];
 
     initial
-        $readmemh(ROM_FILENAME, rom, 0, 255);
+        $readmemh(ROM_FILENAME, rom_data, 0, 255);
 
     always @(posedge clk)
-        dout <= rom[address];
+        dout <= rom_data[address];
 
 endmodule
     

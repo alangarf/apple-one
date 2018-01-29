@@ -5,7 +5,7 @@ module apple1_top(
     output uart_tx,
     output uart_cts,
     output [15:0] led,
-    output [1:0] button
+    input [3:0] button
 );
 
     wire clk25;
@@ -29,7 +29,8 @@ module apple1_top(
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
         .uart_cts(uart_cts),
-        .pc_monitor(pc_monitor)
+        .pc_monitor(pc_monitor),
+        .reset_button(button[0])
     );
     
 endmodule

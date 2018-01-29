@@ -4,14 +4,18 @@ module rom_basic(
     output reg [7:0] dout
     );
 
-    parameter ROM_FILENAME = "../roms/basic.hex";
+    `ifdef YOSYS
+    parameter BASIC_FILENAME = "../../roms/basic.hex";
+    `else
+    parameter BASIC_FILENAME = "../roms/basic.hex";
+    `endif
 
-    reg [11:0] rom[0:4095];
+    reg [7:0] rom_data[0:4095];
 
     initial
-        $readmemh(ROM_FILENAME, rom, 0, 4095);
+        $readmemh(BASIC_FILENAME, rom_data, 0, 4095);
 
     always @(posedge clk)
-        dout <= rom[address];
+        dout <= rom_data[address];
 
 endmodule

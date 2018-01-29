@@ -6,17 +6,21 @@ module ram(
     output reg [7:0] dout
     );
 
+    `ifdef YOSYS
+    parameter RAM_FILENAME = "../../roms/ram.hex";
+    `else
     parameter RAM_FILENAME = "../roms/ram.hex";
+    `endif
 
-    reg [7:0] ram[0:8191];
+    reg [7:0] ram_data[0:8191];
 
     initial
-        $readmemh(RAM_FILENAME, ram, 0, 8191);
+        $readmemh(RAM_FILENAME, ram_data, 0, 8191);
 
     always @(posedge clk)
     begin
-        dout <= ram[address];
-        if (w_en) ram[address] <= din;
+        dout <= ram_data[address];
+        if (w_en) ram_data[address] <= din;
     end
 
 endmodule

@@ -1,20 +1,17 @@
 module apple1(
-    input  clk25,           // 25 MHz master clock
-    input  rst_n,           // active low synchronous reset (needed for simulation)
+    input  clk25,               // 25 MHz master clock
+    input  rst_n,               // active low synchronous reset (needed for simulation)
 
     input  uart_rx,
     output uart_tx,
     output uart_cts,
 
-    input ps2_clk,          // PS/2 keyboard serial clock input
-    input ps2_din,          // PS/2 keyboard serial data input
+    input ps2_clk,              // PS/2 keyboard serial clock input
+    input ps2_din,              // PS/2 keyboard serial data input
 
-    output [15:0] pc_monitor    // spy for program counter / debugging
+    output [15:0] pc_monitor,   // spy for program counter / debugging
+    input reset_button          // allow a physical reset button
 );
-    parameter RAM_FILENAME = "../../roms/ram.hex";
-    parameter WOZ_FILENAME = "../../roms/wozmon.hex";
-    parameter BASIC_FILENAME = "../../roms/basic.hex";
-
     //////////////////////////////////////////////////////////////////////////
     // Registers and Wires
 
@@ -89,7 +86,7 @@ module apple1(
         end
     end
 
-    assign reset = ~hard_reset;
+    assign reset = ~(hard_reset && reset_button);
 
     //////////////////////////////////////////////////////////////////////////
     // 6502
@@ -120,7 +117,7 @@ module apple1(
 
     // RAM
     wire [7:0] ram_dout;
-    ram #(RAM_FILENAME) my_ram (
+    ram my_ram(
         .clk(clk25),
         .address(ab[12:0]),
         .w_en(we & ram_cs),
@@ -130,7 +127,7 @@ module apple1(
 
     // WozMon ROM
     wire [7:0] rom_dout;
-    rom_wozmon #(WOZ_FILENAME) my_rom_wozmon (
+    rom_wozmon my_rom_wozmon(
         .clk(clk25),
         .address(ab[7:0]),
         .dout(rom_dout)
@@ -138,7 +135,7 @@ module apple1(
 
     // Basic ROM
     wire [7:0] basic_dout;
-    rom_basic #(BASIC_FILENAME) my_rom_basic (
+    rom_basic my_rom_basic(
         .clk(clk25),
         .address(ab[11:0]),
         .dout(basic_dout)
@@ -150,9 +147,9 @@ module apple1(
         `ifdef SIM
         100, 10, 2 // for simulation don't need real baud rates
         `else
-        25000000, 115200, 8
+        25000000, 115200, 8 // 25MHz, 115200 baud, 8 times RX oversampling
         `endif
-    )my_uart (
+    ) my_uart(
         .clk(clk25),
         .reset(reset),
 
@@ -170,8 +167,7 @@ module apple1(
 
     // PS/2 keyboard interface
     wire [7:0] ps2_dout;
-    ps2keyboard keyboard
-    (
+    ps2keyboard keyboard(
         .clk25(clk25),
         .reset(reset),
         .key_clk(ps2_clk),
