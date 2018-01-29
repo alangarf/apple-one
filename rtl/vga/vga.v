@@ -4,9 +4,9 @@ module vga(
     input in_stb,
     output vga_h_sync,
     output vga_v_sync,
-    output reg vga_red,
-    output reg vga_grn,
-    output reg vga_blu
+    output vga_red,
+    output vga_grn,
+    output vga_blu
     );
     
     reg [5:0] v_ram[0:959] /* synthesis syn_ramstyle = "block_ram" */;
@@ -94,28 +94,55 @@ module vga(
         end
     end
 
+    reg out;
+    assign vga_red = out;
+    assign vga_grn = out;
+    assign vga_blu = out;
 
     always @(posedge clk25)
     begin
-        if (~(vga_h_act && vga_v_act))
-        begin
-            // outside display area
-            vga_red = 0;
+        case ({vga_h_act, vga_v_act})
+        default:
+            begin
+                // outside display area
+                out = 1'b0;
+            end
 
-        end else begin
-            // inside display area
+        2'b11:
+            begin
+                // inside display frame
+                case (vdot)
+                5'b00000,
+                5'b00001,
+                5'b00010,
+                5'b00011,
+                5'b10010,
+                5'b10011:
+                    // blank row for spacing
+                    out = 1'b0;
 
-            if (vdot[4:1] == 0 || vdot[4:1] == 1 || vdot[4:1] == 9 || hdot[3:1] == 0 || hdot[3:1] == 6 || hdot[3:1] == 7)
-                vga_red = 0;
-            else
-                vga_red = c_rom[(v_ram[hpos + (vpos * 40)] * 7) + (vdot[4:1] - 2)][5 - hdot[3:1]];
+                default:
+                    case (hdot)
+                    4'b0000,
+                    4'b0001,
+                    4'b1100,
+                    4'b1101,
+                    4'b1110,
+                    4'b1111:
+                        // blank column for spacing
+                        out = 1'b0;
 
-        end
-
-        vga_grn = vga_red;
-        vga_blu = vga_red;
+                    default:
+                        // into character pixels
+                        // TODO: fix this mess
+                        out = c_rom[(v_ram[hpos + (vpos * 40)] * 7) + (vdot[4:1] - 2)][5 - hdot[3:1]];
+                    endcase
+                endcase
+            end
+        endcase
     end
 
+    // FIXME: This is horrible
     reg [5:0] cur_pos;
     reg stb;
     always @(posedge clk25)
