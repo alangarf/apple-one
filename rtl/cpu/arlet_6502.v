@@ -1,7 +1,7 @@
 module arlet_6502(
     input clk,              // clock signal
     input enable,           // clock enable strobe
-    input reset,            // active high reset signal
+    input rst,              // active high reset signal
     output reg [15:0] ab,   // address bus
     input [7:0] dbi,        // 8-bit data bus (input)
     output reg [7:0] dbo,   // 8-bit data bus (output)
@@ -18,7 +18,7 @@ module arlet_6502(
 
     cpu arlet_cpu (
         .clk(clk),
-        .reset(reset),
+        .reset(rst),
         .AB(ab_c),
         .DI(dbi),
         .DO(dbo_c),
@@ -29,9 +29,9 @@ module arlet_6502(
         .PC_MONITOR(pc_monitor)
     );
 
-    always @(posedge clk or posedge reset)
+    always @(posedge clk or posedge rst)
     begin
-        if (reset)
+        if (rst)
         begin
             ab <= 16'd0;
             dbo <= 8'd0;

@@ -1,16 +1,42 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+//
+// Description: Apple1 hardware core
+//
+// Author.....: Alan Garfield
+//              Niels A. Moseley
+// Date.......: 26-1-2018
+//
+
 module apple1(
     input  clk25,               // 25 MHz master clock
     input  rst_n,               // active low synchronous reset (needed for simulation)
 
-    input  uart_rx,
-    output uart_tx,
-    output uart_cts,
+    // I/O interface to computer
+    input  uart_rx,             // asynchronous serial data input from computer
+    output uart_tx,             // asynchronous serial data output to computer
+    output uart_cts,            // clear to send flag to computer
 
+    // I/O interface to keyboard
     input ps2_clk,              // PS/2 keyboard serial clock input
     input ps2_din,              // PS/2 keyboard serial data input
 
-    output [15:0] pc_monitor,   // spy for program counter / debugging
-    input reset_button          // allow a physical reset button
+    // Debugging ports
+    output [15:0] pc_monitor    // spy for program counter / debugging
 );
     //////////////////////////////////////////////////////////////////////////
     // Registers and Wires
@@ -23,77 +49,31 @@ module apple1(
     //////////////////////////////////////////////////////////////////////////
     // Clocks
 
-    // generate clock enable once every
-    // 25 clocks. This will (hopefully) make
-    // the 6502 run at 1 MHz or 1Hz
-    //
-    // the clock division counter is synchronously
-    // reset using rst_n to avoid undefined signals
-    // in simulation
-    //
-
-    //`define SLOWCPU
-    `ifdef SLOWCPU
-        reg [25:0] clk_div;
-        reg cpu_clken;
-        always @(posedge clk25)
-        begin
-            // note: clk_div should be compared to
-            //       N-1, where N is the clock divisor
-            if ((clk_div == 24999999) || (rst_n == 1'b0))
-                clk_div <= 0;
-            else
-                clk_div <= clk_div + 1'b1;
-
-            cpu_clken <= (clk_div[25:0] == 0);
-        end
-    `else
-        reg [4:0] clk_div;
-        reg cpu_clken;
-        always @(posedge clk25)
-        begin
-            // note: clk_div should be compared to
-            //       N-1, where N is the clock divisor
-            if ((clk_div == 24) || (rst_n == 1'b0))
-                clk_div <= 0;
-            else
-                clk_div <= clk_div + 1'b1;
-
-            cpu_clken <= (clk_div[4:0] == 0);
-        end
-    `endif
+    wire cpu_clken;
+    clock my_clock(
+        .clk25(clk25),
+        .rst_n(rst_n),
+        .cpu_clken(cpu_clken)
+    );
 
     //////////////////////////////////////////////////////////////////////////
     // Reset
-    wire reset;
-    reg hard_reset;
-    reg [5:0] reset_cnt;
-    wire pwr_up_reset = &reset_cnt;
 
-    always @(posedge clk25)
-    begin
-        if (rst_n == 1'b0)
-        begin
-            reset_cnt  <= 6'b0;
-            hard_reset <= 1'b0;
-        end
-        else if (cpu_clken)
-        begin
-            if (!pwr_up_reset)
-                reset_cnt <= reset_cnt + 6'b1;
-
-            hard_reset <= pwr_up_reset;
-        end
-    end
-
-    assign reset = ~(hard_reset && reset_button);
+    wire rst;
+    pwr_reset my_reset(
+        .clk25(clk25),
+        .rst_n(rst_n),
+        .enable(cpu_clken),
+        .rst(rst)
+    );
 
     //////////////////////////////////////////////////////////////////////////
     // 6502
+
     arlet_6502 my_cpu(
         .clk    (clk25),
         .enable (cpu_clken),
-        .reset  (reset),
+        .rst    (rst),
         .ab     (ab),
         .dbi    (dbi),
         .dbo    (dbo),
@@ -105,7 +85,7 @@ module apple1(
     );
 
     //////////////////////////////////////////////////////////////////////////
-    // RAM and ROM
+    // Address Decoding
 
     wire ram_cs =   (ab[15:13] ==  3'b000);            // 0x0000 -> 0x1FFF
     wire uart_cs =  (ab[15:2]  == 14'b11010000000100); // 0xD010 -> 0xD013
@@ -114,6 +94,9 @@ module apple1(
     //wire ps2kb_cs = (ab[15:1]  == 15'b110100000001000); // 0xD010 -> 0xD011
     wire basic_cs = (ab[15:12] ==  4'b1110);           // 0xE000 -> 0xEFFF
     wire rom_cs =   (ab[15:8]  ==  8'b11111111);       // 0xFF00 -> 0xFFFF
+
+    //////////////////////////////////////////////////////////////////////////
+    // RAM and ROM
 
     // RAM
     wire [7:0] ram_dout;
@@ -141,6 +124,9 @@ module apple1(
         .dout(basic_dout)
     );
 
+    //////////////////////////////////////////////////////////////////////////
+    // Peripherals
+
     // UART
     wire [7:0] uart_dout;
     uart #(
@@ -151,7 +137,7 @@ module apple1(
         `endif
     ) my_uart(
         .clk(clk25),
-        .reset(reset),
+        .rst(rst),
 
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
@@ -169,13 +155,16 @@ module apple1(
     wire [7:0] ps2_dout;
     ps2keyboard keyboard(
         .clk25(clk25),
-        .reset(reset),
+        .rst(rst),
         .key_clk(ps2_clk),
         .key_din(ps2_din),
         .cs(ps2kb_cs),
         .address(ab[0]),
         .dout(ps2_dout)
     );
+
+    //////////////////////////////////////////////////////////////////////////
+    // CPU Data In MUX
 
     // link up chip selected device to cpu input
     assign dbi = ram_cs   ? ram_dout :

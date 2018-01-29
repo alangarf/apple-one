@@ -6,7 +6,7 @@
 
 module uart(
     input clk,
-    input reset,
+    input rst,
 
     input enable,
     input [1:0] address,
@@ -29,7 +29,7 @@ module uart(
 
     async_transmitter #(ClkFrequency, Baud) my_tx (
         .clk(clk),
-        .reset(reset),
+        .rst(rst),
         .TxD_start(uart_tx_stb),
         .TxD_data(uart_tx_byte),
         .TxD(uart_tx),
@@ -43,7 +43,7 @@ module uart(
 
     async_receiver #(ClkFrequency, Baud, Oversampling) my_rx(
         .clk(clk),
-        .reset(reset),
+        .rst(rst),
         .RxD(uart_rx),
         .RxD_data_ready(uart_rx_stb),
         .RxD_data(rx_data),
@@ -51,9 +51,9 @@ module uart(
         .RxD_endofpacket(rx_end)
         );
 
-    always @(posedge clk or posedge reset)
+    always @(posedge clk or posedge rst)
     begin
-        if (reset)
+        if (rst)
         begin
             uart_rx_status <= 'b0;
             uart_rx_byte <= 8'd0;
@@ -81,9 +81,9 @@ module uart(
     localparam UART_TX   = 2'b10;
 
     // Handle Register
-    always @(posedge clk or posedge reset)
+    always @(posedge clk or posedge rst)
     begin
-        if (reset)
+        if (rst)
         begin
             dout <= 8'd0;
 

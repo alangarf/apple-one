@@ -19,20 +19,20 @@
 //
 // Author.....: Niels A. Moseley
 // Date.......: 28-1-2018
-// 
+//
 
 module ps2keyboard (
-    input       clk25,          // 25MHz clock
-    input       reset,          // active high reset
+    input       clk25,      // 25MHz clock
+    input       rst,        // active high reset
 
     // I/O interface to keyboard
-    input       key_clk,        // clock input from keyboard / device
-    input       key_din,        // data input from keyboard / device
+    input       key_clk,    // clock input from keyboard / device
+    input       key_din,    // data input from keyboard / device
 
     // I/O interface to computer
-    input       cs,             // chip select, active high
-    input       address,        // =0 RX buffer, =1 RX status
-    output reg [7:0] dout       // 8-bit output bus.                                
+    input       cs,         // chip select, active high
+    input       address,    // =0 RX buffer, =1 RX status
+    output reg [7:0] dout   // 8-bit output bus.
 );
 
     // signals in the slow PS/2 clock domain
@@ -52,16 +52,16 @@ module ps2keyboard (
     reg shift;              // state of the shift key
     reg [2:0] cur_state;
     reg [2:0] next_state;
-    
+
 //
 // PS/2 data from a device changes when the clock
 // is low, so we latch when the clock transitions
 // to a high state
 //
 
-always @(posedge key_clk or posedge reset)
+always @(posedge key_clk or posedge rst)
 begin
-    if (reset == 1'b1)
+    if (rst == 1'b1)
     begin
         // reset the serial buffer
         rxshiftbuf <= 11'b0;
@@ -112,9 +112,9 @@ localparam S_KEYF0      = 3'b001;   // regular key release state
 localparam S_KEYE0      = 3'b010;   // extended key state
 localparam S_KEYE0F0    = 3'b011;   // extended release state
 
-always @(posedge clk25 or posedge reset)
+always @(posedge clk25 or posedge rst)
 begin
-    if (reset)
+    if (rst)
     begin
         rxflag_ff   <= 0;
         rx          <= 0;
@@ -135,7 +135,7 @@ begin
             rx <= rxshiftbuf[8:1];
             rx_rdy <= 1;
         end
-        
+
         // handle I/O from CPU
         if (cs == 1'b1)
         begin
@@ -208,7 +208,7 @@ begin
 
                                     8'h4E:  ascii <= "-";
                                     8'h55:  ascii <= "=";
-                                    8'h5D:  ascii <= "\\ ";
+                                    8'h5D:  ascii <= "\\";
                                     8'h66:  ascii <= 8'd8;      // backspace
                                     8'h29:  ascii <= " ";
 
@@ -219,9 +219,10 @@ begin
                                     8'h52:  ascii <= "'";
                                     8'h41:  ascii <= ",";
                                     8'h49:  ascii <= ".";
-                                    8'h4A:  ascii <= "/"; 
+                                    8'h4A:  ascii <= "/";
                                     8'h59:  shift <= 1'b1;      // right shfit
                                     8'h12:  shift <= 1'b1;      // left shift
+                                    default: ascii <= ".";
                                 endcase
                             else
                                 case(rx)
@@ -279,6 +280,8 @@ begin
                                     8'h4A:  ascii <= "?";
                                     8'h59:  shift <= 1'b1;      // right shfit
                                     8'h12:  shift <= 1'b1;      // left shift
+
+                                    default: ascii <= ".";
                                 endcase
                         end
                     end
@@ -298,6 +301,10 @@ begin
                             next_state = S_KEYNORMAL;
                     end
                 S_KEYE0F0:
+                    begin
+                        next_state = S_KEYNORMAL;
+                    end
+                default:
                     begin
                         next_state = S_KEYNORMAL;
                     end

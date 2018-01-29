@@ -13,7 +13,6 @@ module apple1_top(
     // 12MHz up to 25MHz
     clock_pll clock_pll_inst(
             .REFERENCECLK(clk),
-            .PLLOUTCORE(),
             .PLLOUTGLOBAL(clk25),
             .RESET(1'b1)
             );
@@ -22,15 +21,16 @@ module apple1_top(
     assign led[7:0] = pc_monitor[7:0];
     assign led[15:8] = ~pc_monitor[15:8];
 
+    // TODO: debounce buttons
+
     // apple one main system
     apple1 my_apple1(
         .clk25(clk25),
-        .rst_n(1'b1),
+        .rst_n(button[0]),
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
         .uart_cts(uart_cts),
-        .pc_monitor(pc_monitor),
-        .reset_button(button[0])
+        .pc_monitor(pc_monitor)
     );
     
 endmodule

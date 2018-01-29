@@ -39,6 +39,8 @@ report: dir apple1.rpt
 $(BUILDDIR)/apple1.bin: $(BUILDDIR)/apple1.asc
 $(BUILDDIR)/apple1.asc: $(BUILDDIR)/apple1.blif
 $(BUILDDIR)/apple1.blif: $(SOURCEDIR)/apple1.v \
+	$(SOURCEDIR)/clock.v \
+	$(SOURCEDIR)/pwr_reset.v \
 	$(SOURCEDIR)/ram.v \
 	$(SOURCEDIR)/rom_wozmon.v \
 	$(SOURCEDIR)/rom_basic.v \

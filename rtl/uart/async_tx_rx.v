@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////////////
 module async_transmitter(
     input clk,
-    input reset,
+    input rst,
     input TxD_start,
     input [7:0] TxD_data,
     output TxD,
@@ -24,7 +24,7 @@ module async_transmitter(
 
     ////////////////////////////////
     wire BitTick;
-    BaudTickGen #(ClkFrequency, Baud) tickgen(.clk(clk), .reset(reset), .enable(TxD_busy), .tick(BitTick));
+    BaudTickGen #(ClkFrequency, Baud) tickgen(.clk(clk), .rst(rst), .enable(TxD_busy), .tick(BitTick));
 
     reg [3:0] TxD_state;
     reg [7:0] TxD_shift;
@@ -32,9 +32,9 @@ module async_transmitter(
     wire TxD_ready = (TxD_state==0);
     assign TxD_busy = ~TxD_ready;
 
-    always @(posedge clk or posedge reset)
+    always @(posedge clk or posedge rst)
     begin
-        if (reset)
+        if (rst)
         begin
             TxD_state <= 0;
             TxD_shift <= 0;
@@ -72,7 +72,7 @@ endmodule
 ////////////////////////////////////////////////////////
 module async_receiver(
     input clk,
-    input reset,
+    input rst,
     input RxD,
     output reg RxD_data_ready,
     output reg [7:0] RxD_data,  // data received, valid only (for one clock cycle) when RxD_data_ready is asserted
@@ -95,13 +95,13 @@ module async_receiver(
     reg [3:0] RxD_state;
 
     wire OversamplingTick;
-    BaudTickGen #(ClkFrequency, Baud, Oversampling) tickgen(.clk(clk), .reset(reset), .enable(1'b1), .tick(OversamplingTick));
+    BaudTickGen #(ClkFrequency, Baud, Oversampling) tickgen(.clk(clk), .rst(rst), .enable(1'b1), .tick(OversamplingTick));
 
     // synchronize RxD to our clk domain
     reg [1:0] RxD_sync;   // 2'b11
-    always @(posedge clk or posedge reset)
+    always @(posedge clk or posedge rst)
     begin
-        if (reset)
+        if (rst)
             RxD_sync <= 2'b11;
         else
             if(OversamplingTick) RxD_sync <= {RxD_sync[0], RxD};
@@ -110,9 +110,9 @@ module async_receiver(
     // and filter it
     reg [1:0] Filter_cnt; // 2'b11
     reg RxD_bit;          // 1'b1
-    always @(posedge clk or posedge reset)
+    always @(posedge clk or posedge rst)
     begin
-        if (reset)
+        if (rst)
         begin
             Filter_cnt <= 2'b11;
             RxD_bit <= 1'b1;
@@ -146,9 +146,9 @@ module async_receiver(
     wire sampleNow = OversamplingTick && (OversamplingCnt==Oversampling/2-1);
 
     // now we can accumulate the RxD bits in a shift-register
-    always @(posedge clk or posedge reset)
+    always @(posedge clk or posedge rst)
     begin
-        if (reset)
+        if (rst)
             RxD_state <= 0;
         else
             case(RxD_state)
@@ -167,26 +167,26 @@ module async_receiver(
             endcase
     end
 
-    always @(posedge clk or posedge reset)
+    always @(posedge clk or posedge rst)
     begin
-        if (reset)
+        if (rst)
             RxD_data <= 0;
         else
             if (sampleNow && RxD_state[3]) RxD_data <= {RxD_bit, RxD_data[7:1]};
     end
 
-    always @(posedge clk or posedge reset)
+    always @(posedge clk or posedge rst)
     begin
-        if (reset)
+        if (rst)
             RxD_data_ready <= 0;
         else
             RxD_data_ready <= (sampleNow && RxD_state==4'b0010 && RxD_bit);  // make sure a stop bit is received
     end
 
     reg [l2o+1:0] GapCnt;
-    always @(posedge clk or posedge reset)
+    always @(posedge clk or posedge rst)
     begin
-        if (reset)
+        if (rst)
             GapCnt <= 0;
         else
             if (RxD_state!=0) GapCnt<=0; else if(OversamplingTick & ~GapCnt[log2(Oversampling)+1]) GapCnt <= GapCnt + 1'h1;
@@ -200,7 +200,7 @@ endmodule
 
 ////////////////////////////////////////////////////////
 module BaudTickGen(
-    input clk, reset, enable,
+    input clk, rst, enable,
     output tick  // generate a tick at the specified baud rate * oversampling
     );
 
@@ -217,7 +217,7 @@ module BaudTickGen(
 
     always @(posedge clk)
     begin
-        if (reset)
+        if (rst)
             Acc <= 0;
         else
             if(enable) Acc <= Acc[AccWidth-1:0] + Inc[AccWidth:0]; else Acc <= Inc[AccWidth:0];
