@@ -35,6 +35,13 @@ set_io button[2] F1
 set_io button[1] F2
 set_io button[0] G1
 
+### VGA Display
+set_io vga_h_sync C2
+set_io vga_v_sync D1
+set_io vga_red B1
+set_io vga_grn B2
+set_io vga_blu C1
+
 ### TM1638 Display
 #set_io tm_clk P1
 #set_io tm_dio P2

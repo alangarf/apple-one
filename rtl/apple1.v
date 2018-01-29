@@ -35,6 +35,13 @@ module apple1(
     input ps2_clk,              // PS/2 keyboard serial clock input
     input ps2_din,              // PS/2 keyboard serial data input
 
+    // Outputs to VGA display
+    output vga_h_sync,          // hozizontal VGA sync pulse
+    output vga_v_sync,          // vertical VGA sync pulse
+    output reg vga_red,         // red VGA signal
+    output reg vga_grn,         // green VGA signal
+    output reg vga_blu,         // blue VGA signal
+
     // Debugging ports
     output [15:0] pc_monitor    // spy for program counter / debugging
 );
@@ -161,6 +168,18 @@ module apple1(
         .cs(ps2kb_cs),
         .address(ab[0]),
         .dout(ps2_dout)
+    );
+
+    // VGA Display interface
+    vga my_vga(
+        .clk25(clk25),
+        .in(),
+        .in_stb(),
+        .vga_h_sync(vga_h_sync),
+        .vga_v_sync(vga_v_sync),
+        .vga_red(vga_red),
+        .vga_grn(vga_grn),
+        .vga_blu(vga_blu)
     );
 
     //////////////////////////////////////////////////////////////////////////

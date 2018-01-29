@@ -30,6 +30,13 @@ module apple1_top(
     output uart_tx,         // asynchronous serial data output to computer
     output uart_cts,        // clear to send flag to computer
 
+    // Outputs to VGA display
+    output vga_h_sync,          // hozizontal VGA sync pulse
+    output vga_v_sync,          // vertical VGA sync pulse
+    output reg vga_red,         // red VGA signal
+    output reg vga_grn,         // green VGA signal
+    output reg vga_blu,         // blue VGA signal
+
     // Debugging ports
     output [7:0] led,       // 8 LEDs on the iCE40HX8K board
 
@@ -59,6 +66,11 @@ module apple1_top(
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
         .uart_cts(uart_cts),
+        .vga_h_sync(vga_h_sync),
+        .vga_v_sync(vga_v_sync),
+        .vga_red(vga_red),
+        .vga_grn(vga_grn),
+        .vga_blu(vga_blu),
         .pc_monitor(pc_monitor)
     );
     
