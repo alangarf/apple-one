@@ -20,14 +20,14 @@ set_io led[1] B3
 set_io led[0] C3
 
 ### YL-4 Switch Matrix LEDs (inverted)
-set_io led[15] J1
-set_io led[14] J2
-set_io led[13] K1
-set_io led[12] K3
-set_io led[11] L1
-set_io led[10] L3
-set_io led[9] M1
-set_io led[8] M2
+set_io ledx[7] J1
+set_io ledx[6] J2
+set_io ledx[5] K1
+set_io ledx[4] K3
+set_io ledx[3] L1
+set_io ledx[2] L3
+set_io ledx[1] M1
+set_io ledx[0] M2
 
 ### YL-4 Switch Marix Buttons
 set_io button[3] E2

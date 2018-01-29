@@ -24,7 +24,7 @@
 //
 
 module clock(
-    input clk25,            // 25MHz clock
+    input clk25,            // 25MHz clock master clock
     input rst_n,            // active low synchronous reset
 
     // Clock enables

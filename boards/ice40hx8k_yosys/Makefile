@@ -4,7 +4,9 @@ PIN_DEF=ice40hx8k.pcf
 SOURCEDIR = ../../rtl
 BUILDDIR = build
 
-all:
+all: apple1 prog
+
+info:
 	@echo "       To build: make apple1"
 	@echo "     To program: make prog"
 	@echo "To build report: make report"
@@ -63,4 +65,4 @@ clean:
 	rm -rf build apple1.rpt
 
 .SECONDARY:
-.PHONY: all clean prog iceprog
+.PHONY: all info clean prog iceprog

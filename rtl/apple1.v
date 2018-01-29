@@ -137,13 +137,13 @@ module apple1(
         `endif
     ) my_uart(
         .clk(clk25),
+        .enable(uart_cs & cpu_clken),
         .rst(rst),
 
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
         .uart_cts(uart_cts),
 
-        .enable(uart_cs & cpu_clken),
         //.address({1'b1, ab[0]}),  // for ps/2
         .address(ab[1:0]),
         .w_en(we & uart_cs),

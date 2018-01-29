@@ -1,22 +1,39 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
 //
-// Just add the .v file to the project
+//   http://www.apache.org/licenses/LICENSE-2.0
 //
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
 //
-//`include "./async_tx_rx.v"
+// Description: A wrapper for the basic UART from fpga4fun.com
+//
+// Author.....: Alan Garfield
+//              Niels A. Moseley
+// Date.......: 26-1-2018
+//
 
 module uart(
-    input clk,
-    input rst,
+    input clk,              // clock signal
+    input enable,           // clock enable strobe
+    input rst,              // active high reset signal
+    input [1:0] address,    // address bus
+    input w_en,             // active high write enable strobe
+    input [7:0] din,        // 8-bit data bus (input)
+    output reg [7:0] dout,  // 8-bit data bus (output)
 
-    input enable,
-    input [1:0] address,
-    input w_en,
-    input [7:0] din,
-    output reg [7:0] dout,
-
-    input uart_rx,
-    output uart_tx,
-    output uart_cts
+    input uart_rx,          // asynchronous serial data input from computer
+    output uart_tx,         // asynchronous serial data output to computer
+    output uart_cts         // clear to send flag to computer
     );
 
     parameter ClkFrequency = 25000000;	// 25MHz
