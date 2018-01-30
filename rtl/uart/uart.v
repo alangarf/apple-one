@@ -136,7 +136,7 @@ module uart(
                         `ifdef SIM
                         if ((din & 8'h7f) >= 32)
                             $write("%c", din & 8'h7f);
-                        `endif                    
+                        `endif
 
                         uart_tx_byte <= {1'b0, din[6:0]};
                         uart_tx_stb <= 1;

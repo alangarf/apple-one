@@ -52,6 +52,7 @@ $(BUILDDIR)/apple1.blif: $(SOURCEDIR)/apple1.v \
 	$(SOURCEDIR)/uart/uart.v \
 	$(SOURCEDIR)/uart/async_tx_rx.v \
 	$(SOURCEDIR)/vga/vga.v \
+	$(SOURCEDIR)/vga/vram.v \
 	$(SOURCEDIR)/ps2keyboard/ps2keyboard.v \
 	$(SOURCEDIR)/boards/ice40hx8k/clock_pll.v \
 	$(SOURCEDIR)/boards/ice40hx8k/apple1_hx8k.v

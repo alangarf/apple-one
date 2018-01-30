@@ -36,6 +36,7 @@ module apple1(
     input ps2_din,              // PS/2 keyboard serial data input
 
     // Outputs to VGA display
+    input clr_screen_btn,       // active high clear screen button
     output vga_h_sync,          // hozizontal VGA sync pulse
     output vga_v_sync,          // vertical VGA sync pulse
     output reg vga_red,         // red VGA signal
@@ -57,10 +58,12 @@ module apple1(
     // Clocks
 
     wire cpu_clken;
+    wire blink_clken;
     clock my_clock(
         .clk25(clk25),
         .rst_n(rst_n),
-        .cpu_clken(cpu_clken)
+        .cpu_clken(cpu_clken),
+        .blink_clken(blink_clken)
     );
 
     //////////////////////////////////////////////////////////////////////////
@@ -87,20 +90,29 @@ module apple1(
         .we     (we),
         .irq_n  (1'b1),
         .nmi_n  (1'b1),
-        .ready  (cpu_clken),
-        .pc_monitor (pc_monitor)
+        .ready  (cpu_clken)
+        //.pc_monitor (pc_monitor)
     );
 
     //////////////////////////////////////////////////////////////////////////
     // Address Decoding
 
-    wire ram_cs =   (ab[15:13] ==  3'b000);            // 0x0000 -> 0x1FFF
+    wire ram_cs =   (ab[15:13] ==  3'b000);             // 0x0000 -> 0x1FFF
+
     wire uart_cs =  (ab[15:2]  == 14'b11010000000100); // 0xD010 -> 0xD013
-    wire ps2kb_cs = 1'b0;
-    //wire uart_cs =  (ab[15:1]  == 15'b110100000001001); // 0xD012 -> 0xD013
+    //wire ps2kb_cs = 1'b0;
+    //wire vga_cs = 1'b0;
+
     //wire ps2kb_cs = (ab[15:1]  == 15'b110100000001000); // 0xD010 -> 0xD011
-    wire basic_cs = (ab[15:12] ==  4'b1110);           // 0xE000 -> 0xEFFF
-    wire rom_cs =   (ab[15:8]  ==  8'b11111111);       // 0xFF00 -> 0xFFFF
+    //wire uart_cs =  (ab[15:1]  == 15'b110100000001001); // 0xD012 -> 0xD013
+    //wire vga_cs = 1'b0;
+
+    //wire uart_cs =  (ab[15:1]  == 15'b110100000001000); // 0xD010 -> 0xD011
+    wire ps2kb_cs = 1'b0;
+    wire vga_cs =   (ab[15:1]  == 15'b110100000001001); // 0xD012 -> 0xD013
+
+    wire basic_cs = (ab[15:12] ==  4'b1110);            // 0xE000 -> 0xEFFF
+    wire rom_cs =   (ab[15:8]  ==  8'b11111111);        // 0xFF00 -> 0xFFFF
 
     //////////////////////////////////////////////////////////////////////////
     // RAM and ROM
@@ -152,7 +164,8 @@ module apple1(
         .uart_cts(uart_cts),
 
         //.address({1'b1, ab[0]}),  // for ps/2
-        .address(ab[1:0]),
+        //.address({1'b0, ab[0]}),  // for vga
+        .address(ab[1:0]),        // for uart
         .w_en(we & uart_cs),
         .din(dbo),
         .dout(uart_dout)
@@ -173,13 +186,21 @@ module apple1(
     // VGA Display interface
     vga my_vga(
         .clk25(clk25),
-        .in(),
-        .in_stb(),
+        .enable(vga_cs & cpu_clken),
+        .rst(rst),
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
         .vga_red(vga_red),
         .vga_grn(vga_grn),
-        .vga_blu(vga_blu)
+        .vga_blu(vga_blu),
+
+        .address(ab[0]),
+        .w_en(we & vga_cs),
+        .din(dbo),
+
+        .clr_screen_btn(clr_screen_btn),
+        .blink_clken(blink_clken),
+        .debug(pc_monitor)
     );
 
     //////////////////////////////////////////////////////////////////////////

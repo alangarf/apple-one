@@ -28,7 +28,8 @@ module clock(
     input rst_n,            // active low synchronous reset
 
     // Clock enables
-    output reg cpu_clken    // 1MHz clock enable for the CPU and devices
+    output reg cpu_clken,   // 1MHz clock enable for the CPU and devices
+    output reg blink_clken  // 1Hz clock enable for cursor blink
     );
 
     // generate clock enable once every
@@ -68,5 +69,21 @@ module clock(
             cpu_clken <= (clk_div[4:0] == 0);
         end
     `endif
+
+    reg [20:0] bclk_div;
+    always @(posedge clk25)
+    begin
+        // note: bclk_div should be compared to
+        //       N-1, where N is the clock divisor
+        if (cpu_clken)
+        begin
+            if ((bclk_div == 500000) || (rst_n == 1'b0))
+                bclk_div <= 0;
+            else
+                bclk_div <= bclk_div + 1'b1;
+
+            blink_clken <= (bclk_div[20:0] == 0);
+        end
+    end
 
 endmodule
