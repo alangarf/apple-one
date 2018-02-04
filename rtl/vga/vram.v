@@ -24,6 +24,7 @@
 
 module vram(
     input clk,                  // clock signal
+    input rst,                  //
     input [9:0] read_addr,      // read address bus
     input [9:0] write_addr,     // write address bus
     input r_en,                 // active high read enable strobe
@@ -33,7 +34,7 @@ module vram(
     );
 
     `ifdef SIM
-    parameter RAM_FILENAME = "../roms/ram.hex";
+    parameter RAM_FILENAME = "../roms/vga_vram.bin";
     `else
     parameter RAM_FILENAME = "../../roms/vga_vram.bin";
     `endif
@@ -41,13 +42,19 @@ module vram(
     reg [5:0] ram_data[0:1023];
 
     initial
-        $readmemb(RAM_FILENAME, ram_data, 0, 1024);
+        $readmemb(RAM_FILENAME, ram_data, 0, 1023);
 
-    always @(posedge clk)
+    always @(posedge clk or posedge rst )
     begin
-        if (r_en) dout <= ram_data[read_addr];
-        if (w_en) ram_data[write_addr] <= din;
+        if (rst)
+            dout <= 0;
+        else
+        begin
+            //if (r_en) dout <= ram_data[read_addr];
+            dout <= ram_data[read_addr];
+            if (w_en) ram_data[write_addr] <= din;
+        end
     end
 
 endmodule
-     
+

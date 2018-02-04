@@ -10,300 +10,219 @@ module vga(
     input address,          // address bus
     input w_en,             // active high write enable strobe
     input [7:0] din,        // 8-bit data bas (input)
-    input clr_screen_btn,   // active high clear screen button
-    input blink_clken,      // cursor blink enable strobe
-    output [15:0] debug
+    input blink_clken      // cursor blink enable strobe
     );
 
-    reg [4:0] c_rom[0:447] /* synthesis syn_ramstyle = "block_ram" */;
-    initial begin
-        $readmemb("../../roms/vga_font.bin", c_rom, 0, 447);
-    end
-
-    reg [9:0] vram_r_addr;
-    reg [9:0] vram_w_addr;
-    reg vram_r_en;
-    reg vram_w_en;
-    reg [5:0] vram_din;
-    reg [5:0] vram_dout;
-
-    vram my_vram(
-        .clk(clk25),
-        .read_addr(vram_r_addr),
-        .write_addr(vram_w_addr),
-        .r_en(vram_r_en),
-        .w_en(vram_w_en),
-        .din(vram_din),
-        .dout(vram_dout)
-    );
+    //////////////////////////////////////////////////////////////////////////
+    // VGA Sync Generation
 
     // video structure constants
-    parameter hpixels = 800;    // horizontal pixels per line
-    parameter vlines = 521;     // vertical lines per frame
-    parameter hpulse = 96;      // hsync pulse length
-    parameter vpulse = 2;       // vsync pulse length
+    parameter h_pixels = 799;   // horizontal pixels per line
+    parameter v_lines = 520;    // vertical lines per frame
+    parameter h_pulse = 96;     // hsync pulse length
+    parameter v_pulse = 2;      // vsync pulse length
     parameter hbp = 144;        // end of horizontal back porch
     parameter hfp = 784;        // beginning of horizontal front porch
     parameter vbp = 31;         // end of vertical back porch
     parameter vfp = 511;        // beginning of vertical front porch
 
     // registers for storing the horizontal & vertical counters
-    reg [9:0] hc;
-    reg [9:0] vc;
-    reg [5:0] hpos;
-    reg [4:0] vpos;
-    reg [3:0] hdot;
-    reg [4:0] vdot;
+    reg [9:0] h_cnt;
+    reg [9:0] v_cnt;
+    wire [3:0] h_dot;
+    reg [4:0] v_dot;
 
     reg [5:0] h_cursor;
     reg [4:0] v_cursor;
 
-    wire vga_h_act;
-    wire vga_v_act;
+    wire h_active;
+    wire v_active;
+    assign h_active = (h_cnt >= hbp && h_cnt < hfp);
+    assign v_active = (v_cnt >= vbp && v_cnt < vfp);
 
-    assign vga_h_act = (hc >= hbp && hc < hfp);
-    assign vga_v_act = (vc >= vbp && vc < vfp);
-
-    assign vga_h_sync = (hc < hpulse) ? 0 : 1;
-    assign vga_v_sync = (vc < vpulse) ? 0 : 1;
-    //assign vblank = (vc >= vbp && vc < vfp) ? 0:1;
-
-    always @(posedge clk25)
-    begin
-        if (hc < hpixels - 1)
-        begin
-            hc <= hc + 1;
-
-            // count 16 pixels, so 640px / 16 = 40 characters
-            if (vga_h_act)
-            begin
-                hdot <= hdot + 1;
-
-                if (hdot == 4'hF)
-                begin
-                    hdot <= 0;
-                    hpos <= hpos + 1;
-                end
-            end
-        end
-        else
-        begin
-            // reset horizontal counters
-            hc <= 0;
-            hdot <= 0;
-            hpos <= 0;
-
-            if (vc < vlines - 1)
-            begin
-                vc <= vc + 1;
-
-                // count 20 rows, so 480px / 20 = 24 rows
-                if (vga_v_act)
-                begin
-                    vdot <= vdot + 1;
-
-                    if (vdot == 5'd19)
-                    begin
-                        vdot <= 0;
-                        vpos <= vpos + 1;
-                    end
-                end
-            end
-            else
-            begin
-                // reset vertical counters
-                vc <= 0;
-                vdot <= 0;
-                vpos <= 0;
-            end
-        end
-    end
-
-    reg out;
-    assign vga_red = out;
-    assign vga_grn = out;
-    assign vga_blu = out;
-
-    reg [8:0] cur_chr_offset;
-    reg [9:0] v_pos_offset;
-    reg [3:0] v_offset;
-    reg [2:0] h_offset;
-    reg blink;
+    assign vga_h_sync = (h_cnt < h_pulse) ? 0 : 1;
+    assign vga_v_sync = (v_cnt < v_pulse) ? 0 : 1;
 
     always @(posedge clk25 or posedge rst)
     begin
         if (rst)
         begin
-            vram_r_addr = 10'd0;
-            vram_r_en = 1'b0;
+            h_cnt <= 10'd0;
+            v_cnt <= 10'd0;
+            v_dot <= 5'd0;
         end
         else
         begin
-            // get the current character from vram and build
-            // offset to map into character ROM (5x7 font)
-            if (blink && (hpos == h_cursor && vpos == v_cursor))
-                cur_chr_offset = 9'd0; // the @ character
+            if (h_cnt < h_pixels)
+                h_cnt <= h_cnt + 1;
+
             else
             begin
-                vram_r_en = 1'b1;
-                v_pos_offset = (vpos * 40);
-                vram_r_addr = (v_pos_offset + {4'b0, hpos});
-                cur_chr_offset = (vram_dout * 7);
+                // reset horizontal counters
+                h_cnt <= 0;
 
-                //cur_chr_offset <= (v_ram[hpos + (40 * vpos)] * 7);
-            end
-
-            case ({vga_h_act, vga_v_act})
-            default:
-                // outside display area
-                out = 1'b0;
-
-            2'b11:
-            begin
-                // we're inside the visible screen display frame
-                //
-                // scan doubling is achieved by ignoring bit 0 of both vdot
-                // and hdot counters, in affect doubling the pixel size
-                // (each pixel becomes screen pixels)
-                case (vdot[4:1])
-                4'b0000,
-                4'b0001,
-                4'b1001:
+                if (v_cnt < v_lines)
                 begin
-                    // blank lines for spacing
-                    out = 1'b0;
-                end
+                    v_cnt <= v_cnt + 1;
 
-                default:
+                    // count 20 rows, so 480px / 20 = 24 rows
+                    if (v_active)
+                    begin
+                        v_dot <= v_dot + 1;
+
+                        if (v_dot == 5'd19)
+                            v_dot <= 0;
+                    end
+                end
+                else
                 begin
-                    // work out character rom offset for current line
-                    // taking away 2 from counter to allow for the two
-                    // blank preceding lines
-                    v_offset = (vdot[4:1] - 2);
-
-                    case (hdot[3:1])
-                    3'b000,
-                    3'b110,
-                    3'b111:
-                    begin
-                        // blank columns for spacing
-                        out = 1'b0;
-                    end
-
-                    default:
-                    begin
-                        // work out the character rom offset for the current
-                        // column. We reverse the dot pattern by subtracting
-                        // the column from the number of pixel in the
-                        // character row in rom
-                        h_offset = (5 - hdot[3:1]);
-
-                        // grab the pixel from the character rom for
-                        // the given screen column and line
-                        out = c_rom[cur_chr_offset + {5'b0, v_offset}][h_offset];
-                    end
-                    endcase
+                    // reset vertical counters
+                    v_cnt <= 0;
+                    v_dot <= 0;
                 end
-                endcase
             end
-            endcase
         end
     end
 
-    reg cls_flag, cls_running;
+    // count 16 pixels, so 640px / 16 = 40 characters
+    assign h_dot = h_active ? h_cnt[3:0] : 4'd0;
+
+    //////////////////////////////////////////////////////////////////////////
+    // Character ROM
+
+    wire [5:0] font_char;
+    wire [3:0] font_pixel;
+    wire [4:0] font_line;
+    wire font_out;
+
+    font_rom my_font_rom(
+        .clk(clk25),
+        .character(font_char),
+        .pixel(font_pixel),
+        .line(font_line),
+        .out(font_out)
+    );
+
+    //////////////////////////////////////////////////////////////////////////
+    // Video RAM
+
+    wire [9:0] vram_r_addr;
+    reg [9:0] vram_w_addr;
+    reg vram_w_en;
+    reg [5:0] vram_din;
+    wire [5:0] vram_dout;
+
+    vram my_vram(
+        .clk(clk25),
+        .rst(rst),
+        .read_addr(vram_r_addr),
+        .write_addr(vram_w_addr),
+        .r_en(h_active),
+        .w_en(vram_w_en),
+        .din(vram_din),
+        .dout(vram_dout)
+    );
+
+
+    reg [5:0] vram_h_addr;
+    reg [9:0] vram_v_addr;
+
+    //////////////////////////////////////////////////////////////////////////
+    // Video Signal Generation
+
+    always @(posedge clk25 or posedge rst) begin
+        if (rst) begin
+            vram_h_addr <= 0;
+            vram_v_addr <= 0;
+        end else begin
+            // start the pipeline for reading vram and font details
+            // 3 pixel clock cycles early
+            if (h_dot == 4'hC)
+                vram_h_addr <= vram_h_addr + 1;
+
+            // advance to next row when last display line is reached for row
+            if (v_dot == 5'd19 && h_cnt == 10'd0)
+                vram_v_addr <= vram_v_addr + 10'h28;
+
+            // clear the address registers if we're not in visible area
+            if (~h_active)
+                vram_h_addr <= 0;
+            if (~v_active)
+                vram_v_addr <= 0;
+        end
+    end
+
+    assign vram_r_addr = ({4'd0, vram_h_addr} + vram_v_addr);
+    assign font_char = vram_dout;
+    assign font_pixel = h_dot + 1; // offset by one to get pixel into right cycle,
+                                   // font output one pixel clk behind
+    assign font_line = v_dot;
+
+    assign vga_red = font_out;
+    assign vga_grn = font_out;
+    assign vga_blu = font_out;
+
     reg char_seen;
 
     always @(posedge clk25 or posedge rst)
     begin
         if (rst)
         begin
-            blink <= 1'b1;
             h_cursor <= 6'd0;
             v_cursor <= 5'd0;
             char_seen <= 0;
-            debug <= 0;
-            cls_running <= 0;
-            cls_flag <= 1;
         end
         else
         begin
-            if (cls_flag || clr_screen_btn)
+            vram_w_en <= 0;
+
+            if (address == 1'b0) // address low == TX register
             begin
-                if ((vpos == 0) && (hpos == 0))
-                    cls_running <= 1;
-
-                if (cls_running)
+                if (enable & w_en & ~char_seen)
                 begin
-                    // clear the vram using the position pointers
-                    // very similar to the original apple 1 :)
-                    vram_w_addr <= ((vpos * 40) + {4'b0, hpos});
-                    vram_din <= 6'd0;
-                    vram_w_en <= 1;
+                    // incoming character
+                    char_seen <= 1;
 
-                    if ((vpos == 23) && (hpos == 40))
+                    case(din)
+                    8'h8D:
                     begin
-                        cls_running <= 0;
+                        // handle carriage return
+                        h_cursor <= 0;
+                        v_cursor <= v_cursor + 1;
                     end
-                end
-                else
-                begin
-                    cls_flag <= 0;
-                end
-            end
-            begin
-                vram_w_en <= 0;
 
-                if (address == 1'b0) // address low == TX register
-                begin
-                    if (enable & w_en & ~char_seen)
+                    8'h7F:
+                        // ignore the DDR call to the PIA
+                        h_cursor <= h_cursor + 1;
+
+                    default:
                     begin
-                        // incoming character
-                        debug <= {8'd0, din};
-                        char_seen <= 1;
+                        vram_w_addr <= ((v_cursor * 40) + {4'b0, h_cursor});
+                        vram_din <= {~din[6], din[4:0]};
+                        vram_w_en <= 1;
 
-                        case(din)
-                        8'h8D:
-                        begin
-                            // handle carriage return
-                            h_cursor <= 0;
-                            v_cursor <= v_cursor + 1;
-                        end
-
-                        8'h7F:
-                            // ignore the DDR call to the PIA
-                            h_cursor <= h_cursor + 1;
-
-                        default:
-                        begin
-                            vram_w_addr <= ((v_cursor * 40) + {4'b0, h_cursor});
-                            vram_din <= {~din[6], din[4:0]};
-                            vram_w_en <= 1;
-
-                            h_cursor <= h_cursor + 1;
-                        end
-                        endcase
-
-                        if (h_cursor == 39)
-                        begin
-                            h_cursor <= 0;
-                            v_cursor <= v_cursor + 1;
-                        end
-
-                        if (v_cursor == 23)
-                        begin
-                            // here we need to add the scroll, probably by moving the
-                            // HEAD of vram up one line
-                            v_cursor <= 0;
-                        end
-
+                        h_cursor <= h_cursor + 1;
                     end
-                    else if(~enable & ~w_en)
-                        char_seen <= 0;
-                end
-            end
+                    endcase
 
-            if (blink_clken)
-                blink <= ~blink;
+                    if (h_cursor == 39)
+                    begin
+                        h_cursor <= 0;
+                        v_cursor <= v_cursor + 1;
+                    end
+
+                    if (v_cursor == 23)
+                    begin
+                        // here we need to add the scroll, probably by moving the
+                        // HEAD of vram up one line
+                        v_cursor <= 0;
+                    end
+
+                end
+                else if(~enable & ~w_en)
+                    char_seen <= 0;
+            end
         end
     end
+
 endmodule
