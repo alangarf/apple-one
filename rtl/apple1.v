@@ -90,8 +90,8 @@ module apple1(
         .we     (we),
         .irq_n  (1'b1),
         .nmi_n  (1'b1),
-        .ready  (cpu_clken)
-        //.pc_monitor (pc_monitor)
+        .ready  (cpu_clken),
+        .pc_monitor (pc_monitor)
     );
 
     //////////////////////////////////////////////////////////////////////////
@@ -198,9 +198,7 @@ module apple1(
         .w_en(we & vga_cs),
         .din(dbo),
 
-        .clr_screen_btn(clr_screen_btn),
-        .blink_clken(blink_clken),
-        .debug(pc_monitor)
+        .blink_clken(blink_clken)
     );
 
     //////////////////////////////////////////////////////////////////////////

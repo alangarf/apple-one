@@ -24,7 +24,6 @@
 
 module vram(
     input clk,                  // clock signal
-    input rst,                  //
     input [9:0] read_addr,      // read address bus
     input [9:0] write_addr,     // write address bus
     input r_en,                 // active high read enable strobe
@@ -44,17 +43,10 @@ module vram(
     initial
         $readmemb(RAM_FILENAME, ram_data, 0, 1023);
 
-    always @(posedge clk or posedge rst )
+    always @(posedge clk)
     begin
-        if (rst)
-            dout <= 0;
-        else
-        begin
-            //if (r_en) dout <= ram_data[read_addr];
-            dout <= ram_data[read_addr];
-            if (w_en) ram_data[write_addr] <= din;
-        end
+        if (r_en) dout <= ram_data[read_addr];
+        if (w_en) ram_data[write_addr] <= din;
     end
 
 endmodule
-

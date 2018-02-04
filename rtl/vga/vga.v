@@ -114,7 +114,6 @@ module vga(
 
     vram my_vram(
         .clk(clk25),
-        .rst(rst),
         .read_addr(vram_r_addr),
         .write_addr(vram_w_addr),
         .r_en(h_active),
