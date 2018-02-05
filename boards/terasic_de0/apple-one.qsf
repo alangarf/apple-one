@@ -361,6 +361,11 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_CTS
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_RXD
 set_global_assignment -name ENABLE_SIGNALTAP ON
 set_global_assignment -name USE_SIGNALTAP_FILE output_files/stp1.stp
+set_global_assignment -name VERILOG_FILE ../../rtl/vga/vram.v
+set_global_assignment -name VERILOG_FILE ../../rtl/vga/vga.v
+set_global_assignment -name VERILOG_FILE ../../rtl/vga/font_rom.v
+set_global_assignment -name VERILOG_FILE ../../rtl/pwr_reset.v
+set_global_assignment -name VERILOG_FILE ../../rtl/clock.v
 set_global_assignment -name VERILOG_FILE ../../rtl/rom_basic.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ps2keyboard/ps2keyboard.v
 set_global_assignment -name VERILOG_FILE ../../rtl/boards/terasic_de0/segmentdisplay.v
