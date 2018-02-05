@@ -20,6 +20,9 @@
 // Author.....: Alan Garfield
 // Date.......: 3-2-2018
 //
+//`define DOTTY
+//`define SCANLINES
+`define NORMAL
 
 module font_rom(
     input clk,              // clock signal
@@ -48,7 +51,17 @@ module font_rom(
     wire [3:0] line_ptr = line[4:1];
 
     always @(posedge clk)
+    begin
+        `ifdef DOTTY
         out <= (line[0] & pixel[0]) ? rom[(character * 10) + {2'd0, line_ptr}][pixel_ptr] : 1'b0;
+        `endif
+        `ifdef SCANLINES
+        out <= (line[0]) ? rom[(character * 10) + {2'd0, line_ptr}][pixel_ptr] : 1'b0;
+        `endif
+        `ifdef NORMAL
+        out <= rom[(character * 10) + {2'd0, line_ptr}][pixel_ptr];
+        `endif
+    end
 
 endmodule
      
