@@ -48,7 +48,7 @@ module font_rom(
     wire [3:0] line_ptr = line[4:1];
 
     always @(posedge clk)
-        out <= rom[(character * 10) + {2'd0, line_ptr}][pixel_ptr];
+        out <= (line[0] & pixel[0]) ? rom[(character * 10) + {2'd0, line_ptr}][pixel_ptr] : 1'b0;
 
 endmodule
      

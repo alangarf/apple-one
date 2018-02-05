@@ -9,12 +9,11 @@ module vga(
     output vga_blu,         // blue VGA signal
     input address,          // address bus
     input w_en,             // active high write enable strobe
-    input [7:0] din,        // 8-bit data bas (input)
-    input blink_clken      // cursor blink enable strobe
+    input [7:0] din        // 8-bit data bas (input)
     );
 
     //////////////////////////////////////////////////////////////////////////
-    // VGA Sync Generation
+    // Registers and Parameters
 
     // video structure constants
     parameter h_pixels = 799;   // horizontal pixels per line
@@ -32,17 +31,41 @@ module vga(
     wire [3:0] h_dot;
     reg [4:0] v_dot;
 
+    // hardware cursor registers
+    wire [9:0] cursor;
     reg [5:0] h_cursor;
-    reg [4:0] v_cursor;
+    reg [9:0] v_cursor;
 
+    // vram indexing registers
+    reg [9:0] vram_start_addr;
+    reg [5:0] vram_h_addr;
+    reg [9:0] vram_v_addr;
+
+    // vram registers
+    wire [9:0] vram_r_addr;
+    reg [9:0] vram_w_addr;
+    reg vram_w_en;
+    reg [5:0] vram_din;
+    wire [5:0] vram_dout;
+
+    // font rom registers
+    wire [5:0] font_char;
+    wire [3:0] font_pixel;
+    wire [4:0] font_line;
+    wire font_out;
+
+    // cpu control registers
+    reg char_seen;
+
+    // active region strobes
     wire h_active;
     wire v_active;
     assign h_active = (h_cnt >= hbp && h_cnt < hfp);
     assign v_active = (v_cnt >= vbp && v_cnt < vfp);
 
-    assign vga_h_sync = (h_cnt < h_pulse) ? 0 : 1;
-    assign vga_v_sync = (v_cnt < v_pulse) ? 0 : 1;
-
+    //////////////////////////////////////////////////////////////////////////
+    // VGA Sync Generation
+    //
     always @(posedge clk25 or posedge rst)
     begin
         if (rst)
@@ -90,11 +113,6 @@ module vga(
     //////////////////////////////////////////////////////////////////////////
     // Character ROM
 
-    wire [5:0] font_char;
-    wire [3:0] font_pixel;
-    wire [4:0] font_line;
-    wire font_out;
-
     font_rom my_font_rom(
         .clk(clk25),
         .character(font_char),
@@ -106,12 +124,6 @@ module vga(
     //////////////////////////////////////////////////////////////////////////
     // Video RAM
 
-    wire [9:0] vram_r_addr;
-    reg [9:0] vram_w_addr;
-    reg vram_w_en;
-    reg [5:0] vram_din;
-    wire [5:0] vram_dout;
-
     vram my_vram(
         .clk(clk25),
         .read_addr(vram_r_addr),
@@ -121,10 +133,6 @@ module vga(
         .din(vram_din),
         .dout(vram_dout)
     );
-
-
-    reg [5:0] vram_h_addr;
-    reg [9:0] vram_v_addr;
 
     //////////////////////////////////////////////////////////////////////////
     // Video Signal Generation
@@ -151,25 +159,53 @@ module vga(
         end
     end
 
-    assign vram_r_addr = ({4'd0, vram_h_addr} + vram_v_addr);
-    assign font_char = vram_dout;
+    //////////////////////////////////////////////////////////////////////////
+    // Cursor blink
+
+    reg blink;
+    reg [22:0] blink_div;
+    always @(posedge clk25 or posedge rst)
+    begin
+        if (rst)
+            blink_div <= 0;
+        else
+        begin
+            blink_div <= blink_div + 1;
+
+            if (blink_div == 23'd0)
+                blink <= ~blink;
+        end
+    end
+
+    //////////////////////////////////////////////////////////////////////////
+    // Pipeline and VGA signals
+
+    // vram to font rom to display pipeline assignments
+    assign cursor = ({4'd0, h_cursor} + v_cursor);
+    assign vram_r_addr = (vram_start_addr + {4'd0, vram_h_addr} + vram_v_addr);
+    assign font_char = (vram_r_addr != cursor) ? vram_dout : (blink) ? 6'd0 : 6'd32;
     assign font_pixel = h_dot + 1; // offset by one to get pixel into right cycle,
                                    // font output one pixel clk behind
     assign font_line = v_dot;
 
+    // vga signals out to monitor
     assign vga_red = font_out;
     assign vga_grn = font_out;
     assign vga_blu = font_out;
+    assign vga_h_sync = (h_cnt < h_pulse) ? 0 : 1;
+    assign vga_v_sync = (v_cnt < v_pulse) ? 0 : 1;
 
-    reg char_seen;
+    //////////////////////////////////////////////////////////////////////////
+    // CPU control and hardware cursor
 
     always @(posedge clk25 or posedge rst)
     begin
         if (rst)
         begin
             h_cursor <= 6'd0;
-            v_cursor <= 5'd0;
+            v_cursor <= 10'd0;
             char_seen <= 0;
+            vram_start_addr <= 0;
         end
         else
         begin
@@ -187,16 +223,16 @@ module vga(
                     begin
                         // handle carriage return
                         h_cursor <= 0;
-                        v_cursor <= v_cursor + 1;
+                        v_cursor <= v_cursor + 10'h28;
                     end
 
                     8'h7F:
                         // ignore the DDR call to the PIA
-                        h_cursor <= h_cursor + 1;
+                        h_cursor <= 0;
 
                     default:
                     begin
-                        vram_w_addr <= ((v_cursor * 40) + {4'b0, h_cursor});
+                        vram_w_addr <= cursor;
                         vram_din <= {~din[6], din[4:0]};
                         vram_w_en <= 1;
 
@@ -210,13 +246,25 @@ module vga(
                         v_cursor <= v_cursor + 1;
                     end
 
+                    if (v_cursor == 920)
+                    begin
+                        // force cursor to start at bottom of screen
+                        // FIXME: now we need to scroll
+                        v_cursor <= 920;
+                        vram_start_addr <= vram_start_addr + 10'h28;
+                    end
+
+                    if (vram_start_addr >= 920)
+                        vram_start_addr <= 0;
+
+                    /*
                     if (v_cursor == 23)
                     begin
                         // here we need to add the scroll, probably by moving the
                         // HEAD of vram up one line
-                        v_cursor <= 0;
+                        vram_start_addr <= vram_start_addr + 10'h28;
                     end
-
+                    */
                 end
                 else if(~enable & ~w_en)
                     char_seen <= 0;
