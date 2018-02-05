@@ -1,0 +1,4 @@
+../rtl/vga/vga.v
+../rtl/vga/vram.v
+../rtl/vga/font_rom.v
+vga_tb.v

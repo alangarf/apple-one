@@ -58,12 +58,10 @@ module apple1(
     // Clocks
 
     wire cpu_clken;
-    wire blink_clken;
     clock my_clock(
         .clk25(clk25),
         .rst_n(rst_n),
-        .cpu_clken(cpu_clken),
-        .blink_clken(blink_clken)
+        .cpu_clken(cpu_clken)
     );
 
     //////////////////////////////////////////////////////////////////////////
@@ -90,8 +88,8 @@ module apple1(
         .we     (we),
         .irq_n  (1'b1),
         .nmi_n  (1'b1),
-        .ready  (cpu_clken)
-        //.pc_monitor (pc_monitor)
+        .ready  (cpu_clken),
+        .pc_monitor (pc_monitor)
     );
 
     //////////////////////////////////////////////////////////////////////////
@@ -196,11 +194,7 @@ module apple1(
 
         .address(ab[0]),
         .w_en(we & vga_cs),
-        .din(dbo),
-
-        .clr_screen_btn(clr_screen_btn),
-        .blink_clken(blink_clken),
-        .debug(pc_monitor)
+        .din(dbo)
     );
 
     //////////////////////////////////////////////////////////////////////////

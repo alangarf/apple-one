@@ -33,7 +33,7 @@ module vram(
     );
 
     `ifdef SIM
-    parameter RAM_FILENAME = "../roms/ram.hex";
+    parameter RAM_FILENAME = "../roms/vga_vram.bin";
     `else
     parameter RAM_FILENAME = "../../roms/vga_vram.bin";
     `endif
@@ -41,7 +41,7 @@ module vram(
     reg [5:0] ram_data[0:1023];
 
     initial
-        $readmemb(RAM_FILENAME, ram_data, 0, 1024);
+        $readmemb(RAM_FILENAME, ram_data, 0, 1023);
 
     always @(posedge clk)
     begin
@@ -50,4 +50,3 @@ module vram(
     end
 
 endmodule
-     
