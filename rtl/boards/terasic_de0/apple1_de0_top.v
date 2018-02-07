@@ -36,8 +36,15 @@ module apple1_de0_top(
     output  [6:0] HEX1_D,
     output  [6:0] HEX2_D,
     output  [6:0] HEX3_D,
+    
     input   PS2_KBCLK,
-    input   PS2_KBDAT
+    input   PS2_KBDAT,
+
+    output  [3:0] VGA_R,
+    output  [3:0] VGA_G,
+    output  [3:0] VGA_B,
+    output  VGA_HS,
+    output  VGA_VS    
 );
 
     //////////////////////////////////////////////////////////////////////////    
@@ -51,6 +58,8 @@ module apple1_de0_top(
         clk25 <= ~clk25;
     end
     
+    wire vga_bit;
+    
     //////////////////////////////////////////////////////////////////////////    
     // Core of system
     apple1 apple1_top(
@@ -61,8 +70,18 @@ module apple1_de0_top(
         .uart_cts(UART_CTS),
         .ps2_clk(PS2_KBCLK),
         .ps2_din(PS2_KBDAT),
+        .vga_h_sync(VGA_HS),
+        .vga_v_sync(VGA_VS),
+        .vga_red(vga_bit),
+        //.vga_grn(vga_bit),
+        //.vga_blu(vga_bit),
+        .clr_screen_btn(~BUTTON[1]),
         .pc_monitor(pc_monitor)
     );
+
+    assign VGA_R[3:0] = vga_bit ? 4'b1111 : 4'b0000;
+    assign VGA_G[3:0] = vga_bit ? 4'b1111 : 4'b0000;
+    assign VGA_B[3:0] = vga_bit ? 4'b1111 : 4'b0000;
 
     //////////////////////////////////////////////////////////////////////////    
     // Display 6502 address on 7-segment displays
@@ -95,4 +114,12 @@ module apple1_de0_top(
         .display_out(HEX3_D)
     );
 
+    reg [15:0] cnt;
+    always @(posedge vga_bit)
+    begin
+      cnt <= cnt + 1;
+    end
+    
+    assign LEDG = cnt[7:0];
+    
 endmodule

@@ -208,7 +208,7 @@ begin
 
                                     8'h4E:  ascii <= "-";
                                     8'h55:  ascii <= "=";
-                                    8'h5D:  ascii <= "\\ ";
+                                    8'h5D:  ascii <= "\\ ";     // extra spaced needed by Quartus
                                     8'h66:  ascii <= 8'd8;      // backspace
                                     8'h29:  ascii <= " ";
 
