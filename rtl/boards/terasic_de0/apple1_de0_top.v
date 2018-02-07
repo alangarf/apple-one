@@ -75,13 +75,12 @@ module apple1_de0_top(
         .vga_red(vga_bit),
         //.vga_grn(vga_bit),
         //.vga_blu(vga_bit),
-        .clr_screen_btn(~BUTTON[1]),
         .pc_monitor(pc_monitor)
     );
 
-    assign VGA_R[3:0] = vga_bit ? 4'b1111 : 4'b0000;
+    assign VGA_R[3:0] = vga_bit ? 4'b1000 : 4'b0000;
     assign VGA_G[3:0] = vga_bit ? 4'b1111 : 4'b0000;
-    assign VGA_B[3:0] = vga_bit ? 4'b1111 : 4'b0000;
+    assign VGA_B[3:0] = vga_bit ? 4'b1000 : 4'b0000;
 
     //////////////////////////////////////////////////////////////////////////    
     // Display 6502 address on 7-segment displays
@@ -114,12 +113,13 @@ module apple1_de0_top(
         .display_out(HEX3_D)
     );
 
-    reg [15:0] cnt;
-    always @(posedge vga_bit)
-    begin
-      cnt <= cnt + 1;
-    end
+    // debugging for VGA stuff:
+    //reg [15:0] cnt;
+    //always @(posedge vga_bit)
+    //begin
+    //  cnt <= cnt + 1;
+    //end
     
-    assign LEDG = cnt[7:0];
+    assign LEDG = 0;
     
 endmodule

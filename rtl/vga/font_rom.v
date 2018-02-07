@@ -34,19 +34,21 @@ module font_rom(
     );
 
     `ifdef SIM
-    parameter ROM_FILENAME = "../roms/vga_font.bin";
+    parameter ROM_FILENAME = "../roms/vga_font.hex";
     `else
-    parameter ROM_FILENAME = "../../roms/vga_font.bin";
+    parameter ROM_FILENAME = "../../roms/vga_font.hex";
     `endif
 
     reg [7:0] rom[0:1023];
 
     initial
-        $readmemb(ROM_FILENAME, rom, 0, 1023);
+        $readmemh(ROM_FILENAME, rom, 0, 1023);
 
     // double width of pixel by ignoring bit 0
     wire [2:0] pixel_ptr;
-    assign pixel_ptr = (3'h7 - pixel[3:1]);
+    
+    //assign pixel_ptr = (3'h7 - pixel[3:1]);
+    assign pixel_ptr = pixel[3:1];
 
     // double height of pixel by ignoring bit 0
     wire [3:0] line_ptr = line[4:1];
