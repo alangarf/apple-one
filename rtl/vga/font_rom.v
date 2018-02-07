@@ -26,6 +26,7 @@
 
 module font_rom(
     input clk,              // clock signal
+    input [1:0] mode,       // character mode
     input [5:0] character,  // address bus
     input [3:0] pixel,      // address of the pixel to output
     input [4:0] line,       // address of the line to output
@@ -38,10 +39,10 @@ module font_rom(
     parameter ROM_FILENAME = "../../roms/vga_font.bin";
     `endif
 
-    reg [7:0] rom[0:639];
+    reg [7:0] rom[0:1023];
 
     initial
-        $readmemb(ROM_FILENAME, rom, 0, 639);
+        $readmemb(ROM_FILENAME, rom, 0, 1023);
 
     // double width of pixel by ignoring bit 0
     wire [2:0] pixel_ptr;
@@ -52,15 +53,14 @@ module font_rom(
 
     always @(posedge clk)
     begin
-        `ifdef DOTTY
-        out <= (line[0] & pixel[0]) ? rom[(character * 10) + {2'd0, line_ptr}][pixel_ptr] : 1'b0;
-        `endif
-        `ifdef SCANLINES
-        out <= (line[0]) ? rom[(character * 10) + {2'd0, line_ptr}][pixel_ptr] : 1'b0;
-        `endif
-        `ifdef NORMAL
-        out <= rom[(character * 10) + {2'd0, line_ptr}][pixel_ptr];
-        `endif
+        // mode
+        // 00 - normal
+        // 01 - vertical scanlines
+        // 10 - horizontal scanlines
+        // 11 - dotty mode
+        out <= (mode[1] & line[0]) ? 1'b0 :
+               (mode[0] & pixel[0]) ? 1'b0 :
+               rom[(character * 10) + {2'd0, line_ptr}][pixel_ptr];
     end
 
 endmodule
