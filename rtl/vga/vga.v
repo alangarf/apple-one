@@ -10,8 +10,7 @@ module vga(
     input address,          // address bus
     input w_en,             // active high write enable strobe
     input [7:0] din,        // 8-bit data bus (input)
-    input [1:0] mode,       // 2-bit mode setting for pixel doubling
-    output [15:0] debug
+    input [1:0] mode        // 2-bit mode setting for pixel doubling
     );
 
     //////////////////////////////////////////////////////////////////////////
@@ -43,6 +42,7 @@ module vga(
     reg [4:0] vram_v_addr;
     reg [4:0] vram_start_addr;
     reg [4:0] vram_end_addr;
+    reg [4:0] vram_clr_addr;
 
     // vram registers
     wire [10:0] vram_r_addr;
@@ -200,10 +200,10 @@ module vga(
     assign vga_h_sync = (h_cnt < h_pulse) ? 0 : 1;
     assign vga_v_sync = (v_cnt < v_pulse) ? 0 : 1;
 
-    assign debug = {v_cursor, 6'd0, vram_start_addr};
-
     //////////////////////////////////////////////////////////////////////////
     // CPU control and hardware cursor
+
+    assign vram_clr_addr = vram_end_addr + {3'd0, vram_v_addr[1:0]};
 
     always @(posedge clk25 or posedge rst)
     begin
@@ -264,7 +264,7 @@ module vga(
             end
             else
             begin
-                vram_w_addr <= {(vram_end_addr + 2), vram_h_addr};
+                vram_w_addr <= {vram_clr_addr, vram_h_addr};
                 vram_din <= 6'd32;
                 vram_w_en <= 1;
             end

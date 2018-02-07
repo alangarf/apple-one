@@ -88,8 +88,8 @@ module apple1(
         .we     (we),
         .irq_n  (1'b1),
         .nmi_n  (1'b1),
-        .ready  (cpu_clken)
-        //.pc_monitor (pc_monitor)
+        .ready  (cpu_clken),
+        .pc_monitor (pc_monitor)
     );
 
     //////////////////////////////////////////////////////////////////////////
@@ -111,8 +111,6 @@ module apple1(
 
     wire basic_cs = (ab[15:12] ==  4'b1110);            // 0xE000 -> 0xEFFF
     wire rom_cs =   (ab[15:8]  ==  8'b11111111);        // 0xFF00 -> 0xFFFF
-
-    wire mode_cs = (ab[15:12]  == 4'b1100); // 0xC000
 
     //////////////////////////////////////////////////////////////////////////
     // RAM and ROM
@@ -199,9 +197,11 @@ module apple1(
         .address(ab[0]),
         .w_en(we & vga_cs),
         .din(dbo),
-        .mode(vga_mode),
-        .debug(pc_monitor)
+        .mode(vga_mode)
     );
+
+    // FIXME: REMOVE THIS
+    wire mode_cs = (ab[15:12]  == 4'b1100); // 0xC000
 
     always @(posedge clk25 or posedge rst)
     begin
