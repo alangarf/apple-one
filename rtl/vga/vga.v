@@ -42,7 +42,7 @@ module vga(
     reg [4:0] vram_v_addr;
     reg [4:0] vram_start_addr;
     reg [4:0] vram_end_addr;
-    reg [4:0] vram_clr_addr;
+    wire [4:0] vram_clr_addr;
 
     // vram registers
     wire [10:0] vram_r_addr;

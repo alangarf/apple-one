@@ -39,9 +39,9 @@ module apple1(
     input clr_screen_btn,       // active high clear screen button
     output vga_h_sync,          // hozizontal VGA sync pulse
     output vga_v_sync,          // vertical VGA sync pulse
-    output reg vga_red,         // red VGA signal
-    output reg vga_grn,         // green VGA signal
-    output reg vga_blu,         // blue VGA signal
+    output vga_red,         // red VGA signal
+    output vga_grn,         // green VGA signal
+    output vga_blu,         // blue VGA signal
 
     // Debugging ports
     output [15:0] pc_monitor    // spy for program counter / debugging
