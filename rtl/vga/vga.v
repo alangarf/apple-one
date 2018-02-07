@@ -9,7 +9,9 @@ module vga(
     output vga_blu,         // blue VGA signal
     input address,          // address bus
     input w_en,             // active high write enable strobe
-    input [7:0] din        // 8-bit data bas (input)
+    input [7:0] din,        // 8-bit data bus (input)
+    input [1:0] mode,       // 2-bit mode setting for pixel doubling
+    output [15:0] debug
     );
 
     //////////////////////////////////////////////////////////////////////////
@@ -32,18 +34,19 @@ module vga(
     reg [4:0] v_dot;
 
     // hardware cursor registers
-    wire [9:0] cursor;
+    wire [10:0] cursor;
     reg [5:0] h_cursor;
-    reg [9:0] v_cursor;
+    reg [4:0] v_cursor;
 
     // vram indexing registers
-    reg [9:0] vram_start_addr;
     reg [5:0] vram_h_addr;
-    reg [9:0] vram_v_addr;
+    reg [4:0] vram_v_addr;
+    reg [4:0] vram_start_addr;
+    reg [4:0] vram_end_addr;
 
     // vram registers
-    wire [9:0] vram_r_addr;
-    reg [9:0] vram_w_addr;
+    wire [10:0] vram_r_addr;
+    reg [10:0] vram_w_addr;
     reg vram_w_en;
     reg [5:0] vram_din;
     wire [5:0] vram_dout;
@@ -115,6 +118,7 @@ module vga(
 
     font_rom my_font_rom(
         .clk(clk25),
+        .mode(mode),
         .character(font_char),
         .pixel(font_pixel),
         .line(font_line),
@@ -139,23 +143,23 @@ module vga(
 
     always @(posedge clk25 or posedge rst) begin
         if (rst) begin
-            vram_h_addr <= 0;
-            vram_v_addr <= 0;
+            vram_h_addr <= 'd0;
+            vram_v_addr <= 'd0;
         end else begin
             // start the pipeline for reading vram and font details
             // 3 pixel clock cycles early
             if (h_dot == 4'hC)
-                vram_h_addr <= vram_h_addr + 1;
+                vram_h_addr <= vram_h_addr + 'd1;
 
             // advance to next row when last display line is reached for row
             if (v_dot == 5'd19 && h_cnt == 10'd0)
-                vram_v_addr <= vram_v_addr + 10'h28;
+                vram_v_addr <= vram_v_addr + 'd1;
 
             // clear the address registers if we're not in visible area
             if (~h_active)
-                vram_h_addr <= 0;
+                vram_h_addr <= 'd0;
             if (~v_active)
-                vram_v_addr <= 0;
+                vram_v_addr <= vram_start_addr;
         end
     end
 
@@ -181,8 +185,9 @@ module vga(
     // Pipeline and VGA signals
 
     // vram to font rom to display pipeline assignments
-    assign cursor = ({4'd0, h_cursor} + v_cursor);
-    assign vram_r_addr = (vram_start_addr + {4'd0, vram_h_addr} + vram_v_addr);
+    assign cursor = {v_cursor, h_cursor};
+    assign vram_r_addr = {vram_v_addr, vram_h_addr};
+
     assign font_char = (vram_r_addr != cursor) ? vram_dout : (blink) ? 6'd0 : 6'd32;
     assign font_pixel = h_dot + 1; // offset by one to get pixel into right cycle,
                                    // font output one pixel clk behind
@@ -195,6 +200,8 @@ module vga(
     assign vga_h_sync = (h_cnt < h_pulse) ? 0 : 1;
     assign vga_v_sync = (v_cnt < v_pulse) ? 0 : 1;
 
+    assign debug = {v_cursor, 6'd0, vram_start_addr};
+
     //////////////////////////////////////////////////////////////////////////
     // CPU control and hardware cursor
 
@@ -203,13 +210,27 @@ module vga(
         if (rst)
         begin
             h_cursor <= 6'd0;
-            v_cursor <= 10'd0;
-            char_seen <= 0;
-            vram_start_addr <= 0;
+            v_cursor <= 5'd0;
+            char_seen <= 'b0;
+            vram_start_addr <= 5'd0;
+            vram_end_addr <= 5'd23;
         end
         else
         begin
             vram_w_en <= 0;
+
+            // cursor overflow handling
+            if (h_cursor == 6'd40)
+            begin
+                h_cursor <= 6'd0;
+                v_cursor <= v_cursor + 'd1;
+            end
+
+            if (v_cursor == vram_end_addr)
+            begin
+                vram_start_addr <= vram_start_addr + 'd1;
+                vram_end_addr <= vram_end_addr + 'd1;
+            end
 
             if (address == 1'b0) // address low == TX register
             begin
@@ -219,55 +240,33 @@ module vga(
                     char_seen <= 1;
 
                     case(din)
-                    8'h8D:
-                    begin
+                    8'h8D: begin
                         // handle carriage return
                         h_cursor <= 0;
-                        v_cursor <= v_cursor + 10'h28;
+                        v_cursor <= v_cursor + 'd1;
                     end
 
-                    8'h7F:
+                    8'h7F: begin
                         // ignore the DDR call to the PIA
                         h_cursor <= 0;
+                    end
 
-                    default:
-                    begin
+                    default: begin
                         vram_w_addr <= cursor;
                         vram_din <= {~din[6], din[4:0]};
                         vram_w_en <= 1;
-
                         h_cursor <= h_cursor + 1;
                     end
                     endcase
-
-                    if (h_cursor == 39)
-                    begin
-                        h_cursor <= 0;
-                        v_cursor <= v_cursor + 1;
-                    end
-
-                    if (v_cursor == 920)
-                    begin
-                        // force cursor to start at bottom of screen
-                        // FIXME: now we need to scroll
-                        v_cursor <= 920;
-                        vram_start_addr <= vram_start_addr + 10'h28;
-                    end
-
-                    if (vram_start_addr >= 920)
-                        vram_start_addr <= 0;
-
-                    /*
-                    if (v_cursor == 23)
-                    begin
-                        // here we need to add the scroll, probably by moving the
-                        // HEAD of vram up one line
-                        vram_start_addr <= vram_start_addr + 10'h28;
-                    end
-                    */
                 end
                 else if(~enable & ~w_en)
                     char_seen <= 0;
+            end
+            else
+            begin
+                vram_w_addr <= {(vram_end_addr + 2), vram_h_addr};
+                vram_din <= 6'd32;
+                vram_w_en <= 1;
             end
         end
     end

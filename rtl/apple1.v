@@ -88,8 +88,8 @@ module apple1(
         .we     (we),
         .irq_n  (1'b1),
         .nmi_n  (1'b1),
-        .ready  (cpu_clken),
-        .pc_monitor (pc_monitor)
+        .ready  (cpu_clken)
+        //.pc_monitor (pc_monitor)
     );
 
     //////////////////////////////////////////////////////////////////////////
@@ -111,6 +111,8 @@ module apple1(
 
     wire basic_cs = (ab[15:12] ==  4'b1110);            // 0xE000 -> 0xEFFF
     wire rom_cs =   (ab[15:8]  ==  8'b11111111);        // 0xFF00 -> 0xFFFF
+
+    wire mode_cs = (ab[15:12]  == 4'b1100); // 0xC000
 
     //////////////////////////////////////////////////////////////////////////
     // RAM and ROM
@@ -182,10 +184,12 @@ module apple1(
     );
 
     // VGA Display interface
+    reg [1:0] vga_mode;
     vga my_vga(
         .clk25(clk25),
         .enable(vga_cs & cpu_clken),
         .rst(rst),
+
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
         .vga_red(vga_red),
@@ -194,8 +198,19 @@ module apple1(
 
         .address(ab[0]),
         .w_en(we & vga_cs),
-        .din(dbo)
+        .din(dbo),
+        .mode(vga_mode),
+        .debug(pc_monitor)
     );
+
+    always @(posedge clk25 or posedge rst)
+    begin
+        if (rst)
+            vga_mode <= 2'b0;
+        else
+            if (mode_cs & we & cpu_clken)
+                vga_mode <= dbo[1:0];
+    end
 
     //////////////////////////////////////////////////////////////////////////
     // CPU Data In MUX
@@ -206,5 +221,6 @@ module apple1(
                  basic_cs ? basic_dout :
                  uart_cs  ? uart_dout :
                  ps2kb_cs ? ps2_dout :
+                 mode_cs ? vga_mode :
                  8'hFF;
 endmodule
