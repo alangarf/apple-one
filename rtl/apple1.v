@@ -34,6 +34,7 @@ module apple1(
     // I/O interface to keyboard
     input ps2_clk,              // PS/2 keyboard serial clock input
     input ps2_din,              // PS/2 keyboard serial data input
+    input ps2_select,           // Input to select the PS/2 keyboard instead of the UART
 
     // Outputs to VGA display
     input clr_screen_btn,       // active high clear screen button
@@ -97,15 +98,19 @@ module apple1(
 
     wire ram_cs =   (ab[15:13] ==  3'b000);            // 0x0000 -> 0x1FFF
 
-    wire uart_cs =  (ab[15:2]  == 14'b11010000000100); // 0xD010 -> 0xD013
+    // RX: Either keyboard or UART input
+    // TX: Always VGA and UART output
+    wire rx_cs = (ab[15:1]  == 15'b110100000001000);    // 0xD010 -> 0xD011
+    wire tx_cs = (ab[15:1]  == 15'b110100000001001);    // 0xD012 -> 0xD013
+    
+    // select UART on transmit but only receive when PS/2 is not selected.
+    wire uart_cs = tx_cs | ((~ps2_select) & rx_cs);
 
-    //wire ps2kb_cs = (ab[15:1]  == 15'b110100000001000); // 0xD010 -> 0xD011
-    //wire uart_cs =  (ab[15:1]  == 15'b110100000001001); // 0xD012 -> 0xD013
-    //wire vga_cs = 1'b0;
-
-    //wire uart_cs =  (ab[15:1]  == 15'b110100000001000); // 0xD010 -> 0xD011
-    wire ps2kb_cs = 1'b0;
-    wire vga_cs =   (ab[15:1]  == 15'b110100000001001); // 0xD012 -> 0xD013
+    // select PS/2 keyboard input when selected.
+    wire ps2kb_cs = ps2_select & rx_cs;
+    
+    // VGA always get characters when they are sent.
+    wire vga_cs   = tx_cs;
 
     wire basic_cs = (ab[15:12] ==  4'b1110);            // 0xE000 -> 0xEFFF
     wire rom_cs =   (ab[15:8]  ==  8'b11111111);        // 0xFF00 -> 0xFFFF

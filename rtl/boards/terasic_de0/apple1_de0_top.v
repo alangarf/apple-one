@@ -70,6 +70,7 @@ module apple1_de0_top(
         .uart_cts(UART_CTS),
         .ps2_clk(PS2_KBCLK),
         .ps2_din(PS2_KBDAT),
+        .ps2_select(1'b1),
         .vga_h_sync(VGA_HS),
         .vga_v_sync(VGA_VS),
         .vga_red(vga_bit),
@@ -78,6 +79,7 @@ module apple1_de0_top(
         .pc_monitor(pc_monitor)
     );
 
+    // set the monochrome base colour here.. 
     assign VGA_R[3:0] = vga_bit ? 4'b1000 : 4'b0000;
     assign VGA_G[3:0] = vga_bit ? 4'b1111 : 4'b0000;
     assign VGA_B[3:0] = vga_bit ? 4'b1000 : 4'b0000;
@@ -112,16 +114,7 @@ module apple1_de0_top(
         .hexdigit_in(pc_monitor[15:12]),
         .display_out(HEX3_D)
     );
-
-    // debugging for VGA stuff:
-    //reg [15:0] cnt;
-    //always @(posedge vga_bit)
-    //begin
-    //  cnt <= cnt + 1;
-    //end
-    
-    
-    
+      
     assign LEDG = 0;
     
 endmodule

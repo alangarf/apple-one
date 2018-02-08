@@ -35,13 +35,17 @@ module ps2keyboard (
     output reg [7:0] dout   // 8-bit output bus.
 );
 
-    // signals in the slow PS/2 clock domain
+    // ************************************************************
+    //   signals in the slow PS/2 clock domain
+    // ************************************************************
     reg [3:0]  rxcnt;       // count how many bits have been shift into rxshiftbuf
     reg [10:0] rxshiftbuf;  // 11 bit shift receive register
     reg rx_flag = 0;        // this flag changes state (0->1 or 1->0) when
                             // valid data is available in rxshiftbuf
 
-    // signals in the high-speed clock (clk25) domain
+    // ************************************************************
+    //   signals in the high-speed clock (clk25) domain
+    // ************************************************************
     reg [7:0]  rx;          // receive buffer
     reg rxflag_ff;          // flip-flop state for clk domain xing
     reg rx_rdy;             // data ready to be read
@@ -52,6 +56,7 @@ module ps2keyboard (
     reg shift;              // state of the shift key
     reg [2:0] cur_state;
     reg [2:0] next_state;
+    reg [15:0] debounce_timer;
 
 //
 // PS/2 data from a device changes when the clock
@@ -59,7 +64,7 @@ module ps2keyboard (
 // to a high state
 //
 
-always @(posedge key_clk or posedge rst)
+always @(negedge key_clk or posedge rst)
 begin
     if (rst == 1'b1)
     begin
@@ -132,6 +137,12 @@ begin
         begin
             // we detected a change in the rx_flag
             // so we have valid data in the rxshiftbuf
+            
+            // bits 8 .. 1 contain the actual keyboard
+            // scan code. The other bits are start/parity
+            // and stop bits. 
+            //
+            // TODO: do a parity check! .. 
             rx <= rxshiftbuf[8:1];
             rx_rdy <= 1;
         end
@@ -152,6 +163,12 @@ begin
             end
         end
 
+        // handle the debounce timer
+        if (debounce_timer != 16'd0)
+        begin
+            debounce_timer <= debounce_timer - 16'd1;
+        end
+        
         // keyboard translation state machine
         if (rx_rdy == 1'b1)
         begin
@@ -165,124 +182,143 @@ begin
                             next_state = S_KEYE0;
                         else
                         begin
-                            ascii_rdy <= 1'b1;  // new key has arrived!
-                            if (!shift)
-                                case(rx)
-                                    8'h1C:  ascii <= "A";
-                                    8'h32:  ascii <= "B";
-                                    8'h21:  ascii <= "C";
-                                    8'h23:  ascii <= "D";
-                                    8'h24:  ascii <= "E";
-                                    8'h2B:  ascii <= "F";
-                                    8'h34:  ascii <= "G";
-                                    8'h33:  ascii <= "H";
-                                    8'h43:  ascii <= "I";
-                                    8'h3B:  ascii <= "J";
-                                    8'h42:  ascii <= "K";
-                                    8'h4B:  ascii <= "L";
-                                    8'h3A:  ascii <= "M";
-                                    8'h31:  ascii <= "N";
-                                    8'h44:  ascii <= "O";
-                                    8'h4D:  ascii <= "P";
-                                    8'h15:  ascii <= "Q";
-                                    8'h2D:  ascii <= "R";
-                                    8'h1B:  ascii <= "S";
-                                    8'h2C:  ascii <= "T";
-                                    8'h3C:  ascii <= "U";
-                                    8'h2A:  ascii <= "V";
-                                    8'h1D:  ascii <= "W";
-                                    8'h22:  ascii <= "X";
-                                    8'h35:  ascii <= "Y";
-                                    8'h1A:  ascii <= "Z";
+                            // check the debounce timer, if this is 
+                            // not zero, a new key arrived too quickly
+                            // and we simply discard it. For better
+                            // debouncing, we should check if the key
+                            // is actually the same as the previous received/
+                            // key, but let's try this first to see if it works
+                            // ok...
+                            
+                            if (debounce_timer == 16'd0)
+                            begin
+                                ascii_rdy <= 1'b1;  // new key has arrived!
+                                debounce_timer <= 16'hFFFF; // reset the debounce timer
+                            end
+                            
+                            // check for a SHIFT key
+                            if ((rx == 8'h59) || (rx == 8'h12))
+                            begin
+                                shift <= 1'b1;
+                                ascii_rdy <= 1'b0;  // shift is not a key!
+                            end                            
+                            else begin
+                                if (!shift)
+                                    case(rx)
+                                        8'h1C:  ascii <= "A";
+                                        8'h32:  ascii <= "B";
+                                        8'h21:  ascii <= "C";
+                                        8'h23:  ascii <= "D";
+                                        8'h24:  ascii <= "E";
+                                        8'h2B:  ascii <= "F";
+                                        8'h34:  ascii <= "G";
+                                        8'h33:  ascii <= "H";
+                                        8'h43:  ascii <= "I";
+                                        8'h3B:  ascii <= "J";
+                                        8'h42:  ascii <= "K";
+                                        8'h4B:  ascii <= "L";
+                                        8'h3A:  ascii <= "M";
+                                        8'h31:  ascii <= "N";
+                                        8'h44:  ascii <= "O";
+                                        8'h4D:  ascii <= "P";
+                                        8'h15:  ascii <= "Q";
+                                        8'h2D:  ascii <= "R";
+                                        8'h1B:  ascii <= "S";
+                                        8'h2C:  ascii <= "T";
+                                        8'h3C:  ascii <= "U";
+                                        8'h2A:  ascii <= "V";
+                                        8'h1D:  ascii <= "W";
+                                        8'h22:  ascii <= "X";
+                                        8'h35:  ascii <= "Y";
+                                        8'h1A:  ascii <= "Z";
 
-                                    8'h45:  ascii <= "0";
-                                    8'h16:  ascii <= "1";
-                                    8'h1E:  ascii <= "2";
-                                    8'h26:  ascii <= "3";
-                                    8'h25:  ascii <= "4";
-                                    8'h2E:  ascii <= "5";
-                                    8'h36:  ascii <= "6";
-                                    8'h3D:  ascii <= "7";
-                                    8'h3E:  ascii <= "8";
-                                    8'h46:  ascii <= "9";
+                                        8'h45:  ascii <= "0";
+                                        8'h16:  ascii <= "1";
+                                        8'h1E:  ascii <= "2";
+                                        8'h26:  ascii <= "3";
+                                        8'h25:  ascii <= "4";
+                                        8'h2E:  ascii <= "5";
+                                        8'h36:  ascii <= "6";
+                                        8'h3D:  ascii <= "7";
+                                        8'h3E:  ascii <= "8";
+                                        8'h46:  ascii <= "9";
 
-                                    8'h4E:  ascii <= "-";
-                                    8'h55:  ascii <= "=";
-                                    8'h5D:  ascii <= "\\ ";     // extra spaced needed by Quartus
-                                    8'h66:  ascii <= 8'd8;      // backspace
-                                    8'h29:  ascii <= " ";
+                                        8'h4E:  ascii <= "-";
+                                        8'h55:  ascii <= "=";
+                                        8'h5D:  ascii <= "\\ ";     // extra spaced needed by Quartus
+                                        8'h66:  ascii <= 8'd8;      // backspace
+                                        8'h29:  ascii <= " ";
 
-                                    8'h5A:  ascii <= 8'd13;     // enter
-                                    8'h54:  ascii <= "[";
-                                    8'h5B:  ascii <= "]";
-                                    8'h4C:  ascii <= ";";
-                                    8'h52:  ascii <= "'";
-                                    8'h41:  ascii <= ",";
-                                    8'h49:  ascii <= ".";
-                                    8'h4A:  ascii <= "/";
-                                    8'h59:  shift <= 1'b1;      // right shfit
-                                    8'h12:  shift <= 1'b1;      // left shift
-                                    default: ascii <= ".";
-                                endcase
-                            else
-                                case(rx)
-                                    8'h1C:  ascii <= "A";
-                                    8'h32:  ascii <= "B";
-                                    8'h21:  ascii <= "C";
-                                    8'h23:  ascii <= "D";
-                                    8'h24:  ascii <= "E";
-                                    8'h2B:  ascii <= "F";
-                                    8'h34:  ascii <= "G";
-                                    8'h33:  ascii <= "H";
-                                    8'h43:  ascii <= "I";
-                                    8'h3B:  ascii <= "J";
-                                    8'h42:  ascii <= "K";
-                                    8'h4B:  ascii <= "L";
-                                    8'h3A:  ascii <= "M";
-                                    8'h31:  ascii <= "N";
-                                    8'h44:  ascii <= "O";
-                                    8'h4D:  ascii <= "P";
-                                    8'h15:  ascii <= "Q";
-                                    8'h2D:  ascii <= "R";
-                                    8'h1B:  ascii <= "S";
-                                    8'h2C:  ascii <= "T";
-                                    8'h3C:  ascii <= "U";
-                                    8'h2A:  ascii <= "V";
-                                    8'h1D:  ascii <= "W";
-                                    8'h22:  ascii <= "X";
-                                    8'h35:  ascii <= "Y";
-                                    8'h1A:  ascii <= "Z";
+                                        8'h5A:  ascii <= 8'd13;     // enter
+                                        8'h54:  ascii <= "[";
+                                        8'h5B:  ascii <= "]";
+                                        8'h4C:  ascii <= ";";
+                                        8'h52:  ascii <= "'";
+                                        8'h41:  ascii <= ",";
+                                        8'h49:  ascii <= ".";
+                                        8'h4A:  ascii <= "/";
+                                        8'h59:  shift <= 1'b1;      // right shfit
+                                        8'h12:  shift <= 1'b1;      // left shift
+                                        default: ascii <= ".";
+                                    endcase
+                                else
+                                    // Here, we're in a shifted state
+                                    case(rx)
+                                        8'h1C:  ascii <= "A";
+                                        8'h32:  ascii <= "B";
+                                        8'h21:  ascii <= "C";
+                                        8'h23:  ascii <= "D";
+                                        8'h24:  ascii <= "E";
+                                        8'h2B:  ascii <= "F";
+                                        8'h34:  ascii <= "G";
+                                        8'h33:  ascii <= "H";
+                                        8'h43:  ascii <= "I";
+                                        8'h3B:  ascii <= "J";
+                                        8'h42:  ascii <= "K";
+                                        8'h4B:  ascii <= "L";
+                                        8'h3A:  ascii <= "M";
+                                        8'h31:  ascii <= "N";
+                                        8'h44:  ascii <= "O";
+                                        8'h4D:  ascii <= "P";
+                                        8'h15:  ascii <= "Q";
+                                        8'h2D:  ascii <= "R";
+                                        8'h1B:  ascii <= "S";
+                                        8'h2C:  ascii <= "T";
+                                        8'h3C:  ascii <= "U";
+                                        8'h2A:  ascii <= "V";
+                                        8'h1D:  ascii <= "W";
+                                        8'h22:  ascii <= "X";
+                                        8'h35:  ascii <= "Y";
+                                        8'h1A:  ascii <= "Z";
 
-                                    8'h45:  ascii <= ")";
-                                    8'h16:  ascii <= "!";
-                                    8'h1E:  ascii <= "@";
-                                    8'h26:  ascii <= "#";
-                                    8'h25:  ascii <= "$";
-                                    8'h2E:  ascii <= "%";
-                                    8'h36:  ascii <= "^";
-                                    8'h3D:  ascii <= "&";
-                                    8'h3E:  ascii <= "*";
-                                    8'h46:  ascii <= "(";
+                                        8'h45:  ascii <= ")";
+                                        8'h16:  ascii <= "!";
+                                        8'h1E:  ascii <= "@";
+                                        8'h26:  ascii <= "#";
+                                        8'h25:  ascii <= "$";
+                                        8'h2E:  ascii <= "%";
+                                        8'h36:  ascii <= "^";
+                                        8'h3D:  ascii <= "&";
+                                        8'h3E:  ascii <= "*";
+                                        8'h46:  ascii <= "(";
 
-                                    8'h4E:  ascii <= "_";
-                                    8'h55:  ascii <= "+";
-                                    8'h5D:  ascii <= "|";
-                                    8'h66:  ascii <= 8'd8;      // backspace
-                                    8'h29:  ascii <= " ";
+                                        8'h4E:  ascii <= "_";
+                                        8'h55:  ascii <= "+";
+                                        8'h5D:  ascii <= "|";
+                                        8'h66:  ascii <= 8'd8;      // backspace
+                                        8'h29:  ascii <= " ";
 
-                                    8'h5A:  ascii <= 8'd13;     // enter
-                                    8'h54:  ascii <= "{";
-                                    8'h5B:  ascii <= "}";
-                                    8'h4C:  ascii <= ":";
-                                    8'h52:  ascii <= "\"";
-                                    8'h41:  ascii <= "<";
-                                    8'h49:  ascii <= ">";
-                                    8'h4A:  ascii <= "?";
-                                    8'h59:  shift <= 1'b1;      // right shfit
-                                    8'h12:  shift <= 1'b1;      // left shift
-
-                                    default: ascii <= ".";
-                                endcase
+                                        8'h5A:  ascii <= 8'd13;     // enter
+                                        8'h54:  ascii <= "{";
+                                        8'h5B:  ascii <= "}";
+                                        8'h4C:  ascii <= ":";
+                                        8'h52:  ascii <= "\"";
+                                        8'h41:  ascii <= "<";
+                                        8'h49:  ascii <= ">";
+                                        8'h4A:  ascii <= "?";
+                                        default: ascii <= ".";
+                                    endcase
+                            end
                         end
                     end
                 S_KEYF0:
