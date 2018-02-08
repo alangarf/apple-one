@@ -360,6 +360,14 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_CTS
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_RXD
 set_global_assignment -name ENABLE_SIGNALTAP ON
 set_global_assignment -name USE_SIGNALTAP_FILE output_files/stp1.stp
+set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
+set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
+set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
+set_global_assignment -name VERILOG_FILE ../../rtl/ps2keyboard/debounce.v
 set_global_assignment -name VERILOG_FILE ../../rtl/vga/vram.v
 set_global_assignment -name VERILOG_FILE ../../rtl/vga/vga.v
 set_global_assignment -name VERILOG_FILE ../../rtl/vga/font_rom.v
@@ -378,11 +386,4 @@ set_global_assignment -name VERILOG_FILE ../../rtl/uart/uart.v
 set_global_assignment -name VERILOG_FILE ../../rtl/uart/async_tx_rx.v
 set_global_assignment -name VERILOG_FILE ../../rtl/rom_wozmon.v
 set_global_assignment -name VERILOG_FILE ../../rtl/ram.v
-set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
-set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
-set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
-set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
-set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
-set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
-set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
