@@ -120,6 +120,8 @@ module apple1_de0_top(
     //  cnt <= cnt + 1;
     //end
     
+    
+    
     assign LEDG = 0;
     
 endmodule

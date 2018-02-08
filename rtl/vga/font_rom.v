@@ -34,9 +34,9 @@ module font_rom(
     );
 
     `ifdef SIM
-    parameter ROM_FILENAME = "../roms/vga_font.hex";
+    parameter ROM_FILENAME = "../roms/vga_font_bitreversed.hex";
     `else
-    parameter ROM_FILENAME = "../../roms/vga_font.hex";
+    parameter ROM_FILENAME = "../../roms/vga_font_bitreversed.hex";
     `endif
 
     reg [7:0] rom[0:1023];
@@ -44,15 +44,22 @@ module font_rom(
     initial
         $readmemh(ROM_FILENAME, rom, 0, 1023);
 
-    // double width of pixel by ignoring bit 0
-    wire [2:0] pixel_ptr;
-    
-    //assign pixel_ptr = (3'h7 - pixel[3:1]);
-    assign pixel_ptr = pixel[3:1];
-
     // double height of pixel by ignoring bit 0
     wire [3:0] line_ptr = line[4:1];
 
+    // Note: Quartus II reverses the pixels when we do:
+    //
+    // rom[address][bitindex] 
+    //
+    // directly, so we use an intermediate 
+    // signal, romout, to work around this 
+    // problem.
+    //
+    // IceCube2 and Yosys don't seem to have this problem.
+    //
+    
+    reg [7:0] romout;
+    
     always @(posedge clk)
     begin
         // mode
@@ -60,9 +67,12 @@ module font_rom(
         // 01 - vertical scanlines
         // 10 - horizontal scanlines
         // 11 - dotty mode
+        
+        romout = rom[(character * 10) + {2'd0, line_ptr}];
+        
         out <= (mode[1] & line[0]) ? 1'b0 :
                (mode[0] & pixel[0]) ? 1'b0 :
-               rom[(character * 10) + {2'd0, line_ptr}][pixel_ptr];
+               romout[pixel[3:1]];
     end
 
 endmodule

@@ -20,40 +20,40 @@ int main(int argc, char *argv[])
         return 1;
     }
     
-    FILE *fout = fopen("../../roms/vga_font.hex","wt");
+    FILE *fout = fopen("../../roms/vga_font_bitreversed.hex","wt");
     if (fout == NULL)
     {
-        printf("Error: cannot open vga_font.hex for writing!\n");        
+        printf("Error: cannot open vga_font_bitreversed.hex for writing!\n");        
         fclose(fin);
         return 1;        
     }
     
     uint8_t count = 0;
-    uint8_t nibble = 0;
-    uint32_t bitcount = 0;
+    uint8_t byte = 0;
+    uint32_t bytecount = 0;
     while(!feof(fin))
     {
         char c = fgetc(fin);
         if ((c == '0') || (c == '1'))
         {
-            nibble <<= 1;
-            nibble = nibble | (c - '0');
+            byte >>= 1;
+            if (c == '1')
+                byte |= 0x80;
+            
             count++;
-            if (count == 4)
+            if (count == 8)
             {
-                fprintf(fout, "%c", hextbl[nibble]);
+                fprintf(fout, "%c", hextbl[byte >> 4]);
+                fprintf(fout, "%c", hextbl[byte & 0x0F]);
+                fprintf(fout, "\n");
                 count = 0;
-                nibble = 0;
-                if ((bitcount % 8) == 7)
-                {
-                    fprintf(fout, "\n");
-                }
+                byte = 0;
+                bytecount++;
             }
-            bitcount++;
         }
     }
     
-    printf("Done: converted %d bits\n", bitcount);
+    printf("Done: converted %d bytes\n", bytecount);
     
     fclose(fout);
     fclose(fin);
