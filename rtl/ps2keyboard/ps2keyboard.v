@@ -51,8 +51,6 @@ module ps2keyboard (
     reg shift;              // state of the shift key
     reg [2:0] cur_state;
     reg [2:0] next_state;
-    reg [15:0] debounce_timer;
-
 
     debounce ps2clk_debounce
     (
@@ -231,7 +229,12 @@ module ps2keyboard (
                                             8'h41:  ascii <= ",";
                                             8'h49:  ascii <= ".";
                                             8'h4A:  ascii <= "/";
-                                            default: ascii <= ".";
+                                            default: 
+                                                // unsupported key!
+                                                begin
+                                                    ascii_rdy <= 1'b0;  // shift is not a key!
+                                                    ascii <= " ";
+                                                end
                                         endcase
                                     else
                                         // Here, we're in a shifted state
@@ -288,7 +291,12 @@ module ps2keyboard (
                                             8'h41:  ascii <= "<";
                                             8'h49:  ascii <= ">";
                                             8'h4A:  ascii <= "?";
-                                            default: ascii <= ".";
+                                            default: 
+                                                // unsupported key!
+                                                begin
+                                                    ascii_rdy <= 1'b0;  // shift is not a key!
+                                                    ascii <= " ";
+                                                end
                                         endcase
                                 end
                             end
