@@ -231,8 +231,6 @@ module ps2keyboard (
                                             8'h41:  ascii <= ",";
                                             8'h49:  ascii <= ".";
                                             8'h4A:  ascii <= "/";
-                                            8'h59:  shift <= 1'b1;      // right shfit
-                                            8'h12:  shift <= 1'b1;      // left shift
                                             default: ascii <= ".";
                                         endcase
                                     else
