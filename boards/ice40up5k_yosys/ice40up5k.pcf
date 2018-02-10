@@ -1,0 +1,19 @@
+# For the iCE40UP-5K UPDuino board
+
+### UART (FTDI Channel B)
+set_io uart_rx   12
+set_io uart_tx   21
+set_io uart_cts  13
+
+### Breakout Board LEDs
+set_io red_led   41
+set_io green_led 40
+set_io blue_led  39
+
+### VGA Display
+set_io vga_h_sync 18
+set_io vga_v_sync 11
+set_io vga_red 10
+set_io vga_grn 9
+set_io vga_blu 6
+
