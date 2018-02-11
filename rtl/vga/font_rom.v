@@ -34,9 +34,9 @@ module font_rom(
     );
 
     `ifdef SIM
-    parameter ROM_FILENAME = "../roms/vga_font_bitreversed.hex";
-    `else
     parameter ROM_FILENAME = "../../roms/vga_font_bitreversed.hex";
+    `else
+    parameter ROM_FILENAME = "../../../roms/vga_font_bitreversed.hex";
     `endif
 
     reg [7:0] rom[0:1023];

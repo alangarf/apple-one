@@ -367,23 +367,23 @@ set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
-set_global_assignment -name VERILOG_FILE ../../rtl/ps2keyboard/debounce.v
-set_global_assignment -name VERILOG_FILE ../../rtl/vga/vram.v
-set_global_assignment -name VERILOG_FILE ../../rtl/vga/vga.v
-set_global_assignment -name VERILOG_FILE ../../rtl/vga/font_rom.v
-set_global_assignment -name VERILOG_FILE ../../rtl/pwr_reset.v
-set_global_assignment -name VERILOG_FILE ../../rtl/clock.v
-set_global_assignment -name VERILOG_FILE ../../rtl/rom_basic.v
-set_global_assignment -name VERILOG_FILE ../../rtl/ps2keyboard/ps2keyboard.v
-set_global_assignment -name VERILOG_FILE ../../rtl/boards/terasic_de0/segmentdisplay.v
-set_global_assignment -name VERILOG_FILE ../../rtl/cpu/arlet/cpu.v
-set_global_assignment -name VERILOG_FILE ../../rtl/cpu/arlet/ALU.v
-set_global_assignment -name VERILOG_FILE ../../rtl/cpu/arlet_6502.v
-set_global_assignment -name VERILOG_FILE ../../rtl/apple1.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/ps2keyboard/debounce.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/vga/vram.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/vga/vga.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/vga/font_rom.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/pwr_reset.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/clock.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/rom_basic.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/ps2keyboard/ps2keyboard.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/boards/terasic_de0/segmentdisplay.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/cpu/arlet/cpu.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/cpu/arlet/ALU.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/cpu/arlet_6502.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/apple1.v
 set_global_assignment -name SDC_FILE "apple-one.sdc"
-set_global_assignment -name VERILOG_FILE ../../rtl/boards/terasic_de0/apple1_de0_top.v
-set_global_assignment -name VERILOG_FILE ../../rtl/uart/uart.v
-set_global_assignment -name VERILOG_FILE ../../rtl/uart/async_tx_rx.v
-set_global_assignment -name VERILOG_FILE ../../rtl/rom_wozmon.v
-set_global_assignment -name VERILOG_FILE ../../rtl/ram.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/boards/terasic_de0/apple1_de0_top.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/uart/uart.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/uart/async_tx_rx.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/rom_wozmon.v
+set_global_assignment -name VERILOG_FILE ../../../rtl/ram.v
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

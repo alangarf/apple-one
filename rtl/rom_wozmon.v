@@ -29,9 +29,9 @@ module rom_wozmon(
     );
 
     `ifdef SIM
-    parameter ROM_FILENAME = "../roms/wozmon.hex";
-    `else
     parameter ROM_FILENAME = "../../roms/wozmon.hex";
+    `else
+    parameter ROM_FILENAME = "../../../roms/wozmon.hex";
     `endif
 
     reg [7:0] rom_data[0:255];
