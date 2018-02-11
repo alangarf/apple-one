@@ -30,6 +30,10 @@ module apple1_top(
     output uart_tx,         // asynchronous serial data output to computer
     output uart_cts,        // clear to send flag to computer
 
+    // I/O interface to keyboard
+    input ps2_clk,              // PS/2 keyboard serial clock input
+    input ps2_din,              // PS/2 keyboard serial data input
+
     // Outputs to VGA display
     output vga_h_sync,          // hozizontal VGA sync pulse
     output vga_v_sync,          // vertical VGA sync pulse
@@ -39,7 +43,6 @@ module apple1_top(
 
     // Debugging ports
     output [7:0] led,       // 8 LEDs on the iCE40HX8K board
-
     output [7:0] ledx,      // 8 LEDs on optionally attached YL-4 board
     input [3:0] button      // 4 buttons on optionall attached YL-4 board
 );
@@ -57,7 +60,23 @@ module apple1_top(
     assign led[7:0] = pc_monitor[7:0];
     assign ledx[7:0] = ~pc_monitor[15:8];
 
-    // TODO: debounce buttons
+    // PS2 Pullups
+    wire ps2__clk, ps2__din;
+    SB_IO #(
+        .PIN_TYPE(6'b000001),
+        .PULLUP(1'b1)
+    ) my_ps2_clk (
+        .PACKAGE_PIN(ps2_clk),
+        .D_IN_0(ps2__clk),
+    );
+
+    SB_IO #(
+        .PIN_TYPE(6'b000001),
+        .PULLUP(1'b1)
+    ) my_ps2_din (
+        .PACKAGE_PIN(ps2_din),
+        .D_IN_0(ps2__din),
+    );
 
     // apple one main system
     apple1 my_apple1(
@@ -66,7 +85,9 @@ module apple1_top(
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
         .uart_cts(uart_cts),
-        .clr_screen_btn(button[1]),
+        .ps2_clk(ps2__clk),
+        .ps2_din(ps2__din),
+        .ps2_select(1'b0),
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
         .vga_red(vga_red),
