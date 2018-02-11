@@ -31,7 +31,7 @@ module ram(
     );
 
     `ifdef SIM
-    parameter RAM_FILENAME = "../../roms/ram.hex";
+    parameter RAM_FILENAME = "../roms/ram.hex";
     `else
     parameter RAM_FILENAME = "../../../roms/ram.hex";
     `endif

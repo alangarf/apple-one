@@ -1,7 +1,7 @@
-DEVICE = hx8k
-PIN_DEF=ice40hx8k.pcf
+DEVICE = lp8k
+PIN_DEF=tinyfpga.pcf
 
-SOURCEDIR = ../../../rtl
+SOURCEDIR = ../../rtl
 BUILDDIR = build
 
 all: apple1 prog
@@ -20,7 +20,7 @@ $(BUILDDIR)/%.blif: $(SOURCEDIR)/%.v
 	yosys -q -p "chparam -list; hierarchy -top apple1_top; synth_ice40 -blif $@" $^
 
 $(BUILDDIR)/%.asc: $(PIN_DEF) $(BUILDDIR)/%.blif
-	arachne-pnr -d $(subst hx,,$(subst lp,,$(DEVICE))) -o $@ -p $^
+	arachne-pnr -d 8k -P cm81 -o $@ -p $^
 
 $(BUILDDIR)/%.bin: $(BUILDDIR)/%.asc
 	icepack $^ $@
@@ -56,13 +56,13 @@ $(BUILDDIR)/apple1.blif: $(SOURCEDIR)/apple1.v \
 	$(SOURCEDIR)/vga/font_rom.v \
 	$(SOURCEDIR)/ps2keyboard/debounce.v \
 	$(SOURCEDIR)/ps2keyboard/ps2keyboard.v \
-	$(SOURCEDIR)/boards/ice40hx8k/clock_pll.v \
-	$(SOURCEDIR)/boards/ice40hx8k/apple1_hx8k.v
+	clock_pll.v \
+    apple1_hx8k.v
 
 apple1.rpt: $(BUILDDIR)/apple1.asc
 
 prog: dir $(BUILDDIR)/apple1.bin
-	iceprog -S $(filter-out $<,$^)
+	tinyfpgab -p $(filter-out $<,$^)
 
 # ------ HELPERS ------
 clean:

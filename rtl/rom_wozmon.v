@@ -29,7 +29,7 @@ module rom_wozmon(
     );
 
     `ifdef SIM
-    parameter ROM_FILENAME = "../../roms/wozmon.hex";
+    parameter ROM_FILENAME = "../roms/wozmon.hex";
     `else
     parameter ROM_FILENAME = "../../../roms/wozmon.hex";
     `endif

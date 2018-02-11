@@ -33,7 +33,7 @@ module vram(
     );
 
     `ifdef SIM
-    parameter RAM_FILENAME = "../../roms/vga_vram.bin";
+    parameter RAM_FILENAME = "../roms/vga_vram.bin";
     `else
     parameter RAM_FILENAME = "../../../roms/vga_vram.bin";
     `endif

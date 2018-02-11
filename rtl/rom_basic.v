@@ -29,7 +29,7 @@ module rom_basic(
     );
 
     `ifdef SIM
-    parameter BASIC_FILENAME = "../../roms/basic.hex";
+    parameter BASIC_FILENAME = "../roms/basic.hex";
     `else
     parameter BASIC_FILENAME = "../../../roms/basic.hex";
     `endif
