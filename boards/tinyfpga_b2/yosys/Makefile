@@ -1,7 +1,7 @@
 DEVICE = lp8k
 PIN_DEF=tinyfpga.pcf
 
-SOURCEDIR = ../../rtl
+SOURCEDIR = ../../../rtl
 BUILDDIR = build
 
 all: apple1 prog
@@ -56,8 +56,8 @@ $(BUILDDIR)/apple1.blif: $(SOURCEDIR)/apple1.v \
 	$(SOURCEDIR)/vga/font_rom.v \
 	$(SOURCEDIR)/ps2keyboard/debounce.v \
 	$(SOURCEDIR)/ps2keyboard/ps2keyboard.v \
-	clock_pll.v \
-    apple1_hx8k.v
+	$(SOURCEDIR)/boards/tinyfpga_b2/clock_pll.v \
+	$(SOURCEDIR)/boards/tinyfpga_b2/apple1_hx8k.v
 
 apple1.rpt: $(BUILDDIR)/apple1.asc
 
