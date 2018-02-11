@@ -31,7 +31,7 @@ module rom_basic(
     `ifdef SIM
     parameter BASIC_FILENAME = "../roms/basic.hex";
     `else
-    parameter BASIC_FILENAME = "../../roms/basic.hex";
+    parameter BASIC_FILENAME = "../../../roms/basic.hex";
     `endif
 
     reg [7:0] rom_data[0:4095];
