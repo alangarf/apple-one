@@ -39,6 +39,7 @@ vga_v_sync  - D1 ---------------- VGA PIN 14
 ### PS/2 Cable
 
 ```
+                  270 ohm
 ps2_clk - N3 -----/\/\/\----- PS/2 PIN 5
 ps2_din - N2 -----/\/\/\----- PS/2 PIN 1
          GND ------o--------- PS/2 PIN 3
