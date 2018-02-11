@@ -1,0 +1,28 @@
+# For the olimex-iCE40HX8K-EVB
+# plus iCE40-IO expansion board with vga and ps2
+
+## System Clock 100Mhz
+set_io clk J3
+
+### UART
+set_io uart_rx E4
+set_io uart_tx B2
+set_io uart_cts F5
+
+
+set_io button[0] K11
+set_io button[1] P13
+
+### VGA Display
+set_io vga_v_sync H2
+set_io vga_h_sync J4
+
+set_io vga_r[0] E3
+set_io vga_r[1] H5
+set_io vga_r[2] F3
+set_io vga_g[0] H3
+set_io vga_g[1] F2
+set_io vga_g[2] H6
+set_io vga_b[0] F1
+set_io vga_b[1] H4
+set_io vga_b[2] G2
