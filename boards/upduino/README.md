@@ -1,8 +1,8 @@
- # iCE40UP5K support 
+# iCE40UP5K support 
 
 This board directory builds for the iCE40UP5K in the QFN48 (SG48) package.  iCE40UP5K SG48 is the part used on the [Gnarly Grey UPDuino Mini board](http://gnarlygrey.atspace.cc/development-platform.html). 
  
- ## Peripheral support
+## Peripheral support
 
 So far only UART is tested and supported.  Three bits of the PC monitor bus are mapped to the dedicated LED drivers to give some indication of the currently running code.
 
@@ -16,13 +16,16 @@ The on-chip oscillator and PLL are used to generate the 25MHz clock used by the 
 
 See the .pcf for pin connections.  Note that the iCE40UP5K pin numbers in the .pcf correspond to the UPDuino pin silkscreen labels.
 
- ## Building
+## Building
 
 Install a recent IceStorm toolchain, and:
 
-make clean all
+```
+$ cd yosys
+$ make
+```
 
- ## Use
+## Use
 
 Flash using your method of choice.  Attach a 3.3V serial connection to uart_tx (output to PC) and uart_rx (input from PC).  Start a terminal at 115200,n,8,1.
 
