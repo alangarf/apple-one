@@ -67,9 +67,9 @@ module apple1_top(
     apple1 my_apple1(
         .clk25(clk25),
         .rst_n(button[0]),
-        .ps2_clk(pin7),
+        .ps2_clk(pin7), // PS/2 not working with my keyboard
         .ps2_din(pin6),
-        .ps2_select(1'b0),
+        .ps2_select(1'b0), // change to 1 in order to test with keyboard
         .uart_rx(pin11),
         .uart_tx(pin12),
         .uart_cts(pin13),        
