@@ -2,7 +2,7 @@
 
 The directory structure for board should follow the following convention:
 
-/boards/[target_board_name]/[build_env]
+`/boards/[target_board_name]/[build_env]`
 
 ### target_board_name
 Choose a target/board name that uniquely identifies the board, including required extension boards. For example: <b>UPDuino_v1</b> or <b>Terasic_DE0</b>
