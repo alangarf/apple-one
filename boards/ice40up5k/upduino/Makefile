@@ -42,6 +42,7 @@ $(BUILDDIR)/%.bin: $(BUILDDIR)/%.asc
 
 $(PLL):
 	icepll $(QUIET) -i $(FREQ_OSC) -o $(FREQ_PLL) -m -f $@
+
 # ------ APPLE 1 ------
 apple1: dir $(BUILDDIR)/apple1.bin
 report: dir apple1.rpt

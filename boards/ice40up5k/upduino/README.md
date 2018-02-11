@@ -1,6 +1,6 @@
  # iCE40UP5K support 
 
-This board directory builds for the iCE40UP5K in the QFN48 (SG48) package.  iCE40UP5K SG48 is the part used on the [Gnarly Grey UPDuino Mini board](https://gnarlygrey.atspace.cc/development-platform.html). 
+This board directory builds for the iCE40UP5K in the QFN48 (SG48) package.  iCE40UP5K SG48 is the part used on the [Gnarly Grey UPDuino Mini board](http://gnarlygrey.atspace.cc/development-platform.html). 
  
  ## Peripheral support
 
