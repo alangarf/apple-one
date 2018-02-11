@@ -2,7 +2,7 @@
 
 Maintainer: Alan Garfield https://github.com/alangarf
 
-![iCE40HX8K board photo](https://github.com/alangarf/apple-one/raw/master/media/iCE40HX8K-breakout.png)
+![iCE40HX8K board photo](images/iCE40HX8K-breakout.png)
 
 ### Build environment
 The project was started with IceCube2, and the project files are in the subdirectory 'icecube2'. These haven't been updated in a while, but should prove a worthy starting point. I'll endeavour to keep them updated when I can.

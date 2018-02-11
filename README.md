@@ -1,8 +1,8 @@
-![Apple One](https://github.com/alangarf/apple-one/raw/master/media/apple-logo.png)
+![Apple One](media/apple-logo.png)
 
 This is a basic implementation of the original Apple 1 in Verilog for an iCE40HX FPGA. It can run the Apple 1 WozMon and Integer Basic via the serial USB interface which is available on the iCE40HX8K-B-EVN breakout board. This makes this a very compact little set up. There is no reason this cannot be implemented for other FPGAs with very little work.
 
-![iCE40HX8K](https://github.com/alangarf/apple-one/raw/master/media/iCE40HX8K-breakout.png)
+![iCE40HX8K](boards/ice40hx9k-b-evn/images/iCE40HX8K-breakout.png)
 
 This project borrows heavily from the *awesome* work of Andrew Holme and his ["Pool"](http://www.aholme.co.uk/6502/Main.htm) project where he built a 6502 CPU core in Verilog using the netlist from the Visual 6502 project. Amazing stuff, and so far seems to work perfectly. Also many special thanks to ["sbprojects.com"](https://www.sbprojects.com/projects/apple1/index.php) for the wealth of information I gleaned from there.
 
