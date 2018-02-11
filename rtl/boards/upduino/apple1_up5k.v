@@ -49,18 +49,16 @@ module apple1_top(
     wire clk25;
     wire clk;
 
-	wire clk25;
-	SB_HFOSC inthosc (
-		.CLKHFPU(1'b1),
-		.CLKHFEN(1'b1),
-		.CLKHF(clk)
-	);
+    SB_HFOSC inthosc (
+        .CLKHFPU(1'b1),
+        .CLKHFEN(1'b1),
+        .CLKHF(clk)
+    );
 
-   pll pll(
-	   .clock_in(clk),
-	   .clock_out(clk25),
-   ); 
-
+    pll pll(
+        .clock_in(clk),
+        .clock_out(clk25),
+    );
 
     // apple one main system
     apple1 my_apple1(

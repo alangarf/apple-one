@@ -6,7 +6,7 @@ FREQ_PLL = 25
 PIN_DEF=ice40up5k.pcf
 
 
-SOURCEDIR = ../../rtl
+SOURCEDIR = ../../../rtl
 BUILDDIR = build
 PLL=$(BUILDDIR)/pll.sv
 
@@ -66,7 +66,7 @@ $(BUILDDIR)/apple1.blif: $(BUILDDIR)/pll.sv \
 	$(SOURCEDIR)/vga/font_rom.v \
 	$(SOURCEDIR)/ps2keyboard/debounce.v \
 	$(SOURCEDIR)/ps2keyboard/ps2keyboard.v \
-	$(SOURCEDIR)/boards/ice40up5k/apple1_up5k.v
+	$(SOURCEDIR)/boards/upduino/apple1_up5k.v
 
 apple1.rpt: $(BUILDDIR)/apple1.asc
 
