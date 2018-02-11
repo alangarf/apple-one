@@ -11,7 +11,8 @@ The project with the switch of the 6502 CPU from the gate simulated core to a lo
 
 To build:
 ```
-make
+$ cd yosys
+$ make
 ```
 
 ### Features
