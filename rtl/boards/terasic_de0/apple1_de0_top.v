@@ -22,7 +22,13 @@
 // 
 
 
-module apple1_de0_top(
+module apple1_de0_top #(
+    parameter BASIC_FILENAME      = "../../../roms/basic.hex",
+    parameter FONT_ROM_FILENAME   = "../../../roms/vga_font_bitreversed.hex",
+    parameter RAM_FILENAME        = "../../../roms/ram.hex",
+    parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin",
+    parameter WOZMON_ROM_FILENAME = "../../../roms/wozmon.hex"
+) (
     input   CLOCK_50,       // the 50 MHz DE0 master clock
 
     // UART I/O signals
@@ -62,7 +68,13 @@ module apple1_de0_top(
     
     //////////////////////////////////////////////////////////////////////////    
     // Core of system
-    apple1 apple1_top(
+    apple1 #(
+        .BASIC_FILENAME (BASIC_FILENAME),
+        .FONT_ROM_FILENAME (FONT_ROM_FILENAME),
+        .RAM_FILENAME (RAM_FILENAME),
+        .VRAM_FILENAME (VRAM_FILENAME),
+        .WOZMON_ROM_FILENAME (WOZMON_ROM_FILENAME)
+    ) apple1_top(
         .clk25(clk25),
         .rst_n(BUTTON[0]),       // we don't have any reset pulse..
         .uart_rx(UART_RXD),

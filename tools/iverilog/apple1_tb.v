@@ -23,7 +23,13 @@
 
 `timescale 1ns/1ps
 
-module apple1_tb;
+module apple1_tb #(
+    parameter BASIC_FILENAME      = "../roms/basic.hex",
+    parameter FONT_ROM_FILENAME   = "../roms/vga_font_bitreversed.hex",
+    parameter RAM_FILENAME        = "../roms/ram.hex",
+    parameter VRAM_FILENAME       = "../roms/vga_vram.bin",
+    parameter WOZMON_ROM_FILENAME = "../roms/wozmon.hex"
+);
 
     reg clk25, uart_rx, rst_n;
     wire uart_tx, uart_cts;
@@ -69,9 +75,11 @@ module apple1_tb;
     //////////////////////////////////////////////////////////////////////////
     // Core of system
     apple1 #(
-        "../roms/ram.hex",
-        "../roms/wozmon.hex",
-        "../roms/basic.hex"
+        .BASIC_FILENAME (BASIC_FILENAME),
+        .FONT_ROM_FILENAME (FONT_ROM_FILENAME),
+        .RAM_FILENAME (RAM_FILENAME),
+        .VRAM_FILENAME (VRAM_FILENAME),
+        .WOZMON_ROM_FILENAME (WOZMON_ROM_FILENAME)
     ) core_top (
         .clk25(clk25),
         .rst_n(rst_n),

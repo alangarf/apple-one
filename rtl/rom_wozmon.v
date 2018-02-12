@@ -28,11 +28,7 @@ module rom_wozmon(
     output reg [7:0] dout   // 8-bit data bus (output)
     );
 
-    `ifdef SIM
-    parameter ROM_FILENAME = "../roms/wozmon.hex";
-    `else
-    parameter ROM_FILENAME = "../../../roms/wozmon.hex";
-    `endif
+    parameter ROM_FILENAME = "";
 
     reg [7:0] rom_data[0:255];
 

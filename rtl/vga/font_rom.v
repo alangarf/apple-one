@@ -33,11 +33,7 @@ module font_rom(
     output reg out          // single pixel from address and pixel pos
     );
 
-    `ifdef SIM
-    parameter ROM_FILENAME = "../roms/vga_font_bitreversed.hex";
-    `else
-    parameter ROM_FILENAME = "../../../roms/vga_font_bitreversed.hex";
-    `endif
+    parameter ROM_FILENAME = "";
 
     reg [7:0] rom[0:1023];
 

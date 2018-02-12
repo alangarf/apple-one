@@ -30,11 +30,7 @@ module ram(
     output reg [7:0] dout   // 8-bit data bus (output)
     );
 
-    `ifdef SIM
-    parameter RAM_FILENAME = "../roms/ram.hex";
-    `else
-    parameter RAM_FILENAME = "../../../roms/ram.hex";
-    `endif
+    parameter RAM_FILENAME = "";
 
     reg [7:0] ram_data[0:8191];
 
