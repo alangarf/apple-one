@@ -88,8 +88,7 @@ module vga_tb;
         .vga_blu(vga_blu),
         .address(address),
         .w_en(w_en),
-        .din(din),
-        .blink_clken(blink_clken)
+        .din(din)
     );
 
 endmodule

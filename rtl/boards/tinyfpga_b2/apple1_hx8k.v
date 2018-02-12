@@ -85,7 +85,6 @@ module apple1_top #(
         .uart_rx(pin11),
         .uart_tx(pin12),
         .uart_cts(pin13),        
-        .clr_screen_btn(button[1]),
         .vga_h_sync(pin4),
         .vga_v_sync(pin5),
         .vga_red(vga_red),
