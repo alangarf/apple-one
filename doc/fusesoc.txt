@@ -1,0 +1,18 @@
+From PR #14:
+
+"This adds support for simulating the two testbenches. Tested with
+icarus, modelsim, isim or xsim. Default is icarus
+
+fusesoc run --target=$target --tool=$tool apple-one
+
+where $target is apple1_tb or vga_tb and $tool is icarus,isim,modelsim or xsim
+It also adds targets for building for the de0 and tinyfpga_b2 boards
+
+fusesoc build --target={de0,tinyfpga_b2} apple-one
+
+All ROM and ROM files can be overriden on the command-line, e.g.
+
+fusesoc build --target=de0 apple-one --BASIC_FILENAME=/path/to/file.hex
+
+Use fusesoc build --target=$target apple-one --help to see all
+parameters."
