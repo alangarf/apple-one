@@ -58,6 +58,10 @@ filesets:
       - tools/iverilog/apple1_tb.v
     file_type : verilogSource
 
+  s3e_starterkit:
+    files:
+      - boards/spartan3e_starterkit/webpack_ise/apple1_s3e_starterkit_top.ucf : {file_type : UCF}
+      - rtl/boards/spartan3e_starterkit/apple1_s3e_starterkit_top.v : {file_type : verilogSource}
   tinyfpga_b2:
     files:
       - boards/tinyfpga_b2/yosys/tinyfpga.pcf : {file_type : PCF}
@@ -90,6 +94,17 @@ targets:
       modelsim:
         vlog_options : [+define+SIM]
 
+  s3e_starterkit:
+    default_tool : ise
+    filesets : [main, synth, cpu, uart, vga, ps2keyboard, s3e_starterkit]
+    parameters : [BASIC_FILENAME, FONT_ROM_FILENAME, RAM_FILENAME, VRAM_FILENAME, WOZMON_ROM_FILENAME]
+    tools :
+      ise :
+        family  : Spartan3E
+        device  : xc3s500e
+        package : fg320
+        speed   : -4
+    toplevel : [apple1_s3e_starterkit_top]
   tinyfpga_b2:
     default_tool : icestorm
     filesets : [main, synth, cpu, uart, vga, ps2keyboard, tinyfpga_b2]
