@@ -1,0 +1,136 @@
+CAPI=2:
+
+name : ::apple-one:0
+
+filesets:
+  cpu:
+    files:
+      - rtl/cpu/arlet/cpu.v
+      - rtl/cpu/arlet/ALU.v
+      - rtl/cpu/arlet_6502.v
+    file_type : verilogSource
+
+  main:
+    files:
+      - roms/basic.hex:  {copyto : basic.hex , is_include_file : true}
+      - rtl/rom_basic.v
+      - rtl/apple1.v
+      - roms/wozmon.hex: {copyto : wozmon.hex, is_include_file : true}
+      - rtl/rom_wozmon.v
+      - roms/ram.hex:    {copyto : ram.hex   , is_include_file : true}
+      - rtl/ram.v
+    file_type : verilogSource
+  ps2keyboard:
+    files:
+      - rtl/ps2keyboard/debounce.v
+      - rtl/ps2keyboard/ps2keyboard.v
+    file_type : verilogSource
+  synth:
+    files:
+      - rtl/pwr_reset.v
+      - rtl/clock.v
+    file_type : verilogSource
+      
+  vga:
+    files:
+      - roms/vga_font_bitreversed.hex: {copyto : vga_font_bitreversed.hex, is_include_file : true}
+      - roms/vga_vram.bin: {copyto : vga_vram.bin, is_include_file : true}
+      - rtl/vga/vram.v
+      - rtl/vga/vga.v
+      - rtl/vga/font_rom.v
+    file_type : verilogSource
+  uart:
+    files:
+      - rtl/uart/uart.v
+      - rtl/uart/async_tx_rx.v
+    file_type : verilogSource
+      
+  de0:
+    files:
+      - rtl/boards/terasic_de0/segmentdisplay.v  : {file_type : verilogSource}
+      - boards/terasic_de0/Quartus/apple-one.sdc : {file_type : SDC}
+      - boards/terasic_de0/Quartus/options.tcl   : {file_type : tclSource}
+      - boards/terasic_de0/Quartus/pinmap.tcl    : {file_type : tclSource}
+      - rtl/boards/terasic_de0/apple1_de0_top.v  : {file_type : verilogSource}
+
+  apple1_tb:
+    files:
+      - tools/iverilog/apple1_tb.v
+    file_type : verilogSource
+
+  tinyfpga_b2:
+    files:
+      - boards/tinyfpga_b2/yosys/tinyfpga.pcf : {file_type : PCF}
+      - rtl/boards/tinyfpga_b2/clock_pll.v 
+      - rtl/boards/tinyfpga_b2/apple1_hx8k.v
+    file_type : verilogSource
+  vga_tb:
+    files:
+      - tools/iverilog/vga_tb.v
+    file_type : verilogSource
+
+targets:
+  de0:
+    default_tool : quartus
+    filesets: [cpu, main, synth, ps2keyboard, uart, vga, de0]
+    parameters : [BASIC_FILENAME, FONT_ROM_FILENAME, RAM_FILENAME, VRAM_FILENAME, WOZMON_ROM_FILENAME]
+    tools:
+      quartus:
+        family     : "Cyclone III"
+        device     : EP3C16F484C6
+    toplevel: [apple1_de0_top]
+  apple1_tb:
+    default_tool : icarus
+    filesets : [cpu, main, synth, ps2keyboard, uart, vga, apple1_tb]
+    parameters : [BASIC_FILENAME, FONT_ROM_FILENAME, RAM_FILENAME, VRAM_FILENAME, WOZMON_ROM_FILENAME]
+    toplevel : [apple1_tb]
+    tools:
+      icarus:
+        iverilog_options : [-DSIM]
+      modelsim:
+        vlog_options : [+define+SIM]
+
+  tinyfpga_b2:
+    default_tool : icestorm
+    filesets : [main, synth, cpu, uart, vga, ps2keyboard, tinyfpga_b2]
+    parameters : [BASIC_FILENAME, FONT_ROM_FILENAME, RAM_FILENAME, VRAM_FILENAME, WOZMON_ROM_FILENAME]
+    toplevel : [apple1_top]
+    tools:
+      icestorm :
+        arachne_pnr_options : [-d, 8k, -P, cm81]
+  vga_tb:
+    default_tool : icarus
+    filesets : [vga, vga_tb]
+    toplevel : [vga_tb]
+
+parameters:
+  BASIC_FILENAME:
+    datatype    : file
+    default     : basic.hex
+    description : BASIC interpreter ROM (hex format)
+    paramtype   : vlogparam
+    scope       : private
+  FONT_ROM_FILENAME:
+    datatype    : file
+    default     : vga_font_bitreversed.hex
+    description : Font ROM (hex format)
+    paramtype   : vlogparam
+    scope       : private
+  RAM_FILENAME:
+    datatype    : file
+    default     : ram.hex
+    description : Initial RAM contents (hex format)
+    paramtype   : vlogparam
+    scope       : private
+  VRAM_FILENAME:
+    datatype    : file
+    default     : vga_vram.bin
+    description : Initial Video RAM contents (bin format)
+    paramtype   : vlogparam
+    scope       : private
+  WOZMON_ROM_FILENAME:
+    datatype    : file
+    default     : wozmon.hex
+    description : WozMon ROM (hex format)
+    paramtype   : vlogparam
+    scope       : private
