@@ -24,11 +24,11 @@
 
 
 module apple1_s3e_starterkit_top #(
-    parameter BASIC_FILENAME      = "../../../roms/basic_ise.hex",
+    parameter BASIC_FILENAME      = "../../../roms/basic.hex",
     parameter FONT_ROM_FILENAME   = "../../../roms/vga_font_bitreversed.hex",
-    parameter RAM_FILENAME        = "../../../roms/ram_ise.hex",
+    parameter RAM_FILENAME        = "../../../roms/ram.hex",
     parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin",
-    parameter WOZMON_ROM_FILENAME = "../../../roms/wozmon_ise.hex"
+    parameter WOZMON_ROM_FILENAME = "../../../roms/wozmon.hex"
 ) (    
     input   CLK_50MHZ,      // the 50 MHz master clock
 
