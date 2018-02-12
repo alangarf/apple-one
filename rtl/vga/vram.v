@@ -32,11 +32,7 @@ module vram(
     output reg [5:0] dout       // 6-bit data bus (output)
     );
 
-    `ifdef SIM
-    parameter RAM_FILENAME = "../roms/vga_vram.bin";
-    `else
-    parameter RAM_FILENAME = "../../../roms/vga_vram.bin";
-    `endif
+    parameter RAM_FILENAME = "";
 
     reg [5:0] ram_data[0:2047];
 

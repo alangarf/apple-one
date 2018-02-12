@@ -22,7 +22,13 @@
 // Date.......: 26-1-2018
 //
 
-module apple1(
+module apple1 #(
+    parameter BASIC_FILENAME      = "",
+    parameter FONT_ROM_FILENAME   = "",
+    parameter RAM_FILENAME        = "",
+    parameter VRAM_FILENAME       = "",
+    parameter WOZMON_ROM_FILENAME = ""
+) (
     input  clk25,               // 25 MHz master clock
     input  rst_n,               // active low synchronous reset (needed for simulation)
 
@@ -119,7 +125,9 @@ module apple1(
 
     // RAM
     wire [7:0] ram_dout;
-    ram my_ram(
+    ram #(
+        .RAM_FILENAME (RAM_FILENAME)
+    ) my_ram(
         .clk(clk25),
         .address(ab[12:0]),
         .w_en(we & ram_cs),
@@ -129,7 +137,9 @@ module apple1(
 
     // WozMon ROM
     wire [7:0] rom_dout;
-    rom_wozmon my_rom_wozmon(
+    rom_wozmon #(
+        .ROM_FILENAME (WOZMON_ROM_FILENAME)
+    ) my_rom_wozmon(
         .clk(clk25),
         .address(ab[7:0]),
         .dout(rom_dout)
@@ -137,7 +147,9 @@ module apple1(
 
     // Basic ROM
     wire [7:0] basic_dout;
-    rom_basic my_rom_basic(
+    rom_basic #(
+        .BASIC_FILENAME (BASIC_FILENAME)
+    ) my_rom_basic(
         .clk(clk25),
         .address(ab[11:0]),
         .dout(basic_dout)
@@ -185,7 +197,10 @@ module apple1(
 
     // VGA Display interface
     reg [1:0] vga_mode;
-    vga my_vga(
+    vga #(
+        .RAM_FILENAME (VRAM_FILENAME),
+        .ROM_FILENAME (FONT_ROM_FILENAME)
+    ) my_vga(
         .clk25(clk25),
         .enable(vga_cs & cpu_clken),
         .rst(rst),

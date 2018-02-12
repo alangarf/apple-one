@@ -22,7 +22,13 @@
 // Date.......: 11-2-2018
 //
 
-module apple1_top(
+module apple1_top #(
+    parameter BASIC_FILENAME      = "../../../roms/basic.hex",
+    parameter FONT_ROM_FILENAME   = "../../../roms/vga_font_bitreversed.hex",
+    parameter RAM_FILENAME        = "../../../roms/ram.hex",
+    parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin",
+    parameter WOZMON_ROM_FILENAME = "../../../roms/wozmon.hex"
+) (
     input  pin3_clk_16mhz,// 16 MHz board clock
 
     // Outputs to VGA display
@@ -64,7 +70,13 @@ module apple1_top(
     wire vga_blu;
 
     // apple one main system
-    apple1 my_apple1(
+    apple1 #(
+        .BASIC_FILENAME (BASIC_FILENAME),
+        .FONT_ROM_FILENAME (FONT_ROM_FILENAME),
+        .RAM_FILENAME (RAM_FILENAME),
+        .VRAM_FILENAME (VRAM_FILENAME),
+        .WOZMON_ROM_FILENAME (WOZMON_ROM_FILENAME)
+    ) my_apple1(
         .clk25(clk25),
         .rst_n(button[0]),
         .ps2_clk(pin7), // PS/2 not working with my keyboard

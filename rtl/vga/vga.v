@@ -26,6 +26,9 @@ module vga(
     parameter vbp = 31;         // end of vertical back porch
     parameter vfp = 511;        // beginning of vertical front porch
 
+    // Video RAM contents
+    parameter RAM_FILENAME = "";
+
     // registers for storing the horizontal & vertical counters
     reg [9:0] h_cnt;
     reg [9:0] v_cnt;
@@ -56,6 +59,9 @@ module vga(
     wire [3:0] font_pixel;
     wire [4:0] font_line;
     wire font_out;
+
+    // Font ROM contents
+    parameter ROM_FILENAME = "";
 
     // cpu control registers
     reg char_seen;
@@ -116,7 +122,9 @@ module vga(
     //////////////////////////////////////////////////////////////////////////
     // Character ROM
 
-    font_rom my_font_rom(
+    font_rom #(
+        .ROM_FILENAME (ROM_FILENAME)
+    ) my_font_rom(
         .clk(clk25),
         .mode(mode),
         .character(font_char),
@@ -128,7 +136,9 @@ module vga(
     //////////////////////////////////////////////////////////////////////////
     // Video RAM
 
-    vram my_vram(
+    vram #(
+        .RAM_FILENAME (RAM_FILENAME)
+    ) my_vram(
         .clk(clk25),
         .read_addr(vram_r_addr),
         .write_addr(vram_w_addr),
