@@ -4,7 +4,9 @@ This is a basic implementation of the original Apple 1 in Verilog. It can run th
 - iCE40HX8K-B-EVN breakout
 - Terasic DE0
 
-![Apple One Running](media/apple-one.png)
+<p align="center">
+ <img src="media/apple-one.png" alt="Apple One Running">
+</p>
 
 This project borrows heavily from the *awesome* work of Andrew Holme and his ["Pool"](http://www.aholme.co.uk/6502/Main.htm) project where he built a 6502 CPU core in Verilog using the netlist from the Visual 6502 project. Amazing stuff, and so far seems to work perfectly. Also many special thanks to ["sbprojects.com"](https://www.sbprojects.com/projects/apple1/index.php) for the wealth of information I gleaned from there.
 
