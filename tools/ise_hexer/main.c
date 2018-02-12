@@ -18,6 +18,23 @@ uint8_t isWhiteSpace(char c)
     return 0;
 }
 
+uint8_t isHex(char c)
+{
+    if ((c>='0') && (c<='9'))
+    {
+        return 1;
+    }
+    if ((c>='a') && (c<='f'))
+    {
+        return 1;
+    }
+    if ((c>='A') && (c<='F'))
+    {
+        return 1;
+    }
+    return 0;
+}
+
 uint8_t convert(const char *infilename, const char *outfilename)
 {
     FILE *fin = fopen(infilename,"rt");
@@ -48,7 +65,10 @@ uint8_t convert(const char *infilename, const char *outfilename)
             }
             else
             {
-                fprintf(fout,"%c", c);
+                if ((isHex(c)) || (c==10) || (c==13))
+                {
+                    fprintf(fout,"%c", c);
+                }
             }
         }
         else
