@@ -324,7 +324,7 @@ module ps2keyboard (
                         begin
                             next_state = S_KEYNORMAL;
                         end
-                endcase;
+                endcase
             end
             else
             begin

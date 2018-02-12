@@ -37,7 +37,6 @@ module apple1(
     input ps2_select,           // Input to select the PS/2 keyboard instead of the UART
 
     // Outputs to VGA display
-    input clr_screen_btn,       // active high clear screen button
     output vga_h_sync,          // hozizontal VGA sync pulse
     output vga_v_sync,          // vertical VGA sync pulse
     output vga_red,         // red VGA signal

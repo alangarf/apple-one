@@ -53,6 +53,14 @@ int main(int argc, char *argv[])
         }
     }
 
+    // append zeros to 1024 bytes to keep Xilinx ISE webpack
+    // happy.. *sigh*
+    while(bytecount < 1024)
+    {
+        fprintf(fout,"00\n");
+        bytecount++;
+    }
+    
     printf("Done: converted %d bytes\n", bytecount);
 
     fclose(fout);
