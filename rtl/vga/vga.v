@@ -1,4 +1,7 @@
-module vga(
+module vga #(
+    parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin",
+    parameter FONT_ROM_FILENAME   = "../../../roms/vga_font_bitreversed.hex"
+) (
     input clk25,            // clock signal
     input enable,           // clock enable strobe,
     input rst,              // active high reset signal
@@ -11,7 +14,7 @@ module vga(
     input w_en,             // active high write enable strobe
     input [7:0] din,        // 8-bit data bus (input)
     input [1:0] mode        // 2-bit mode setting for pixel doubling
-    );
+);
 
     //////////////////////////////////////////////////////////////////////////
     // Registers and Parameters
@@ -25,9 +28,6 @@ module vga(
     parameter hfp = 784;        // beginning of horizontal front porch
     parameter vbp = 31;         // end of vertical back porch
     parameter vfp = 511;        // beginning of vertical front porch
-
-    // Video RAM contents
-    parameter RAM_FILENAME = "";
 
     // registers for storing the horizontal & vertical counters
     reg [9:0] h_cnt;
@@ -123,7 +123,7 @@ module vga(
     // Character ROM
 
     font_rom #(
-        .ROM_FILENAME (ROM_FILENAME)
+        .FONT_ROM_FILENAME (FONT_ROM_FILENAME)
     ) my_font_rom(
         .clk(clk25),
         .mode(mode),
@@ -137,7 +137,7 @@ module vga(
     // Video RAM
 
     vram #(
-        .RAM_FILENAME (RAM_FILENAME)
+        .VRAM_FILENAME (VRAM_FILENAME)
     ) my_vram(
         .clk(clk25),
         .read_addr(vram_r_addr),

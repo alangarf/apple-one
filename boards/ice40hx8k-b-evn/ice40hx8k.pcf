@@ -19,22 +19,6 @@ set_io led[2] C4
 set_io led[1] B3
 set_io led[0] C3
 
-### YL-4 Switch Matrix LEDs (inverted)
-set_io ledx[7] J1
-set_io ledx[6] J2
-set_io ledx[5] K1
-set_io ledx[4] K3
-set_io ledx[3] L1
-set_io ledx[2] L3
-set_io ledx[1] M1
-set_io ledx[0] M2
-
-### YL-4 Switch Marix Buttons
-set_io button[3] E2
-set_io button[2] F1
-set_io button[1] F2
-set_io button[0] G1
-
 ### PS2 Keyboard
 set_io ps2_clk N3
 set_io ps2_din N2
@@ -45,6 +29,22 @@ set_io vga_v_sync D1
 set_io vga_red B1
 set_io vga_grn B2
 set_io vga_blu C1
+
+### YL-4 Switch Marix Buttons
+set_io button[3] E2
+set_io button[2] F1
+set_io button[1] F2
+set_io button[0] G1
+
+### YL-4 Switch Matrix LEDs (inverted)
+set_io ledx[7] J1
+set_io ledx[6] J2
+set_io ledx[5] K1
+set_io ledx[4] K3
+set_io ledx[3] L1
+set_io ledx[2] L3
+set_io ledx[1] M1
+set_io ledx[0] M2
 
 ### TM1638 Display
 #set_io tm_clk P1

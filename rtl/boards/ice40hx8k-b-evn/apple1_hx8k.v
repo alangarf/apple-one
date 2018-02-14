@@ -56,11 +56,10 @@ module apple1_top #(
     wire clk25;
 
     // 12MHz up to 25MHz
-    clock_pll clock_pll_inst(
-            .REFERENCECLK(clk),
-            .PLLOUTGLOBAL(clk25),
-            .RESET(1'b1)
-            );
+    pll my_pll(
+        .clock_in(clk),
+        .clock_out(clk25)
+    );
 
     wire [15:0] pc_monitor;
     assign led[7:0] = pc_monitor[7:0];
@@ -99,7 +98,7 @@ module apple1_top #(
         .uart_cts(uart_cts),
         .ps2_clk(ps2__clk),
         .ps2_din(ps2__din),
-        .ps2_select(1'b0),
+        .ps2_select(1'b1),
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
         .vga_red(vga_red),

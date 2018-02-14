@@ -23,11 +23,11 @@
 //
 
 module apple1 #(
-    parameter BASIC_FILENAME      = "",
-    parameter FONT_ROM_FILENAME   = "",
-    parameter RAM_FILENAME        = "",
-    parameter VRAM_FILENAME       = "",
-    parameter WOZMON_ROM_FILENAME = ""
+    parameter BASIC_FILENAME      = "../../../roms/basic.hex",
+    parameter FONT_ROM_FILENAME   = "../../../roms/vga_font_bitreversed.hex",
+    parameter RAM_FILENAME        = "../../../roms/ram.hex",
+    parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin",
+    parameter WOZMON_ROM_FILENAME = "../../../roms/wozmon.hex"
 ) (
     input  clk25,               // 25 MHz master clock
     input  rst_n,               // active low synchronous reset (needed for simulation)
@@ -138,7 +138,7 @@ module apple1 #(
     // WozMon ROM
     wire [7:0] rom_dout;
     rom_wozmon #(
-        .ROM_FILENAME (WOZMON_ROM_FILENAME)
+        .WOZMON_ROM_FILENAME (WOZMON_ROM_FILENAME)
     ) my_rom_wozmon(
         .clk(clk25),
         .address(ab[7:0]),
@@ -198,8 +198,8 @@ module apple1 #(
     // VGA Display interface
     reg [1:0] vga_mode;
     vga #(
-        .RAM_FILENAME (VRAM_FILENAME),
-        .ROM_FILENAME (FONT_ROM_FILENAME)
+        .VRAM_FILENAME (VRAM_FILENAME),
+        .FONT_ROM_FILENAME (FONT_ROM_FILENAME)
     ) my_vga(
         .clk25(clk25),
         .enable(vga_cs & cpu_clken),

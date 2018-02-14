@@ -22,7 +22,9 @@
 // Date.......: 26-1-2018
 //
 
-module vram(
+module vram #(
+    parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin",
+) (
     input clk,                  // clock signal
     input [10:0] read_addr,      // read address bus
     input [10:0] write_addr,     // write address bus
@@ -30,14 +32,12 @@ module vram(
     input w_en,                 // active high write enable strobe
     input [5:0] din,            // 6-bit data bus (input)
     output reg [5:0] dout       // 6-bit data bus (output)
-    );
-
-    parameter RAM_FILENAME = "";
+);
 
     reg [5:0] ram_data[0:2047];
 
     initial
-        $readmemb(RAM_FILENAME, ram_data, 0, 2047);
+        $readmemb(VRAM_FILENAME, ram_data, 0, 2047);
 
     always @(posedge clk)
     begin

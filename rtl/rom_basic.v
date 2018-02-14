@@ -22,13 +22,13 @@
 // Date.......: 26-1-2018
 //
 
-module rom_basic(
+module rom_basic #(
+    parameter BASIC_FILENAME = "../../../roms/basic.hex"
+) (
     input clk,              // clock signal
     input [11:0] address,   // address bus
     output reg [7:0] dout   // 8-bit data bus (output)
-    );
-
-    parameter BASIC_FILENAME = "";
+);
 
     reg [7:0] rom_data[0:4095];
 

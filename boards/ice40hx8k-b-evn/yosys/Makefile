@@ -1,8 +1,14 @@
-DEVICE = hx8k
-PIN_DEF=ice40hx8k.pcf
+DEVICE = 8k
+PACKAGE = ct256
+FREQ_OSC = 12
+FREQ_PLL = 25
+
+PIN_DEF = ice40hx8k.pcf
 
 SOURCEDIR = ../../../rtl
 BUILDDIR = build
+
+PLL = $(BUILDDIR)/pll.sv
 
 all: apple1 prog
 
@@ -17,10 +23,10 @@ dir:
 
 # ------ TEMPLATES ------
 $(BUILDDIR)/%.blif: $(SOURCEDIR)/%.v
-	yosys -q -p "chparam -list; hierarchy -top apple1_top; synth_ice40 -blif $@" $^
+	yosys -q -p "synth_ice40 -top apple1_top -blif $@" $^
 
 $(BUILDDIR)/%.asc: $(PIN_DEF) $(BUILDDIR)/%.blif
-	arachne-pnr -d $(subst hx,,$(subst lp,,$(DEVICE))) -o $@ -p $^
+	arachne-pnr -d $(DEVICE) -P $(PACKAGE) -o $@ -p $^
 
 $(BUILDDIR)/%.bin: $(BUILDDIR)/%.asc
 	icepack $^ $@
@@ -34,8 +40,11 @@ $(BUILDDIR)/%.bin: $(BUILDDIR)/%.asc
 %_tb.vcd: %_tb.vvp
 	vvp -N $< +vcd=$@
 
+$(PLL):
+	icepll $(QUIET) -i $(FREQ_OSC) -o $(FREQ_PLL) -m -f $@
+
 # ------ APPLE 1 ------
-apple1: dir $(BUILDDIR)/apple1.bin
+apple1: dir $(PLL) $(BUILDDIR)/apple1.bin
 report: dir apple1.rpt
 
 $(BUILDDIR)/apple1.bin: $(BUILDDIR)/apple1.asc
@@ -56,8 +65,8 @@ $(BUILDDIR)/apple1.blif: $(SOURCEDIR)/apple1.v \
 	$(SOURCEDIR)/vga/font_rom.v \
 	$(SOURCEDIR)/ps2keyboard/debounce.v \
 	$(SOURCEDIR)/ps2keyboard/ps2keyboard.v \
-	$(SOURCEDIR)/boards/ice40hx8k/clock_pll.v \
-	$(SOURCEDIR)/boards/ice40hx8k/apple1_hx8k.v
+	$(SOURCEDIR)/boards/ice40hx8k-b-evn/apple1_hx8k.v \
+	$(BUILDDIR)/pll.sv
 
 apple1.rpt: $(BUILDDIR)/apple1.asc
 
