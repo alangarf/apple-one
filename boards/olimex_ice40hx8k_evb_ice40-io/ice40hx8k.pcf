@@ -9,7 +9,7 @@ set_io uart_rx E4
 set_io uart_tx B2
 set_io uart_cts F5
 
-
+### Buttons
 set_io button[0] K11
 set_io button[1] P13
 
@@ -26,3 +26,7 @@ set_io vga_g[2] H6
 set_io vga_b[0] F1
 set_io vga_b[1] H4
 set_io vga_b[2] G2
+
+### PS/2 Keyboard
+set_io ps2_clk G1
+set_io ps2_din J5

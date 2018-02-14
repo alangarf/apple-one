@@ -15,14 +15,20 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Description: Apple 1 implementation for the iCE40HX8K dev
-//              board.
+// Description: Apple 1 implementation for the Omilex iCE40HX8K +
+//              the ICE40-IO interface
 //
 // Author.....: Alan Garfield
 // Date.......: 26-1-2018
 //
 
-module apple1_top(
+module apple1_top #(
+    parameter BASIC_FILENAME      = "../../../roms/basic.hex",
+    parameter FONT_ROM_FILENAME   = "../../../roms/vga_font_bitreversed.hex",
+    parameter RAM_FILENAME        = "../../../roms/ram.hex",
+    parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin",
+    parameter WOZMON_ROM_FILENAME = "../../../roms/wozmon.hex"
+) (
     input  clk,             // 100 MHz board clock
 
     // I/O interface to computer
@@ -30,19 +36,26 @@ module apple1_top(
     output uart_tx,         // asynchronous serial data output to computer
     output uart_cts,        // clear to send flag to computer
 
-    // Outputs to VGA display
-    output vga_h_sync,          // hozizontal VGA sync pulse
-    output vga_v_sync,          // vertical VGA sync pulse
-    output [2:0] vga_r,         // red VGA signal
-    output [2:0] vga_g,         // green VGA signal
-    output [2:0] vga_b,         // blue VGA signal
+    // I/O interface to keyboard
+    input ps2_clk,          // PS/2 keyboard serial clock input
+    input ps2_din,          // PS/2 keyboard serial data input
 
-    input [1:0] button
+    // Outputs to VGA display
+    output vga_h_sync,      // hozizontal VGA sync pulse
+    output vga_v_sync,      // vertical VGA sync pulse
+    output [2:0] vga_r,     // red VGA signal
+    output [2:0] vga_g,     // green VGA signal
+    output [2:0] vga_b,     // blue VGA signal
+
+    // Debugging ports
+    input [1:0] button      // 2 buttons on board
 );
 
     wire clk25;
 
-    pll pll(.clock_in(clk),
+    // 100MHz to 25MHz
+    pll pll(
+        .clock_in(clk),
         .clock_out(clk25),
     );
 
@@ -54,16 +67,29 @@ module apple1_top(
     assign vga_b[2:0] = vga_bit ? 3'b100 : 3'b000;
 
     // apple one main system
-    apple1 my_apple1(
+    apple1 #(
+        .BASIC_FILENAME (BASIC_FILENAME),
+        .FONT_ROM_FILENAME (FONT_ROM_FILENAME),
+        .RAM_FILENAME (RAM_FILENAME),
+        .VRAM_FILENAME (VRAM_FILENAME),
+        .WOZMON_ROM_FILENAME (WOZMON_ROM_FILENAME)
+    ) my_apple1(
         .clk25(clk25),
         .rst_n(button[0]),
+
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
         .uart_cts(uart_cts),
-        .clr_screen_btn(0),
+
+        .ps2_clk(ps2_clk),
+        .ps2_din(ps2_din),
+        .ps2_select(1'b1),       // PS/2 enabled, UART TX disabled
+        //.ps2_select(1'b0),       // PS/2 disabled, UART TX enabled
+
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
         .vga_red(vga_bit),
-        .ps2_select(1'b0),
+        //.vga_grn(vga_bit),
+        //.vga_blu(vga_bit),
     );
 endmodule

@@ -37,20 +37,20 @@ module apple1_top #(
     output uart_cts,        // clear to send flag to computer
 
     // I/O interface to keyboard
-    input ps2_clk,              // PS/2 keyboard serial clock input
-    input ps2_din,              // PS/2 keyboard serial data input
+    input ps2_clk,          // PS/2 keyboard serial clock input
+    input ps2_din,          // PS/2 keyboard serial data input
 
     // Outputs to VGA display
-    output vga_h_sync,          // hozizontal VGA sync pulse
-    output vga_v_sync,          // vertical VGA sync pulse
-    output reg vga_red,         // red VGA signal
-    output reg vga_grn,         // green VGA signal
-    output reg vga_blu,         // blue VGA signal
+    output vga_h_sync,      // hozizontal VGA sync pulse
+    output vga_v_sync,      // vertical VGA sync pulse
+    output reg vga_red,     // red VGA signal
+    output reg vga_grn,     // green VGA signal
+    output reg vga_blu,     // blue VGA signal
 
     // Debugging ports
     output [7:0] led,       // 8 LEDs on the iCE40HX8K board
     output [7:0] ledx,      // 8 LEDs on optionally attached YL-4 board
-    input [3:0] button      // 4 buttons on optionall attached YL-4 board
+    input [3:0] button      // 4 buttons on optionally attached YL-4 board
 );
 
     wire clk25;
