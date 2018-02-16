@@ -1,0 +1,3 @@
+../../rtl/uart/uart.v
+../../rtl/uart/async_tx_rx.v
+uart_tb.v
