@@ -38,7 +38,7 @@ module uart(
 
     parameter ClkFrequency = 25000000;	// 25MHz
     parameter Baud = 115200;
-    parameter Oversampling = 8;
+    parameter Oversampling = 16;
 
     reg uart_tx_stb, uart_tx_init;
     reg [7:0] uart_tx_byte;
@@ -96,6 +96,7 @@ module uart(
     localparam UART_RX   = 2'b00;
     localparam UART_RXCR = 2'b01;
     localparam UART_TX   = 2'b10;
+    localparam UART_TXCR = 2'b11;
 
     // Handle Register
     always @(posedge clk or posedge rst)
@@ -116,6 +117,21 @@ module uart(
 
             case (address)
 
+            UART_RX:
+            begin
+                // UART RX - 0xD010
+                // Bit b7 of KBD is permanently tied to high
+                dout <= {1'b1, uart_rx_byte[6:0]};
+                if (~w_en && ~uart_rx_ack && uart_rx_status && enable)
+                    uart_rx_ack <= 1'b1;
+            end
+
+            UART_RXCR:
+            begin
+                // UART RX CR - 0xD011
+                dout <= {uart_rx_status, 7'b0};
+            end
+
             UART_TX:
             begin
                 // UART TX - 0xD012
@@ -132,12 +148,6 @@ module uart(
                     // This causes the UART to ignore the very first byte sent.
                     if (~uart_tx_status && uart_tx_init)
                     begin
-
-                        `ifdef SIM
-                        if ((din & 8'h7f) >= 32)
-                            $write("%c", din & 8'h7f);
-                        `endif
-
                         uart_tx_byte <= {1'b0, din[6:0]};
                         uart_tx_stb <= 1;
                     end
@@ -146,22 +156,13 @@ module uart(
                 end
             end
 
-            UART_RXCR:
+            UART_TXCR:
             begin
-                // UART RX CR - 0xD011
-                dout <= {uart_rx_status, 7'b0};
-            end
-
-            UART_RX:
-            begin
-                // UART RX - 0xD010
-                dout <= {uart_rx_status, uart_rx_byte[6:0]};
-                if (~w_en && ~uart_rx_ack && enable)
-                    uart_rx_ack <= 1'b1;
-            end
-
-            default:
+                // UART TX CR - 0xD013
+                // Ignore the TX control register
                 dout <= 8'b0;
+            end
+
             endcase
         end
     end
