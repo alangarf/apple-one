@@ -45,9 +45,10 @@ module apple1 #(
     // Outputs to VGA display
     output vga_h_sync,          // hozizontal VGA sync pulse
     output vga_v_sync,          // vertical VGA sync pulse
-    output vga_red,         // red VGA signal
-    output vga_grn,         // green VGA signal
-    output vga_blu,         // blue VGA signal
+    output vga_red,             // red VGA signal
+    output vga_grn,             // green VGA signal
+    output vga_blu,             // blue VGA signal
+    input clr_screen,           // clear screen button
 
     // Debugging ports
     output [15:0] pc_monitor    // spy for program counter / debugging
@@ -175,8 +176,6 @@ module apple1 #(
         .uart_tx(uart_tx),
         .uart_cts(uart_cts),
 
-        //.address({1'b1, ab[0]}),  // for ps/2
-        //.address({1'b0, ab[0]}),  // for vga
         .address(ab[1:0]),        // for uart
         .w_en(we & uart_cs),
         .din(dbo),
@@ -214,7 +213,8 @@ module apple1 #(
         .address(ab[0]),
         .w_en(we & vga_cs),
         .din(dbo),
-        .mode(vga_mode)
+        .mode(vga_mode),
+        .clr_screen(clr_screen)
     );
 
     // FIXME: REMOVE THIS

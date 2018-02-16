@@ -13,7 +13,8 @@ module vga #(
     input address,          // address bus
     input w_en,             // active high write enable strobe
     input [7:0] din,        // 8-bit data bus (input)
-    input [1:0] mode        // 2-bit mode setting for pixel doubling
+    input [1:0] mode,       // 2-bit mode setting for pixel doubling
+    input clr_screen        // clear screen button
 );
 
     //////////////////////////////////////////////////////////////////////////
@@ -59,9 +60,6 @@ module vga #(
     wire [3:0] font_pixel;
     wire [4:0] font_line;
     wire font_out;
-
-    // Font ROM contents
-    parameter ROM_FILENAME = "";
 
     // cpu control registers
     reg char_seen;
@@ -229,54 +227,72 @@ module vga #(
         begin
             vram_w_en <= 0;
 
-            // cursor overflow handling
-            if (h_cursor == 6'd40)
+            if (clr_screen)
             begin
+                // return to top of screen
                 h_cursor <= 6'd0;
-                v_cursor <= v_cursor + 'd1;
-            end
+                v_cursor <= 5'd0;
 
-            if (v_cursor == vram_end_addr)
-            begin
-                vram_start_addr <= vram_start_addr + 'd1;
-                vram_end_addr <= vram_end_addr + 'd1;
-            end
+                vram_start_addr <= 5'd0;
+                vram_end_addr <= 5'd23;
 
-            if (address == 1'b0) // address low == TX register
-            begin
-                if (enable & w_en & ~char_seen)
-                begin
-                    // incoming character
-                    char_seen <= 1;
-
-                    case(din)
-                    8'h8D: begin
-                        // handle carriage return
-                        h_cursor <= 0;
-                        v_cursor <= v_cursor + 'd1;
-                    end
-
-                    8'h7F: begin
-                        // ignore the DDR call to the PIA
-                        h_cursor <= 0;
-                    end
-
-                    default: begin
-                        vram_w_addr <= cursor;
-                        vram_din <= {~din[6], din[4:0]};
-                        vram_w_en <= 1;
-                        h_cursor <= h_cursor + 1;
-                    end
-                    endcase
-                end
-                else if(~enable & ~w_en)
-                    char_seen <= 0;
+                // clear the screen
+                vram_w_addr <= {vram_v_addr, vram_h_addr};
+                vram_din <= 6'd32;
+                vram_w_en <= 1;
             end
             else
             begin
-                vram_w_addr <= {vram_clr_addr, vram_h_addr};
-                vram_din <= 6'd32;
-                vram_w_en <= 1;
+                // cursor overflow handling
+                if (h_cursor == 6'd40)
+                begin
+                    h_cursor <= 6'd0;
+                    v_cursor <= v_cursor + 'd1;
+                end
+
+                if (v_cursor == vram_end_addr)
+                begin
+                    vram_start_addr <= vram_start_addr + 'd1;
+                    vram_end_addr <= vram_end_addr + 'd1;
+                end
+
+                if (address == 1'b0) // address low == TX register
+                begin
+                    if (enable & w_en & ~char_seen)
+                    begin
+                        // incoming character
+                        char_seen <= 1;
+
+                        case(din)
+                        8'h8D: begin
+                            // handle carriage return
+                            h_cursor <= 0;
+                            v_cursor <= v_cursor + 'd1;
+                        end
+
+                        8'h9B,
+                        8'h7F: begin
+                            // ignore the escape key
+                            h_cursor <= 0;
+                        end
+
+                        default: begin
+                            vram_w_addr <= cursor;
+                            vram_din <= {~din[6], din[4:0]};
+                            vram_w_en <= 1;
+                            h_cursor <= h_cursor + 1;
+                        end
+                        endcase
+                    end
+                    else if(~enable & ~w_en)
+                        char_seen <= 0;
+                end
+                else
+                begin
+                    vram_w_addr <= {vram_clr_addr, vram_h_addr};
+                    vram_din <= 6'd32;
+                    vram_w_en <= 1;
+                end
             end
         end
     end

@@ -104,6 +104,7 @@ module apple1_top #(
         .vga_red(vga_red),
         .vga_grn(vga_grn),
         .vga_blu(vga_blu),
+        .clr_screen(~button[1]),
         .pc_monitor(pc_monitor)
     );
     
