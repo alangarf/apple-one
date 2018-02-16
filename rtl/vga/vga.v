@@ -205,6 +205,10 @@ module vga #(
     assign vga_red = font_out;
     assign vga_grn = font_out;
     assign vga_blu = font_out;
+
+    // make background solid blue
+    //assign vga_blu = (h_active & v_active) ? 1'b1 : font_out;
+
     assign vga_h_sync = (h_cnt < h_pulse) ? 0 : 1;
     assign vga_v_sync = (v_cnt < v_pulse) ? 0 : 1;
 

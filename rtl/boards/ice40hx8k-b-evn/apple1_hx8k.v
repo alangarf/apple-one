@@ -150,7 +150,8 @@ module apple1_top #(
         .vga_red(vga_red),
         .vga_grn(vga_grn),
         .vga_blu(vga_blu),
-        .clr_screen(~clr_screen_n),
+        .vga_mode(2'b0),
+        .vga_cls(~clr_screen_n),
         .pc_monitor(pc_monitor)
     );
 

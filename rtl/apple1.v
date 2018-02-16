@@ -48,7 +48,8 @@ module apple1 #(
     output vga_red,             // red VGA signal
     output vga_grn,             // green VGA signal
     output vga_blu,             // blue VGA signal
-    input clr_screen,           // clear screen button
+    input [1:0] vga_mode,       // 2-bit font mode for character rendering
+    input vga_cls,              // clear screen button
 
     // Debugging ports
     output [15:0] pc_monitor    // spy for program counter / debugging
@@ -214,20 +215,8 @@ module apple1 #(
         .w_en(we & vga_cs),
         .din(dbo),
         .mode(vga_mode),
-        .clr_screen(clr_screen)
+        .clr_screen(vga_cls)
     );
-
-    // FIXME: REMOVE THIS
-    wire mode_cs = (ab[15:12]  == 4'b1100); // 0xC000
-
-    always @(posedge clk25 or posedge rst)
-    begin
-        if (rst)
-            vga_mode <= 2'b0;
-        else
-            if (mode_cs & we & cpu_clken)
-                vga_mode <= dbo[1:0];
-    end
 
     //////////////////////////////////////////////////////////////////////////
     // CPU Data In MUX
@@ -238,6 +227,5 @@ module apple1 #(
                  basic_cs ? basic_dout :
                  uart_cs  ? uart_dout :
                  ps2kb_cs ? ps2_dout :
-                 mode_cs ? vga_mode :
                  8'hFF;
 endmodule
