@@ -53,17 +53,24 @@ module apple1_top #(
     input [3:0] button      // 4 buttons on optionally attached YL-4 board
 );
 
+    //////////////////////////////////////////////////////////////////////////
+    // Registers and Wires
     wire clk25;
 
+    wire [15:0] pc_monitor;
+    assign led[7:0] = pc_monitor[7:0];
+    assign ledx[7:0] = ~pc_monitor[15:8];
+
+    //////////////////////////////////////////////////////////////////////////
+    // Clocks
     // 12MHz up to 25MHz
     pll my_pll(
         .clock_in(clk),
         .clock_out(clk25)
     );
 
-    wire [15:0] pc_monitor;
-    assign led[7:0] = pc_monitor[7:0];
-    assign ledx[7:0] = ~pc_monitor[15:8];
+    //////////////////////////////////////////////////////////////////////////
+    // PS/2 Keyboard
 
     // PS2 Pullups
     wire ps2__clk, ps2__din;
@@ -83,6 +90,45 @@ module apple1_top #(
         .D_IN_0(ps2__din),
     );
 
+    //////////////////////////////////////////////////////////////////////////
+    // Reset, Clear Screen and PS/2 mode selection toggle
+
+    // debounce reset button
+    wire reset_n;
+    debounce reset_button (
+        .clk25(clk25),
+        .rst(1'b0),
+        .sig_in(button[0]),
+        .sig_out(reset_n)
+    );
+
+    // debounce clear screen button
+    wire clr_screen_n;
+    debounce clr_button (
+        .clk25(clk25),
+        .rst(~reset_n),
+        .sig_in(button[1]),
+        .sig_out(clr_screen_n)
+    );
+
+    // debounce toggle button on PS2 select
+    wire ps2_toggle;
+    reg ps2_select;
+    debounce ps2_button (
+        .clk25(clk25),
+        .rst(~reset_n),
+        .sig_in(button[2]),
+        .sig_out(ps2_toggle)
+    );
+
+    // defaults to PS2 mode, but can toggle between
+    // UART and PS2 per button press
+    always @(posedge ps2_toggle)
+        ps2_select <= ~ps2_select;
+
+    //////////////////////////////////////////////////////////////////////////
+    // Core of system
+
     // apple one main system
     apple1 #(
         .BASIC_FILENAME (BASIC_FILENAME),
@@ -92,20 +138,20 @@ module apple1_top #(
         .WOZMON_ROM_FILENAME (WOZMON_ROM_FILENAME)
     ) my_apple1(
         .clk25(clk25),
-        .rst_n(button[0]),
+        .rst_n(reset_n),
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
         .uart_cts(uart_cts),
         .ps2_clk(ps2__clk),
         .ps2_din(ps2__din),
-        .ps2_select(1'b1),
+        .ps2_select(ps2_select),
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
         .vga_red(vga_red),
         .vga_grn(vga_grn),
         .vga_blu(vga_blu),
-        .clr_screen(~button[1]),
+        .clr_screen(~clr_screen_n),
         .pc_monitor(pc_monitor)
     );
-    
+
 endmodule
