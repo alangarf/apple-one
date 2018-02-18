@@ -23,7 +23,7 @@
 //
 
 module vram #(
-    parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin",
+    parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin"
 ) (
     input clk,                  // clock signal
     input [10:0] read_addr,      // read address bus

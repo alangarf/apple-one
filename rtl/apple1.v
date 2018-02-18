@@ -201,7 +201,7 @@ module apple1 #(
     reg [2:0] fg_colour;
     reg [2:0] bg_colour;
     reg [1:0] font_mode;
-    wire [7:0] vga_mode_dout;
+    reg [7:0] vga_mode_dout;
 
     vga #(
         .VRAM_FILENAME (VRAM_FILENAME),
