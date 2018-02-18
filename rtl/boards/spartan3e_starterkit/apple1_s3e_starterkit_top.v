@@ -84,6 +84,7 @@ module apple1_s3e_starterkit_top #(
         .vga_red(VGA_R),
         .vga_grn(VGA_G),
         .vga_blu(VGA_B),
+        .vga_cls(~rst_n),
         .pc_monitor(pc_monitor)
     );
     

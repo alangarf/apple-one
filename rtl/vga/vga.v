@@ -224,7 +224,7 @@ module vga #(
             v_cursor <= 5'd0;
             char_seen <= 'b0;
             vram_start_addr <= 5'd0;
-            vram_end_addr <= 5'd23;
+            vram_end_addr <= 5'd24;
         end
         else
         begin
@@ -237,7 +237,7 @@ module vga #(
                 v_cursor <= 5'd0;
 
                 vram_start_addr <= 5'd0;
-                vram_end_addr <= 5'd23;
+                vram_end_addr <= 5'd24;
 
                 // clear the screen
                 vram_w_addr <= {vram_v_addr, vram_h_addr};
