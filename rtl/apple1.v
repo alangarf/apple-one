@@ -48,7 +48,6 @@ module apple1 #(
     output vga_red,             // red VGA signal
     output vga_grn,             // green VGA signal
     output vga_blu,             // blue VGA signal
-    input [1:0] vga_mode,       // 2-bit font mode for character rendering
     input vga_cls,              // clear screen button
 
     // Debugging ports
@@ -103,12 +102,15 @@ module apple1 #(
     //////////////////////////////////////////////////////////////////////////
     // Address Decoding
 
-    wire ram_cs =   (ab[15:13] ==  3'b000);            // 0x0000 -> 0x1FFF
+    wire ram_cs =   (ab[15:13] ==  3'b000);              // 0x0000 -> 0x1FFF
+
+    // font mode, background and foreground colour
+    wire vga_mode_cs = (ab[15:2] == 14'b11000000000000); // 0xC000 -> 0xC003
 
     // RX: Either keyboard or UART input
     // TX: Always VGA and UART output
-    wire rx_cs = (ab[15:1]  == 15'b110100000001000);    // 0xD010 -> 0xD011
-    wire tx_cs = (ab[15:1]  == 15'b110100000001001);    // 0xD012 -> 0xD013
+    wire rx_cs = (ab[15:1]  == 15'b110100000001000);     // 0xD010 -> 0xD011
+    wire tx_cs = (ab[15:1]  == 15'b110100000001001);     // 0xD012 -> 0xD013
     
     // select UART on transmit but only receive when PS/2 is not selected.
     wire uart_cs = tx_cs | ((~ps2_select) & rx_cs);
@@ -119,8 +121,8 @@ module apple1 #(
     // VGA always get characters when they are sent.
     wire vga_cs   = tx_cs;
 
-    wire basic_cs = (ab[15:12] ==  4'b1110);            // 0xE000 -> 0xEFFF
-    wire rom_cs =   (ab[15:8]  ==  8'b11111111);        // 0xFF00 -> 0xFFFF
+    wire basic_cs = (ab[15:12] ==  4'b1110);             // 0xE000 -> 0xEFFF
+    wire rom_cs =   (ab[15:8]  ==  8'b11111111);         // 0xFF00 -> 0xFFFF
 
     //////////////////////////////////////////////////////////////////////////
     // RAM and ROM
@@ -196,7 +198,11 @@ module apple1 #(
     );
 
     // VGA Display interface
-    reg [1:0] vga_mode;
+    reg [2:0] fg_colour;
+    reg [2:0] bg_colour;
+    reg [1:0] font_mode;
+    wire [7:0] vga_mode_dout;
+
     vga #(
         .VRAM_FILENAME (VRAM_FILENAME),
         .FONT_ROM_FILENAME (FONT_ROM_FILENAME)
@@ -214,18 +220,59 @@ module apple1 #(
         .address(ab[0]),
         .w_en(we & vga_cs),
         .din(dbo),
-        .mode(vga_mode),
+        .mode(font_mode),
+        .fg_colour(fg_colour),
+        .bg_colour(bg_colour),
         .clr_screen(vga_cls)
     );
+
+    // Handle font mode and foreground and background
+    // colours. This so isn't Apple One authentic, but
+    // it can't hurt to have some fun. :D
+    always @(posedge clk25 or posedge rst)
+    begin
+        if (rst)
+        begin
+            font_mode <= 2'b0;
+            fg_colour <= 3'd7;
+            bg_colour <= 3'd0;
+        end
+        else
+        begin
+            case (ab[1:0])
+            2'b00:
+            begin
+                vga_mode_dout = {6'b0, font_mode};
+                if (vga_mode_cs & we & cpu_clken)
+                    font_mode <= dbo[1:0];
+            end
+            2'b01:
+            begin
+                vga_mode_dout = {5'b0, fg_colour};
+                if (vga_mode_cs & we & cpu_clken)
+                    fg_colour <= dbo[2:0];
+            end
+            2'b10:
+            begin
+                vga_mode_dout = {5'b0, bg_colour};
+                if (vga_mode_cs & we & cpu_clken)
+                    bg_colour <= dbo[2:0];
+            end
+            default:
+                vga_mode_dout = 8'b0;
+            endcase
+        end
+    end
 
     //////////////////////////////////////////////////////////////////////////
     // CPU Data In MUX
 
     // link up chip selected device to cpu input
-    assign dbi = ram_cs   ? ram_dout :
-                 rom_cs   ? rom_dout :
-                 basic_cs ? basic_dout :
-                 uart_cs  ? uart_dout :
-                 ps2kb_cs ? ps2_dout :
+    assign dbi = ram_cs      ? ram_dout :
+                 rom_cs      ? rom_dout :
+                 basic_cs    ? basic_dout :
+                 uart_cs     ? uart_dout :
+                 ps2kb_cs    ? ps2_dout :
+                 vga_mode_cs ? vga_mode_dout :
                  8'hFF;
 endmodule

@@ -14,6 +14,8 @@ module vga #(
     input w_en,             // active high write enable strobe
     input [7:0] din,        // 8-bit data bus (input)
     input [1:0] mode,       // 2-bit mode setting for pixel doubling
+    input [2:0] bg_colour,  // 3 bit background colour
+    input [2:0] fg_colour,  // 3 bit foreground colour
     input clr_screen        // clear screen button
 );
 
@@ -202,12 +204,9 @@ module vga #(
     assign font_line = v_dot;
 
     // vga signals out to monitor
-    assign vga_red = font_out;
-    assign vga_grn = font_out;
-    assign vga_blu = font_out;
-
-    // make background solid blue
-    //assign vga_blu = (h_active & v_active) ? 1'b1 : font_out;
+    assign vga_red = (h_active & v_active) ? (font_out ? fg_colour[2] : bg_colour[2]) : 1'b0;
+    assign vga_grn = (h_active & v_active) ? (font_out ? fg_colour[1] : bg_colour[1]) : 1'b0;
+    assign vga_blu = (h_active & v_active) ? (font_out ? fg_colour[0] : bg_colour[0]) : 1'b0;
 
     assign vga_h_sync = (h_cnt < h_pulse) ? 0 : 1;
     assign vga_v_sync = (v_cnt < v_pulse) ? 0 : 1;
