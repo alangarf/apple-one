@@ -1,0 +1,38 @@
+# For the Blackice II board
+
+### UART 
+set_io uart_rx   88
+set_io uart_tx   85 
+set_io uart_cts  94
+
+### LEDs
+set_io led[0]   71
+set_io led[1]   67
+set_io led[2]   68
+set_io led[3]   70
+
+### VGA Display
+set_io vga_h_sync 8
+set_io vga_v_sync 7
+set_io vga_r[3] 15
+set_io vga_r[2] 16
+set_io vga_r[1] 19
+set_io vga_r[0] 20
+set_io vga_g[3] 1
+set_io vga_g[2] 2
+set_io vga_g[1] 9
+set_io vga_g[0] 10
+set_io vga_b[3] 11
+set_io vga_b[2] 12
+set_io vga_b[1] 17
+set_io vga_b[0] 18
+
+set_io clk 129
+
+set_io ps2_din 32
+set_io ps2_clk 26
+
+### Buttons
+set_io button[0] 63
+set_io button[1] 64
+
