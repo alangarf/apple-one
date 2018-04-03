@@ -53,9 +53,15 @@ $ make
 
 ## The BACKSPACE key and how to delete typos
 
-The Apple 1 didn't have a typical "backspace" key as we are use to today, due to the way the video display worked it couldn't move the cursor backward to erase characters. So instead it used a "rubout" character, which is the underscore character (__). This character signifies that the input buffer has been moved backwards one character (eg. "PRN__INT" would be received by the Apple 1 as "PRINT").
+The Apple 1 didn't have a typical "backspace" key as we are use to today, due to the way the video display worked it couldn't move the cursor backward to erase characters. So instead it used a "rubout" character, which is the underscore character (_). This character signifies that the input buffer has been moved backwards one character (eg. `PRN_INT` would be received by the Apple 1 as `PRINT`).
 
 It takes a little getting used to but you'll soon get the hang of it.
+
+## The Apple 1 only understands UPPERCASE characters
+
+If you're using the PS/2 input you don't need to be worried about this, as we automatically UPPERCASE all typed characters so WozMon can understand what you are typing.
+
+However if you are using the UART and a serial terminal you will need to remember to turn on your CAPSLOCK, otherwise nothing will respond as you might expect.
 
 ## Serial Setup
  
