@@ -80,25 +80,25 @@ These controls are mapped to memory locations you can tweak using WozMon and are
  | Register | Function | Value | Description |
  | --- | --- | --- | --- |
  | 0xC000 | Font | 00 | Default
- | | Font | 01 | Vertical scanlines
- | | Font | 02 | Horizontal scanlines
- | | Font |03 | Dot mode
+ | | | 01 | Vertical scanlines
+ | | | 02 | Horizontal scanlines
+ | | | 03 | Dot mode
  | 0xC001 | Foreground | 00 | Black
- | | Foreground | 01 | Blue
- | | Foreground | 02 | Green
- | | Foreground | 03 | Cyan
- | | Foreground | 04 | Red
- | | Foreground | 05 | Magenta
- | | Foreground | 06 | Yellow
- | | Foreground | 06 | White
+ | | | 01 | Blue
+ | | | 02 | Green
+ | | | 03 | Cyan
+ | | | 04 | Red
+ | | | 05 | Magenta
+ | | | 06 | Yellow
+ | | | 06 | White
  | 0xC002 | Background | 00 | Black
- | | Background | 01 | Blue
- | | Background | 02 | Green
- | | Background | 03 | Cyan
- | | Background | 04 | Red
- | | Background | 05 | Magenta
- | | Background | 06 | Yellow
- | | Background | 06 | White
+ | | | 01 | Blue
+ | | | 02 | Green
+ | | | 03 | Cyan
+ | | | 04 | Red
+ | | | 05 | Magenta
+ | | | 06 | Yellow
+ | | | 06 | White
  
 ## Helping
  
