@@ -43,6 +43,7 @@ $ cd boards/ice40hx8k-b-evn/yosys/
 $ make
 ```
 
+### Board READMEs
 - [iCE40HX8K-B-EVN breakout](boards/ice40hx8k-b-evn/README.md)
 - [Terasic DE0](boards/terasic_de0/README.md)
 - [Digilent Spartan-3E Starter Board](boards/spartan3e_starterkit/README.md)
@@ -65,7 +66,7 @@ However if you are using the UART and a serial terminal you will need to remembe
 
 ## Serial Setup
  
-Depending on the baords you can use serial to communicate with the Apple1, some boards require a toggle to be set to select between PS/2 input and UART input. The UART by default will be set to 115200 (8/N/1).
+Depending on the board you can use serial to communicate with the Apple 1, some boards require a toggle to be set to select between PS/2 input and UART input. The UART by default will be set to 115200 (8/N/1).
  
 A very basic hardware flow control is implemented. You should turn on CTS support as this will allow you to cut and paste code into the Woz Mon without the Apple 1 missing any bytes.
 
@@ -74,7 +75,7 @@ A very basic hardware flow control is implemented. You should turn on CTS suppor
  
 Most boards support PS/2 input and VGA output. This is the most support method, however all output is replicated to the UART (if available) and the PS/2 keyboard input can be replaced with the UART out if the "toggle" mode buttons is selected.
 
-Unlike the original Apple 1 this implementation can (depending on board you are using and it's support) change the foreground and bbackground colours of the VGA output, as well as differnet scanline modes for the font.
+Unlike the original Apple 1 this implementation can (depending on board you are using and it's support) change the foreground and background colours of the VGA output, as well as differnet scanline modes for the font.
 These controls are mapped to memory locations you can tweak using WozMon and are reset back to defaults when the system is reset.
 
  | Register | Function | Value | Description |
