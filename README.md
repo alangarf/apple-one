@@ -7,7 +7,7 @@ This is a basic implementation of the original Apple 1 in Verilog. It can run th
 
 Contributor supported boards (YMMV):
 - [Blackice II](https://www.tindie.com/products/Folknology/blackice-ii/)
-- [Olimex iCE40HX8K with ICE40-IO](https://www.olimex.com/Products/FPGA/iCE40/iCE40HX1K-EVB/open-source-hardware)
+- [Olimex iCE40HX8K with ICE40-IO](https://www.olimex.com/Products/FPGA/iCE40/iCE40HX8K-EVB/open-source-hardware)
 - [TinyFPGA B2](http://tinyfpga.com/)
 - [Upduino](http://gnarlygrey.atspace.cc/development-platform.html)
 
@@ -90,7 +90,7 @@ These controls are mapped to memory locations you can tweak using WozMon and are
  | | | 04 | Red
  | | | 05 | Magenta
  | | | 06 | Yellow
- | | | 06 | White
+ | | | 07 | White
  | 0xC002 | Background | 00 | Black
  | | | 01 | Blue
  | | | 02 | Green
@@ -98,7 +98,7 @@ These controls are mapped to memory locations you can tweak using WozMon and are
  | | | 04 | Red
  | | | 05 | Magenta
  | | | 06 | Yellow
- | | | 06 | White
+ | | | 07 | White
  
 ## Helping
  
