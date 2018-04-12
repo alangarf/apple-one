@@ -23,6 +23,10 @@ set_io led[0] C3
 set_io ps2_clk N3
 set_io ps2_din N2
 
+### USB Keyboard
+set_io usb_dp P15
+set_io usb_dm R15
+
 ### VGA Display
 set_io vga_h_sync C2
 set_io vga_v_sync D1

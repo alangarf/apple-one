@@ -30,6 +30,7 @@ module apple1 #(
     parameter WOZMON_ROM_FILENAME = "../../../roms/wozmon.hex"
 ) (
     input  clk25,               // 25 MHz master clock
+    input  clkusb,              // 12 MHz usb clock
     input  rst_n,               // active low synchronous reset (needed for simulation)
 
     // I/O interface to computer
@@ -41,6 +42,10 @@ module apple1 #(
     input ps2_clk,              // PS/2 keyboard serial clock input
     input ps2_din,              // PS/2 keyboard serial data input
     input ps2_select,           // Input to select the PS/2 keyboard instead of the UART
+
+    // I/O interface to USB keyboard
+    inout usb_dm,               // USB keyboard minus pin
+    inout usb_dp,               // USB keyboard plus pin
 
     // Outputs to VGA display
     output vga_h_sync,          // hozizontal VGA sync pulse
@@ -103,6 +108,9 @@ module apple1 #(
     // Address Decoding
 
     wire ram_cs =   (ab[15:13] ==  3'b000);              // 0x0000 -> 0x1FFF
+
+    // ukp
+    wire ukp_cs =   (ab[15:12] == 4'b1011);              // 0xB000 -> 0xBFFF
 
     // font mode, background and foreground colour
     wire vga_mode_cs = (ab[15:2] == 14'b11000000000000); // 0xC000 -> 0xC003
@@ -226,6 +234,20 @@ module apple1 #(
         .clr_screen(vga_cls)
     );
 
+    // USB keyboard interface
+    wire [7:0] ukp_dout;
+    wire usb_int;
+    ukp my_ukp(
+        .clk25(clk25),
+        .clkusb(clkusb),
+        .rst(rst),
+        .usb_dm(usb_dm),
+        .usb_dp(usb_dp),
+        .record_n(usb_int),
+        .kbd_adr(ab[3:0]),
+        .kbd_data(ukp_dout)
+    );
+
     // Handle font mode and foreground and background
     // colours. This so isn't Apple One authentic, but
     // it can't hurt to have some fun. :D
@@ -274,5 +296,6 @@ module apple1 #(
                  uart_cs     ? uart_dout :
                  ps2kb_cs    ? ps2_dout :
                  vga_mode_cs ? vga_mode_dout :
+                 ukp_cs      ? ukp_dout :
                  8'hFF;
 endmodule

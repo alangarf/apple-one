@@ -40,6 +40,10 @@ module apple1_top #(
     input ps2_clk,          // PS/2 keyboard serial clock input
     input ps2_din,          // PS/2 keyboard serial data input
 
+    // I/O interface to USB keyboard
+    inout usb_dm,               // USB keyboard minus pin
+    inout usb_dp,               // USB keyboard plus pin
+
     // Outputs to VGA display
     output vga_h_sync,      // hozizontal VGA sync pulse
     output vga_v_sync,      // vertical VGA sync pulse
@@ -138,6 +142,7 @@ module apple1_top #(
         .WOZMON_ROM_FILENAME (WOZMON_ROM_FILENAME)
     ) my_apple1(
         .clk25(clk25),
+        .clkusb(clk),
         .rst_n(reset_n),
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
@@ -145,6 +150,8 @@ module apple1_top #(
         .ps2_clk(ps2__clk),
         .ps2_din(ps2__din),
         .ps2_select(ps2_select),
+        .usb_dm(usb_dm),
+        .usb_dp(usb_dp),
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
         .vga_red(vga_red),
