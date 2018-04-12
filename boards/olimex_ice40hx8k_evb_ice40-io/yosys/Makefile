@@ -1,7 +1,7 @@
 DEVICE = hx8k
 PIN_DEF=ice40hx8k.pcf
 
-SOURCEDIR = ../../rtl
+SOURCEDIR = ../../../rtl
 BUILDDIR = build
 
 all: apple1 prog
