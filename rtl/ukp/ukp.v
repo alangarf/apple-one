@@ -2,8 +2,11 @@ module ukp(
     clk25,
     clkusb,
     rst,
-    usb_dm,
-    usb_dp,
+    usb_en,
+    usb_dm_in,
+    usb_dm_out,
+    usb_dp_in,
+    usb_dp_out,
     record_n,
     kbd_adr,
     kbd_data
@@ -11,10 +14,13 @@ module ukp(
 	input clk25;
 	input clkusb;
     input rst;
-	output record_n;
-	inout usb_dm;
-    inout usb_dp;
+	input usb_dm_in;
+	input usb_dp_in;
 	input [3:0] kbd_adr;
+	output usb_en;
+    output usb_dm_out;
+    output usb_dp_out;
+	output record_n;
 	output [7:0] kbd_data;
 
 	parameter S_OPCODE = 0;
@@ -23,22 +29,22 @@ module ukp(
 	parameter S_B0 = 3;
 	parameter S_B1 = 4;
 
-    parameter LDI    = 4'b0001;
-    parameter START  = 4'b0010;
+    parameter I_LDI    = 4'b0001;
+    parameter I_START  = 4'b0010;
 
-    parameter OUT0   = 4'b0100;
-    parameter OUT1   = 4'b0101;
-    parameter OUT2   = 4'b0110;
-    parameter HZ     = 4'b0111;
+    parameter I_OUT0   = 4'b0100;
+    parameter I_OUT1   = 4'b0101;
+    parameter I_OUT2   = 4'b0110;
+    parameter I_HZ     = 4'b0111;
 
-    parameter BZ     = 4'b1000;
-    parameter BC     = 4'b1001;
-    parameter BNAK   = 4'b1010;
-    parameter DJNZ   = 4'b1011;
+    parameter I_BZ     = 4'b1000;
+    parameter I_BC     = 4'b1001;
+    parameter I_BNAK   = 4'b1010;
+    parameter I_DJNZ   = 4'b1011;
 
-    parameter TOGGLE = 4'b1100;
-    parameter IN     = 4'b1101;
-    parameter WAIT   = 4'b1110;
+    parameter I_TOGGLE = 4'b1100;
+    parameter I_IN     = 4'b1101;
+    parameter I_WAIT   = 4'b1110;
 
 	function sel4;
 		input [1:0] sel;
@@ -66,24 +72,24 @@ module ukp(
 
 	wire [3:0] inst;
 	wire sample;
-	reg connected = 0;
-    reg inst_ready = 0;
-    reg g = 0;
-    reg p = 0;
-    reg m = 0;
-    reg cond = 0;
-    reg nak = 0;
-    reg dm1 = 0;
-	reg bank = 0;
-    reg record1 = 0;
-	reg [2:0] state = 0;
-	reg [7:0] w = 0;
-	reg [9:0] pc = 0;
-	reg [2:0] timing = 0;
-	reg [3:0] tmp = 0;
-	reg [13:0] interval = 0;
-	reg [5:0] bitadr = 0;
-	reg [7:0] data = 0;
+	reg connected;
+    reg inst_ready;
+    reg g;
+    reg p;
+    reg m;
+    reg cond;
+    reg nak;
+    reg dm1;
+	reg bank;
+    reg record1;
+	reg [2:0] state;
+	reg [7:0] w;
+	reg [9:0] pc;
+	reg [2:0] timing;
+	reg [3:0] tmp;
+	reg [13:0] interval;
+	reg [5:0] bitadr;
+	reg [7:0] data;
 
 	ukprom ukprom(
         .clk(clkusb),
@@ -94,9 +100,9 @@ module ukp(
 	wire interval_cy = interval == 12001;
 	wire next = ~(state == S_OPCODE & (
 		~inst[3] & inst[2] & timing != 0 |
-		~inst[3] & ~inst[2] & inst[1] & usb_dm |
+		~inst[3] & ~inst[2] & inst[1] & usb_dm_in |
 		inst == 4'b1110 & ~interval_cy |
-		inst == 4'b1101 & (~sample | (usb_dp | usb_dm) & w != 1)
+		inst == 4'b1101 & (~sample | (usb_dp_in | usb_dm_in) & w != 1)
 	));
 	wire branch = state == S_B1 & cond;
 	wire record;
@@ -132,19 +138,27 @@ module ukp(
             begin
                 if (state == S_OPCODE)
                 begin
-                    if (inst == 4'b0001) state <= S_LDI0;
-                    if (inst == 4'b1100) connected <= ~connected;
+                    // set LDI
+                    if (inst == I_LDI) state <= S_LDI0;
+
+                    // set connected
+                    if (inst == I_TOGGLE) connected <= ~connected;
+
+                    // handle USB outputs when timing is 0
                     if (~inst[3] & inst[2] & timing == 0)
                     begin
                         g <= ~inst[1] | ~inst[0];
                         p <= ~inst[1] & inst[0];
                         m <= inst[1] & ~inst[0];
                     end
+
+                    // handle branching
                     if (inst[3] & ~inst[2])
                     begin
                         state <= S_B0;
-                        cond <= sel4(inst[1:0], {~usb_dm, connected, nak, w != 1});
+                        cond <= sel4(inst[1:0], {~usb_dm_in, connected, nak, w != 1});
                     end
+
                     if (inst == 4'b1011 | inst == 4'b1101 & sample) w <= w - 1;
                 end
 
@@ -195,10 +209,10 @@ module ukp(
 
             if (sample)
             begin
-                if (bitadr == 8) nak <= usb_dm;
+                if (bitadr == 8) nak <= usb_dm_in;
                 data[6:0] <= data[7:1];
-                data[7] <= dm1 ~^ usb_dm;
-                dm1 <= usb_dm;
+                data[7] <= dm1 ~^ usb_dm_in;
+                dm1 <= usb_dm_in;
                 bitadr <= bitadr + 1;
             end
 

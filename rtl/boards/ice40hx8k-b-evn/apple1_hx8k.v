@@ -130,6 +130,28 @@ module apple1_top #(
     always @(posedge ps2_toggle)
         ps2_select <= ~ps2_select;
 
+    wire usb_en;
+    wire usb_dm_in, usb_dp_in;
+    wire usb_dm_out, usb_dp_out;
+    SB_IO #(
+        .PIN_TYPE(6'b101001),
+        .PULLUP(1'b1)
+    ) tm_dm_io (
+        .PACKAGE_PIN(usb_dm),
+        .OUTPUT_ENABLE(usb_en),
+        .D_IN_0(usb_dm_in),
+        .D_OUT_0(usb_dm_out)
+    );
+    SB_IO #(
+        .PIN_TYPE(6'b101001),
+        .PULLUP(1'b1)
+    ) tm_dp_io (
+        .PACKAGE_PIN(usb_dp),
+        .OUTPUT_ENABLE(usb_en),
+        .D_IN_0(usb_dp_in),
+        .D_OUT_0(usb_dp_out)
+    );
+
     //////////////////////////////////////////////////////////////////////////
     // Core of system
 
@@ -150,8 +172,11 @@ module apple1_top #(
         .ps2_clk(ps2__clk),
         .ps2_din(ps2__din),
         .ps2_select(ps2_select),
-        .usb_dm(usb_dm),
-        .usb_dp(usb_dp),
+        .usb_en(usb_en),
+        .usb_dm_in(usb_dm_in),
+        .usb_dp_in(usb_dp_in),
+        .usb_dm_out(usb_dm_out),
+        .usb_dp_out(usb_dp_out),
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
         .vga_red(vga_red),

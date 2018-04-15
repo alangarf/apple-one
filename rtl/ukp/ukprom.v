@@ -1,16 +1,9 @@
-module ukprom(
-    clk,
-    adr,
-    data
-);
+module ukprom(clk, adr, data);
 	input clk;
 	input [9:0] adr;
 	output [3:0] data;
-
 	reg [3:0] data;
-
-	always @(posedge clk)
-    begin
+	always @(posedge clk) begin
 		case (adr)
 			10'h000: data <= 4'h1;
 			10'h001: data <= 4'h9;
@@ -24,8 +17,13 @@ module ukprom(
 			10'h009: data <= 4'h0;
 			10'h00a: data <= 4'h0;
 			10'h00b: data <= 4'h1;
+`ifdef SIM
+			10'h00c: data <= 4'h2;
+			10'h00d: data <= 4'h0;
+`else
 			10'h00c: data <= 4'h8;
 			10'h00d: data <= 4'hc;
+`endif
 			10'h00e: data <= 4'h0;
 			10'h00f: data <= 4'h0;
 			10'h010: data <= 4'he;
@@ -34,16 +32,26 @@ module ukprom(
 			10'h013: data <= 4'h0;
 			10'h014: data <= 4'h4;
 			10'h015: data <= 4'h1;
+`ifdef SIM
+			10'h016: data <= 4'h1;
+			10'h017: data <= 4'h0;
+`else
 			10'h016: data <= 4'ha;
 			10'h017: data <= 4'h0;
+`endif
 			10'h018: data <= 4'he;
 			10'h019: data <= 4'hb;
 			10'h01a: data <= 4'h6;
 			10'h01b: data <= 4'h0;
 			10'h01c: data <= 4'h7;
 			10'h01d: data <= 4'h1;
+`ifdef SIM
+			10'h01e: data <= 4'h1;
+			10'h01f: data <= 4'h0;
+`else
 			10'h01e: data <= 4'h8;
 			10'h01f: data <= 4'h2;
+`endif
 			10'h020: data <= 4'he;
 			10'h021: data <= 4'h4;
 			10'h022: data <= 4'h4;

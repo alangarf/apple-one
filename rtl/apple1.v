@@ -44,8 +44,11 @@ module apple1 #(
     input ps2_select,           // Input to select the PS/2 keyboard instead of the UART
 
     // I/O interface to USB keyboard
-    inout usb_dm,               // USB keyboard minus pin
-    inout usb_dp,               // USB keyboard plus pin
+    input usb_dm_in,            // USB keyboard minus pin
+    input usb_dp_in,            // USB keyboard plus pin
+    output usb_en,
+    output usb_dm_out,          // USB keyboard minus pin
+    output usb_dp_out,          // USB keyboard plus pin
 
     // Outputs to VGA display
     output vga_h_sync,          // hozizontal VGA sync pulse
@@ -235,18 +238,29 @@ module apple1 #(
     );
 
     // USB keyboard interface
-    wire [7:0] ukp_dout;
+    reg [7:0] ukp_dout;
+    wire [7:0] ukp_d;
     wire usb_int;
     ukp my_ukp(
         .clk25(clk25),
         .clkusb(clkusb),
         .rst(rst),
-        .usb_dm(usb_dm),
-        .usb_dp(usb_dp),
+        .usb_en(usb_en),
+        .usb_dm_in(usb_dm_in),
+        .usb_dp_in(usb_dp_in),
+        .usb_dm_out(usb_dm_out),
+        .usb_dp_out(usb_dp_out),
         .record_n(usb_int),
         .kbd_adr(ab[3:0]),
-        .kbd_data(ukp_dout)
+        .kbd_data(ukp_d),
+        .debug(debug)
     );
+
+    always @(posedge clk25)
+    begin
+        if (usb_int)
+            ukp_dout <= ukp_d;
+    end
 
     // Handle font mode and foreground and background
     // colours. This so isn't Apple One authentic, but

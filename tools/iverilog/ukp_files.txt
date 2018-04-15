@@ -1,4 +1,0 @@
-../../rtl/ukp/ukp.v
-../../rtl/ukp/ukprom.v
-../../rtl/ukp/keymap.v
-ukp_tb.v
