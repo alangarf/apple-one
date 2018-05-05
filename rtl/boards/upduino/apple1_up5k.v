@@ -73,7 +73,7 @@ module apple1_top #(
         .RAM_FILENAME (RAM_FILENAME),
         .VRAM_FILENAME (VRAM_FILENAME),
         .WOZMON_ROM_FILENAME (WOZMON_ROM_FILENAME)
-    my_apple1(
+    ) my_apple1(
         .clk25(clk25),
         .rst_n(1'b1),
         .uart_rx(uart_rx),
