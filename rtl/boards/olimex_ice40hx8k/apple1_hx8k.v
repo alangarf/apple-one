@@ -47,7 +47,6 @@ module apple1_top #(
     output [2:0] vga_g,     // green VGA signal
     output [2:0] vga_b,     // blue VGA signal
 
-    // Debugging ports
     input [1:0] button      // 2 buttons on board
 );
 
@@ -59,12 +58,28 @@ module apple1_top #(
         .clock_out(clk25),
     );
 
-    wire vga_bit;
+    wire vga_red, vga_green, vga_blue;
+    assign vga_r[2:0]  = {vga_red,   vga_red,   vga_red};
+    assign vga_g[2:0]  = {vga_green, vga_green, vga_green};
+    assign vga_b[2:0]  = {vga_blue,  vga_blue,  vga_blue};
 
-    // set the monochrome base colour here..
-    assign vga_r[2:0] = vga_bit ? 3'b100 : 3'b000;
-    assign vga_g[2:0] = vga_bit ? 3'b111 : 3'b000;
-    assign vga_b[2:0] = vga_bit ? 3'b100 : 3'b000;
+    // debounce reset button
+    wire reset_n;
+    debounce reset_button (
+        .clk25(clk25),
+        .rst(1'b0),
+        .sig_in(button[0]),
+        .sig_out(reset_n)
+    );
+
+    // debounce clear screen button
+    wire clr_screen_n;
+    debounce clr_button (
+        .clk25(clk25),
+        .rst(~reset_n),
+        .sig_in(button[1]),
+        .sig_out(clr_screen_n)
+    );
 
     // apple one main system
     apple1 #(
@@ -75,7 +90,7 @@ module apple1_top #(
         .WOZMON_ROM_FILENAME (WOZMON_ROM_FILENAME)
     ) my_apple1(
         .clk25(clk25),
-        .rst_n(button[0]),
+        .rst_n(reset_n),
 
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
@@ -88,8 +103,9 @@ module apple1_top #(
 
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
-        .vga_red(vga_bit),
-        //.vga_grn(vga_bit),
-        //.vga_blu(vga_bit),
+        .vga_red(vga_red),
+        .vga_grn(vga_green),
+        .vga_blu(vga_blue),
+        .vga_cls(~clr_screen_n),
     );
 endmodule
