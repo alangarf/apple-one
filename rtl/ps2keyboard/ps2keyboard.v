@@ -218,7 +218,7 @@ module ps2keyboard (
                                             8'h4E:  ascii <= "-";
                                             8'h55:  ascii <= "=";
                                             8'h5D:  ascii <= 8'h34;     // backslash
-                                            8'h66:  ascii <= 8'd8;      // backspace
+                                            8'h66:  ascii <= "_";      // backspace
                                             8'h29:  ascii <= " ";
 
                                             8'h5A:  ascii <= 8'd13;     // enter
