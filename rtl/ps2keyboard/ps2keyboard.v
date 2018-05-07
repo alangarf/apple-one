@@ -280,7 +280,7 @@ module ps2keyboard (
                                             8'h4E:  ascii <= "_";
                                             8'h55:  ascii <= "+";
                                             8'h5D:  ascii <= "|";
-                                            8'h66:  ascii <= 8'd8;      // backspace
+                                            8'h66:  ascii <= "_";      // backspace, normally ASCII 0x08 but '_' for Apple 1
                                             8'h29:  ascii <= " ";
 
                                             8'h5A:  ascii <= 8'd13;     // enter
