@@ -15,11 +15,10 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Description: Apple 1 implementation for the Omilex iCE40HX8K +
-//              the ICE40-IO interface
+// Description: Apple 1 implementation for the Blackeice II ICE40HX8K +
 //
-// Author.....: Alan Garfield
-// Date.......: 26-1-2018
+// Author.....: Lawrie Griffiths and Alan Garfield
+// Date.......: 31-3-2018
 //
 
 module apple1_top #(
@@ -34,7 +33,7 @@ module apple1_top #(
     // I/O interface to computer
     input  uart_rx,         // asynchronous serial data input from computer
     output uart_tx,         // asynchronous serial data output to computer
-    output uart_cts,        // clear to send flag to computer
+    output uart_cts,        // clear to send flag to computer - not used
 
     // I/O interface to keyboard
     input ps2_clk,          // PS/2 keyboard serial clock input
@@ -43,25 +42,41 @@ module apple1_top #(
     // Outputs to VGA display
     output vga_h_sync,      // hozizontal VGA sync pulse
     output vga_v_sync,      // vertical VGA sync pulse
-    output [2:0] vga_r,     // red VGA signal
-    output [2:0] vga_g,     // green VGA signal
-    output [2:0] vga_b,     // blue VGA signal
 
+    output [3:0] vga_r,     // red VGA signal
+    output [3:0] vga_g,     // green VGA signal
+    output [3:0] vga_b,     // blue VGA signal
+
+    // Debugging ports
+    output [3:0] led,
     input [1:0] button      // 2 buttons on board
 );
 
+    assign led[0] = 1;
+    assign led[1] = reset_n;
+    assign led[2] = clr_screen_n;
+    assign led[3] = 0;
+
     wire clk25;
 
-    // 100MHz to 25MHz
-    pll pll(
-        .clock_in(clk),
-        .clock_out(clk25),
-    );
+    // ===============================================================
+    // System Clock generation (25MHz)
+    // ===============================================================
 
-    wire vga_red, vga_green, vga_blue;
-    assign vga_r[2:0]  = {vga_red,   vga_red,   vga_red};
-    assign vga_g[2:0]  = {vga_green, vga_green, vga_green};
-    assign vga_b[2:0]  = {vga_blue,  vga_blue,  vga_blue};
+    reg [1:0]  clkpre = 2'b00;     // prescaler, from 100MHz to 25MHz
+
+    always @(posedge clk)
+      begin
+        clkpre <= clkpre + 1;
+      end
+    wire clk25 = clkpre[1];
+
+    wire vga_bit;
+
+    // set the monochrome base colour here..
+    assign vga_r[3:0] = vga_bit ? 4'b1000 : 4'b0000;
+    assign vga_g[3:0] = vga_bit ? 4'b1111 : 4'b0000;
+    assign vga_b[3:0] = vga_bit ? 4'b1000 : 4'b0000;
 
     // debounce reset button
     wire reset_n;
@@ -103,9 +118,9 @@ module apple1_top #(
 
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
-        .vga_red(vga_red),
-        .vga_grn(vga_green),
-        .vga_blu(vga_blue),
+        .vga_red(vga_bit),
+        //.vga_grn(vga_bit),
+        //.vga_blu(vga_bit),
         .vga_cls(~clr_screen_n),
     );
 endmodule

@@ -1,5 +1,5 @@
 DEVICE = hx8k
-PIN_DEF=ice40hx8k.pcf
+PIN_DEF=blackice2.pcf
 
 SOURCEDIR = ../../../rtl
 BUILDDIR = build
@@ -17,16 +17,16 @@ dir:
 
 # ------ TEMPLATES ------
 $(BUILDDIR)/%.blif: $(SOURCEDIR)/%.v
-	yosys -q  -p "chparam -list; hierarchy -top apple1_top; synth_ice40 -blif $@" $^
+	yosys -q -p "chparam -list; hierarchy -top apple1_top; synth_ice40 -blif $@" $^
 
 $(BUILDDIR)/%.asc: $(PIN_DEF) $(BUILDDIR)/%.blif
-	arachne-pnr -d $(subst hx,,$(subst lp,,$(DEVICE))) -o $@ -p $^
+	 arachne-pnr -d 8k -P tq144:4k -o $@ -p $^
 
 $(BUILDDIR)/%.bin: $(BUILDDIR)/%.asc
 	icepack $^ $@
 
 %.rpt: $(BUILDDIR)/%.asc
-	icetime -d $(DEVICE) -mtr $@ $<
+	icetime -d $(DEVICE) -P $(PACKAGE) -c $(FREQ_PLL) -mtr $@ $<
 
 %_tb.vvp: %_tb.v %.v
 	iverilog -o $@ $^
@@ -56,13 +56,12 @@ $(BUILDDIR)/apple1.blif: $(SOURCEDIR)/apple1.v \
 	$(SOURCEDIR)/vga/font_rom.v \
 	$(SOURCEDIR)/ps2keyboard/debounce.v \
 	$(SOURCEDIR)/ps2keyboard/ps2keyboard.v \
-	$(SOURCEDIR)/boards/olimex_ice40hx8k/pll.v \
-	$(SOURCEDIR)/boards/olimex_ice40hx8k/apple1_hx8k.v
+	$(SOURCEDIR)/boards/blackice2/apple1_hx8k.v
 
 apple1.rpt: $(BUILDDIR)/apple1.asc
 
 prog: dir $(BUILDDIR)/apple1.bin
-	iceprogduino  $(filter-out $<,$^)
+	cat $(filter-out $<,$^) >/dev/ttyACM0
 
 # ------ HELPERS ------
 clean:

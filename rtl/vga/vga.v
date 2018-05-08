@@ -267,12 +267,15 @@ module vga #(
                         char_seen <= 1;
 
                         case(din)
+                        8'h0D,
                         8'h8D: begin
                             // handle carriage return
                             h_cursor <= 0;
                             v_cursor <= v_cursor + 'd1;
                         end
 
+                        8'h00,
+                        8'h0A,
                         8'h9B,
                         8'h7F: begin
                             // ignore the escape key
