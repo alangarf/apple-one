@@ -25,7 +25,7 @@ The memory map is currently set up to have:
  ----- | --- | -----------
  0x0000 | 0x1FFF | 8KB of block RAM for system
  0xE000 | 0xEFFF | 4KB of block RAM for basic ROM
- 0xFF00 | 0xFFFF | 512B of block RAM for WozMon ROM
+ 0xFF00 | 0xFFFF | 256B of block RAM for WozMon ROM
 
 You can swap out the Basic ROM to get more RAM if you need the space, this can be achieved easily with only minor modifications to the top file.
  
