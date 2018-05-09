@@ -103,7 +103,7 @@
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1518997497" xil_pn:in_ck="-2402892782883100176" xil_pn:name="TRANEXT_xstsynthesize_spartan3e" xil_pn:prop_ck="-8720043281624233679" xil_pn:start_ts="1518997476">
+    <transform xil_pn:end_ts="1518998485" xil_pn:in_ck="-2402892782883100176" xil_pn:name="TRANEXT_xstsynthesize_spartan3e" xil_pn:prop_ck="-8720043281624233679" xil_pn:start_ts="1518998464">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="WarningsGenerated"/>
       <status xil_pn:value="ReadyToRun"/>
@@ -121,11 +121,11 @@
       <outfile xil_pn:name="webtalk_pn.xml"/>
       <outfile xil_pn:name="xst"/>
     </transform>
-    <transform xil_pn:end_ts="1518445424" xil_pn:in_ck="-5976217886481463465" xil_pn:name="TRAN_compileBCD2" xil_pn:prop_ck="-5004538815383072947" xil_pn:start_ts="1518445424">
+    <transform xil_pn:end_ts="1518998485" xil_pn:in_ck="-5976217886481463465" xil_pn:name="TRAN_compileBCD2" xil_pn:prop_ck="-5004538815383072947" xil_pn:start_ts="1518998485">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
     </transform>
-    <transform xil_pn:end_ts="1518997502" xil_pn:in_ck="-3894786652928293112" xil_pn:name="TRANEXT_ngdbuild_FPGA" xil_pn:prop_ck="-581701490373080307" xil_pn:start_ts="1518997497">
+    <transform xil_pn:end_ts="1518998490" xil_pn:in_ck="-3894786652928293112" xil_pn:name="TRANEXT_ngdbuild_FPGA" xil_pn:prop_ck="-581701490373080307" xil_pn:start_ts="1518998485">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <outfile xil_pn:name="_ngo"/>
@@ -134,9 +134,11 @@
       <outfile xil_pn:name="apple1_s3e_starterkit_top.ngd"/>
       <outfile xil_pn:name="apple1_s3e_starterkit_top_ngdbuild.xrpt"/>
     </transform>
-    <transform xil_pn:end_ts="1518997506" xil_pn:in_ck="8375880660293788329" xil_pn:name="TRANEXT_map_spartan3" xil_pn:prop_ck="-5849673150125579957" xil_pn:start_ts="1518997502">
+    <transform xil_pn:end_ts="1518998495" xil_pn:in_ck="8375880660293788329" xil_pn:name="TRANEXT_map_spartan3" xil_pn:prop_ck="-5849673150125579957" xil_pn:start_ts="1518998490">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
+      <status xil_pn:value="OutOfDateForOutputs"/>
+      <status xil_pn:value="OutputChanged"/>
       <outfile xil_pn:name="_xmsgs/map.xmsgs"/>
       <outfile xil_pn:name="apple1_s3e_starterkit_top.pcf"/>
       <outfile xil_pn:name="apple1_s3e_starterkit_top_map.map"/>
@@ -147,7 +149,7 @@
       <outfile xil_pn:name="apple1_s3e_starterkit_top_summary.xml"/>
       <outfile xil_pn:name="apple1_s3e_starterkit_top_usage.xml"/>
     </transform>
-    <transform xil_pn:end_ts="1518997523" xil_pn:in_ck="-3296291810439397278" xil_pn:name="TRANEXT_par_spartan3" xil_pn:prop_ck="-5563652517805085498" xil_pn:start_ts="1518997506">
+    <transform xil_pn:end_ts="1518998512" xil_pn:in_ck="-3296291810439397278" xil_pn:name="TRANEXT_par_spartan3" xil_pn:prop_ck="-5563652517805085498" xil_pn:start_ts="1518998495">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <outfile xil_pn:name="_xmsgs/par.xmsgs"/>
@@ -161,7 +163,7 @@
       <outfile xil_pn:name="apple1_s3e_starterkit_top_pad.txt"/>
       <outfile xil_pn:name="apple1_s3e_starterkit_top_par.xrpt"/>
     </transform>
-    <transform xil_pn:end_ts="1518997534" xil_pn:in_ck="-5976217886481471090" xil_pn:name="TRANEXT_bitFile_spartan3e" xil_pn:prop_ck="287829442711806529" xil_pn:start_ts="1518997523">
+    <transform xil_pn:end_ts="1518998523" xil_pn:in_ck="-5976217886481471090" xil_pn:name="TRANEXT_bitFile_spartan3e" xil_pn:prop_ck="287829442711806529" xil_pn:start_ts="1518998512">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <outfile xil_pn:name="_xmsgs/bitgen.xmsgs"/>
@@ -185,7 +187,7 @@
       <status xil_pn:value="OutOfDateForInputs"/>
       <status xil_pn:value="InputChanged"/>
     </transform>
-    <transform xil_pn:end_ts="1518997523" xil_pn:in_ck="-6485470272289971291" xil_pn:name="TRAN_postRouteTrce" xil_pn:prop_ck="445577401284416186" xil_pn:start_ts="1518997520">
+    <transform xil_pn:end_ts="1518998512" xil_pn:in_ck="-6485470272289971291" xil_pn:name="TRAN_postRouteTrce" xil_pn:prop_ck="445577401284416186" xil_pn:start_ts="1518998508">
       <status xil_pn:value="SuccessfullyRun"/>
       <status xil_pn:value="ReadyToRun"/>
       <outfile xil_pn:name="_xmsgs/trce.xmsgs"/>

@@ -64,7 +64,7 @@ module apple1_de0_top #(
         clk25 <= ~clk25;
     end
     
-    wire vga_bit;
+    wire r_bit, g_bits, b_bits;
     
     //////////////////////////////////////////////////////////////////////////    
     // Core of system
@@ -85,16 +85,19 @@ module apple1_de0_top #(
         .ps2_select(1'b1),
         .vga_h_sync(VGA_HS),
         .vga_v_sync(VGA_VS),
-        .vga_red(vga_bit),
-        //.vga_grn(vga_bit),
-        //.vga_blu(vga_bit),
+        .vga_red(r_bit),
+        .vga_grn(g_bit),
+        .vga_blu(b_bit),
         .pc_monitor(pc_monitor)
     );
 
     // set the monochrome base colour here.. 
-    assign VGA_R[3:0] = vga_bit ? 4'b1000 : 4'b0000;
-    assign VGA_G[3:0] = vga_bit ? 4'b1111 : 4'b0000;
-    assign VGA_B[3:0] = vga_bit ? 4'b1000 : 4'b0000;
+    assign VGA_R[3] = r_bit;
+    assign VGA_G[3] = g_bit;
+    assign VGA_B[3] = b_bit;
+    assign VGA_R[2:0] = 3'b000;
+    assign VGA_G[2:0] = 3'b000;
+    assign VGA_B[2:0] = 3'b000;
 
     //////////////////////////////////////////////////////////////////////////    
     // Display 6502 address on 7-segment displays

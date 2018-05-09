@@ -39,7 +39,8 @@ module apple1_s3e_starterkit_top #(
     input   PS2_KBCLK,
     input   PS2_KBDAT,
 
-    input   BUTTON,
+    input   BUTTON,         // Button for RESET
+    input   SWITCH,         // Switch between PS/2 input and UART
 
     output  VGA_R,
     output  VGA_G,
@@ -78,7 +79,7 @@ module apple1_s3e_starterkit_top #(
         //.uart_cts(UART_CTS),  // there is no CTS on the board :(
         .ps2_clk(PS2_KBCLK),
         .ps2_din(PS2_KBDAT),
-        .ps2_select(1'b1),
+        .ps2_select(SWITCH),
         .vga_h_sync(VGA_HS),
         .vga_v_sync(VGA_VS),
         .vga_red(VGA_R),
