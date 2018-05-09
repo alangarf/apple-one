@@ -64,7 +64,7 @@ module apple1_de0_top #(
         clk25 <= ~clk25;
     end
     
-    wire r_bit, g_bits, b_bits;
+    wire r_bit, g_bit, b_bit;
     
     //////////////////////////////////////////////////////////////////////////    
     // Core of system
@@ -92,12 +92,9 @@ module apple1_de0_top #(
     );
 
     // set the monochrome base colour here.. 
-    assign VGA_R[3] = r_bit;
-    assign VGA_G[3] = g_bit;
-    assign VGA_B[3] = b_bit;
-    assign VGA_R[2:0] = 3'b000;
-    assign VGA_G[2:0] = 3'b000;
-    assign VGA_B[2:0] = 3'b000;
+    assign VGA_R[3:0] = {4{r_bit}};
+    assign VGA_G[3:0] = {4{g_bit}};
+    assign VGA_B[3:0] = {4{b_bit}};
 
     //////////////////////////////////////////////////////////////////////////    
     // Display 6502 address on 7-segment displays
