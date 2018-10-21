@@ -35,7 +35,6 @@ module apple1 #(
     // I/O interface to computer
     input  uart_rx,             // asynchronous serial data input from computer
     output uart_tx,             // asynchronous serial data output to computer
-    output uart_cts,            // clear to send flag to computer
 
     // I/O interface to keyboard
     input ps2_clk,              // PS/2 keyboard serial clock input
@@ -177,7 +176,6 @@ module apple1 #(
 
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
-        .uart_cts(uart_cts),
 
         .address(ab[1:0]),        // for uart
         .w_en(we & uart_cs),

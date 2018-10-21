@@ -32,8 +32,7 @@ module uart(
     output reg [7:0] dout,  // 8-bit data bus (output)
 
     input uart_rx,          // asynchronous serial data input from computer
-    output uart_tx,         // asynchronous serial data output to computer
-    output uart_cts         // clear to send flag to computer
+    output uart_tx          // asynchronous serial data output to computer
     );
 
     parameter ClkFrequency = 25000000;	// 25MHz
@@ -90,8 +89,6 @@ module uart(
                 uart_rx_status <= 'b0;
         end
     end
-
-    assign uart_cts = ~rx_idle || uart_rx_status;
 
     localparam UART_RX   = 2'b00;
     localparam UART_RXCR = 2'b01;

@@ -79,6 +79,7 @@ module apple1_top #(
         .D_OUT_0(lt_env_out)
     );
 
+    wire pc_monitor;
 
     // apple one main system
     apple1 #(
@@ -92,16 +93,15 @@ module apple1_top #(
         .rst_n(1'b1),
         //.ps2_clk(),
         //.ps2_din(),
-        .ps2_select(1'b1),
-        .uart_rx(uart_tx),
-        .uart_tx(uart_rx),
-        //.uart_cts(),        
+        .ps2_select(1'b0),
+        .uart_rx(uart_rx),
+        .uart_tx(uart_tx),
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
         .vga_red(vga_red),
         .vga_grn(vga_grn),
-        .vga_blu(vga_blu)
-        //.pc_monitor(pc_monitor)
+        .vga_blu(vga_blu),
+        .pc_monitor(pc_monitor)
     );
 
 endmodule
