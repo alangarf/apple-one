@@ -1,0 +1,17 @@
+## System Clock
+set_io clk B2
+
+## VGA Display
+set_io vga_red A6
+set_io vga_grn B6
+set_io vga_blu A7
+set_io vga_h_sync B7
+set_io vga_v_sync A8
+
+## UART
+set_io uart_tx B1
+set_io uart_rx C2
+
+## Lighthouse
+set_io lt_dat H1
+set_io lt_env J1
