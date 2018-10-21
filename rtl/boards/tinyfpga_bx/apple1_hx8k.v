@@ -18,8 +18,8 @@
 // Description: Apple 1 implementation for the iCE40HX8K dev
 //              board.
 //
-// Author.....: Miodrag Milanovic
-// Date.......: 11-2-2018
+// Author.....: Alan Garfield
+// Date.......: 21-10-2018
 //
 
 module apple1_top #(
@@ -38,9 +38,9 @@ module apple1_top #(
     // Outputs to VGA display
     output vga_h_sync,      // hozizontal VGA sync pulse
     output vga_v_sync,      // vertical VGA sync pulse
-    output reg vga_red,     // red VGA signal
-    output reg vga_grn,     // green VGA signal
-    output reg vga_blu,     // blue VGA signal
+    output vga_red,         // red VGA signal
+    output vga_grn,         // green VGA signal
+    output vga_blu,         // blue VGA signal
 
     inout lt_dat,
     inout lt_env
@@ -55,6 +55,7 @@ module apple1_top #(
             .RESET(1'b1)
             );
 
+    // lighthouse sensor
     reg lt_data_rw;
     wire lt_data_in, lt_data_out;
     SB_IO #(
@@ -79,6 +80,12 @@ module apple1_top #(
         .D_OUT_0(lt_env_out)
     );
 
+    assign lt_data_rw = 1'b0;
+    assign lt_data_out = 1'b0;
+    assign lt_env_rw = 1'b0;
+    assign lt_env_out = 1'b0;
+
+    // program counter
     wire pc_monitor;
 
     // apple one main system
@@ -91,16 +98,18 @@ module apple1_top #(
     ) my_apple1(
         .clk25(clk25),
         .rst_n(1'b1),
-        //.ps2_clk(),
-        //.ps2_din(),
         .ps2_select(1'b0),
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
+        .ps2_clk(1'b0),
+        .ps2_din(1'b0),
+        .ps2_select(1'b0),
         .vga_h_sync(vga_h_sync),
         .vga_v_sync(vga_v_sync),
         .vga_red(vga_red),
         .vga_grn(vga_grn),
         .vga_blu(vga_blu),
+        .vga_cls(1'b0),
         .pc_monitor(pc_monitor)
     );
 
