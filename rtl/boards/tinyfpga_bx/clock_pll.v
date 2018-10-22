@@ -11,15 +11,15 @@ output PLLOUTGLOBAL;
 SB_PLL40_CORE clock_pll_inst(.REFERENCECLK(REFERENCECLK),
                              .PLLOUTCORE(PLLOUTCORE),
                              .PLLOUTGLOBAL(PLLOUTGLOBAL),
-                             .EXTFEEDBACK(),
-                             .DYNAMICDELAY(),
+                             .EXTFEEDBACK(1'd0),
+                             .DYNAMICDELAY(8'd0),
                              .RESETB(RESET),
                              .BYPASS(1'b0),
-                             .LATCHINPUTVALUE(),
+                             .LATCHINPUTVALUE(1'd0),
                              .LOCK(),
-                             .SDI(),
+                             .SDI(1'd0),
                              .SDO(),
-                             .SCLK());
+                             .SCLK(1'd0));
 
 //\\ Fin=16, Fout=25;
 defparam clock_pll_inst.DIVR = 4'b0000;

@@ -177,7 +177,7 @@ module apple1 #(
         .uart_rx(uart_rx),
         .uart_tx(uart_tx),
 
-        .address(ab[1:0]),        // for uart
+        .address(ab[1:0]),
         .w_en(we & uart_cs),
         .din(dbo),
         .dout(uart_dout)
