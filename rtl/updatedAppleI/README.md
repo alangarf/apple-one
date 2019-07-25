@@ -68,6 +68,14 @@ Due to some 'not-availability' of some 7 segments characters, I used similiars '
 
 ![board use](images/board-use.jpg)
 
+- **a**: LEDs indicating the state of the load
+- **b**: Switch to change the Program Memory Block
+- **c**: Alternate USB keboard and UART text input
+- **d**: Display
+- **e**: Restart Apple I button
+- **f**: Control buttons for the display
+- **g**: Clean VGA screen
+
 ## Additional Comments
 
 I´m satisfied with this project and thanks for any support or gratitude.
