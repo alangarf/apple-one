@@ -4,6 +4,7 @@ This is a basic implementation of the original Apple 1 in Verilog. It can run th
 - [iCE40HX8K-B-EVN breakout](http://www.latticesemi.com/Products/DevelopmentBoardsAndKits/iCE40HX8KBreakoutBoard.aspx)
 - [Terasic DE0](http://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&No=364)
 - [Digilent Spartan-3E Starter Board](https://store.digilentinc.com/spartan-3e-starter-board-limited-time/)
+- [Digilent Spartan 6 Nexys 3 Board](https://store.digilentinc.com/nexys-3-spartan-6-fpga-trainer-board-limited-time-see-nexys4-ddr/)
 
 Contributor supported boards (YMMV):
 - [Blackice II](https://www.tindie.com/products/Folknology/blackice-ii/)
@@ -47,6 +48,7 @@ $ make
 - [iCE40HX8K-B-EVN breakout](boards/ice40hx8k-b-evn/README.md)
 - [Terasic DE0](boards/terasic_de0/README.md)
 - [Digilent Spartan-3E Starter Board](boards/spartan3e_starterkit/README.md)
+- [Digilent Spartan 6 Nexys 3 Board](boards/spartan6_nexys3/README.md)
 - [Blackice II](boards/blackice2/README.md)
 - [Olimex iCE40HX8K with ICE40-IO](boards/olimex_ice40hx8k_evb_ice40-io/README.md)
 - [TinyFPGA B2](boards/tinyfpga_b2/README.md)
