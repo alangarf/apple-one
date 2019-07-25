@@ -15,7 +15,7 @@ Also, the are some things as the loader or the USB keyboard, and it's nice to ad
 
 ## How works the display?
 
-![display schema]()
+![display schema](images/display.jpg)
 
 It's made of 4 digit of 7 segments each, so 32 bits for correct display of each "acronim of a program"
 
@@ -66,7 +66,7 @@ Due to some 'not-availability' of some 7 segments characters, I used similiars '
               
 ## Use of the board
 
-![board use]()
+![board use](images/board-use.jpg)
 
 ## Additional Comments
 
