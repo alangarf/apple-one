@@ -7,6 +7,7 @@ This is a basic implementation of the original Apple 1 in Verilog. It can run th
 
 Contributor supported boards (YMMV):
 - [Blackice II](https://www.tindie.com/products/Folknology/blackice-ii/)
+- [icoBoard](http://icoboard.org/)
 - [Olimex iCE40HX8K with ICE40-IO](https://www.olimex.com/Products/FPGA/iCE40/iCE40HX8K-EVB/open-source-hardware)
 - [TinyFPGA B2](http://tinyfpga.com/)
 - [Upduino](http://gnarlygrey.atspace.cc/development-platform.html)

@@ -1,0 +1,42 @@
+# For the icoBoard
+
+### 100Mhz clk
+set_io clk			R9
+
+### VGA display
+set_io vga_h_sync	B8
+set_io vga_v_sync	A9
+set_io vga_r[0]		A5
+set_io vga_r[1]		A2
+set_io vga_r[2]		C3
+set_io vga_r[3]		B4
+set_io vga_g[0]		D8
+set_io vga_g[1]		B9
+set_io vga_g[2]		B10
+set_io vga_g[3]		B11
+set_io vga_b[0]		B7
+set_io vga_b[1]		B6
+set_io vga_b[2]		B3
+set_io vga_b[3]		B5
+
+### LEDs
+# onboard LEDs
+set_io led[0]		C8
+set_io led[1]		F7
+
+### PS/2
+set_io ps2_din		L9
+set_io ps2_clk		L7
+
+### Buttons
+# onboard buttons
+set_io button[0]	K11
+set_io button[1]	P13
+
+### UART
+#set_io uart_rts	T15
+#set_io uart_rx		T14
+#set_io uart_tx		T11
+set_io uart_rx		T11
+set_io uart_tx		T14
+set_io uart_cts		R10
