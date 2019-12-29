@@ -38,6 +38,7 @@ module vga #(
     input [1:0] mode,       // 2-bit mode setting for pixel doubling
     input [2:0] bg_colour,  // 3 bit background colour
     input [2:0] fg_colour,  // 3 bit foreground colour
+    output vga_blank,       // set when out of active regions
     input clr_screen        // clear screen button
 );
 
@@ -93,6 +94,8 @@ module vga #(
     wire v_active;
     assign h_active = (h_cnt >= hbp && h_cnt < hfp);
     assign v_active = (v_cnt >= vbp && v_cnt < vfp);
+
+    assign vga_blank = !(h_active && v_active);
 
     //////////////////////////////////////////////////////////////////////////
     // VGA Sync Generation

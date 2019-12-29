@@ -53,7 +53,11 @@ $(BUILDDIR)/apple1.json: $(SOURCEDIR)/apple1.v \
 	$(SOURCEDIR)/vga/font_rom.v \
 	$(SOURCEDIR)/ps2keyboard/debounce.v \
 	$(SOURCEDIR)/ps2keyboard/ps2keyboard.v \
-	$(SOURCEDIR)/boards/ulx3s/apple1_ecp5.v
+	$(SOURCEDIR)/boards/ulx3s/apple1_dvi.v \
+	$(SOURCEDIR)/boards/ulx3s/vga2dvid.v \
+	$(SOURCEDIR)/boards/ulx3s/clk_25_250_125_25.v \
+	$(SOURCEDIR)/boards/ulx3s/tmds_encoder.v \
+	$(SOURCEDIR)/boards/ulx3s/fake_differential.v
 
 prog: dir $(BUILDDIR)/apple1.bit
 	ujprog $(filter-out $<,$^)

@@ -49,6 +49,7 @@ module apple1 #(
     output vga_grn,             // green VGA signal
     output vga_blu,             // blue VGA signal
     input vga_cls,              // clear screen button
+    output vga_blank,           // set when vga not in active area
 
     // Debugging ports
     output [15:0] pc_monitor    // spy for program counter / debugging
@@ -223,6 +224,7 @@ module apple1 #(
         .mode(font_mode),
         .fg_colour(fg_colour),
         .bg_colour(bg_colour),
+	.vga_blank(vga_blank),
         .clr_screen(vga_cls)
     );
 
