@@ -103,7 +103,7 @@ module apple1 #(
     //////////////////////////////////////////////////////////////////////////
     // Address Decoding
 
-    wire ram_cs =   (ab[15:13] ==  3'b000);              // 0x0000 -> 0x1FFF
+    wire ram_cs =   (ab[15:14] ==  2'b00);               // 0x0000 -> 0x3FFF
 
     // font mode, background and foreground colour
     wire vga_mode_cs = (ab[15:2] == 14'b11000000000000); // 0xC000 -> 0xC003
@@ -134,7 +134,7 @@ module apple1 #(
         .RAM_FILENAME (RAM_FILENAME)
     ) my_ram(
         .clk(clk25),
-        .address(ab[12:0]),
+        .address(ab[13:0]),
         .w_en(we & ram_cs),
         .din(dbo),
         .dout(ram_dout)

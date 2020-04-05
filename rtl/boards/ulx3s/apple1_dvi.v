@@ -33,7 +33,7 @@ module apple1_top #(
     // I/O interface to computer
     input  uart_rx,         // asynchronous serial data input from computer
     output uart_tx,         // asynchronous serial data output to computer
-    output uart_cts,        // clear to send flag to computer - not used
+    //output uart_cts,        // clear to send flag to computer - not used
 
     // I/O interface to keyboard
     input ps2_clk,          // PS/2 keyboard serial clock input
@@ -46,8 +46,10 @@ module apple1_top #(
 
     // Debugging ports
     output [3:0] led,
-    input [1:0] button      // 2 buttons on board
+    input [1:0] button,     // 2 buttons on board
+    input [3:0] sw
 );
+    wire uart_cts;
 
     parameter C_ddr = 1'b1; // 0:SDR 1:DDR
 
@@ -127,7 +129,7 @@ module apple1_top #(
 
         .ps2_clk(ps2_clk),
         .ps2_din(ps2_din),
-        .ps2_select(1'b1),       // PS/2 enabled, UART TX disabled
+        .ps2_select(sw[0]),       // PS/2 enabled, UART TX disabled
         //.ps2_select(1'b0),       // PS/2 disabled, UART TX enabled
 
         .vga_h_sync(vga_h_sync),

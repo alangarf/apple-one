@@ -26,13 +26,13 @@ module ram #(
     parameter RAM_FILENAME        = "../../../roms/ram.hex"
 ) (
     input clk,              // clock signal
-    input [12:0] address,   // address bus
+    input [13:0] address,   // address bus
     input w_en,             // active high write enable strobe
     input [7:0] din,        // 8-bit data bus (input)
     output reg [7:0] dout   // 8-bit data bus (output)
 );
 
-    reg [7:0] ram_data[0:8191];
+    reg [7:0] ram_data[0:16383];
 
     initial
         $readmemh(RAM_FILENAME, ram_data, 0, 8191);
