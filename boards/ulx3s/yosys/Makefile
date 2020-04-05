@@ -24,7 +24,7 @@ $(BUILDDIR)/%.config: $(PIN_DEF) $(BUILDDIR)/%.json
 	 nextpnr-ecp5 --${DEVICE} --package CABGA381 --freq 25 --textcfg  $@ --json $(filter-out $<,$^) --lpf $< 
 
 $(BUILDDIR)/%.bit: $(BUILDDIR)/%.config
-	ecppack --idcode ${IDCODE} $^ $@
+	ecppack --compress --idcode ${IDCODE} $^ $@
 
 %_tb.vvp: %_tb.v %.v
 	iverilog -o $@ $^
