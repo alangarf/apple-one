@@ -65,6 +65,10 @@ $(BUILDDIR)/apple1.blif: $(SOURCEDIR)/apple1.v \
 	$(SOURCEDIR)/vga/font_rom.v \
 	$(SOURCEDIR)/ps2keyboard/debounce.v \
 	$(SOURCEDIR)/ps2keyboard/ps2keyboard.v \
+	$(SOURCEDIR)/ukp/ukp.v \
+	$(SOURCEDIR)/ukp/ukpram.v \
+	$(SOURCEDIR)/ukp/ukprom.v \
+	$(SOURCEDIR)/ukp/keymap.v \
 	$(SOURCEDIR)/boards/ice40hx8k-b-evn/apple1_hx8k.v \
 	$(BUILDDIR)/pll.sv
 

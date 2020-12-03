@@ -30,6 +30,7 @@ module apple1 #(
     parameter WOZMON_ROM_FILENAME = "../../../roms/wozmon.hex"
 ) (
     input  clk25,               // 25 MHz master clock
+    input  clkusb,              // 12 MHz usb clock
     input  rst_n,               // active low synchronous reset (needed for simulation)
 
     // I/O interface to computer
@@ -41,6 +42,13 @@ module apple1 #(
     input ps2_clk,              // PS/2 keyboard serial clock input
     input ps2_din,              // PS/2 keyboard serial data input
     input ps2_select,           // Input to select the PS/2 keyboard instead of the UART
+
+    // I/O interface to USB keyboard
+    input usb_dm_in,            // USB keyboard minus pin
+    input usb_dp_in,            // USB keyboard plus pin
+    output usb_en,
+    output usb_dm_out,          // USB keyboard minus pin
+    output usb_dp_out,          // USB keyboard plus pin
 
     // Outputs to VGA display
     output vga_h_sync,          // hozizontal VGA sync pulse
@@ -103,6 +111,9 @@ module apple1 #(
     // Address Decoding
 
     wire ram_cs =   (ab[15:13] ==  3'b000);              // 0x0000 -> 0x1FFF
+
+    // ukp
+    wire ukp_cs =   (ab[15:12] == 4'b1011);              // 0xB000 -> 0xBFFF
 
     // font mode, background and foreground colour
     wire vga_mode_cs = (ab[15:2] == 14'b11000000000000); // 0xC000 -> 0xC003
@@ -226,6 +237,31 @@ module apple1 #(
         .clr_screen(vga_cls)
     );
 
+    // USB keyboard interface
+    reg [7:0] ukp_dout;
+    wire [7:0] ukp_d;
+    wire usb_int;
+    ukp my_ukp(
+        .clk25(clk25),
+        .clkusb(clkusb),
+        .rst(rst),
+        .usb_en(usb_en),
+        .usb_dm_in(usb_dm_in),
+        .usb_dp_in(usb_dp_in),
+        .usb_dm_out(usb_dm_out),
+        .usb_dp_out(usb_dp_out),
+        .record_n(usb_int),
+        .kbd_adr(ab[3:0]),
+        .kbd_data(ukp_d),
+        .debug(debug)
+    );
+
+    always @(posedge clk25)
+    begin
+        if (usb_int)
+            ukp_dout <= ukp_d;
+    end
+
     // Handle font mode and foreground and background
     // colours. This so isn't Apple One authentic, but
     // it can't hurt to have some fun. :D
@@ -274,5 +310,6 @@ module apple1 #(
                  uart_cs     ? uart_dout :
                  ps2kb_cs    ? ps2_dout :
                  vga_mode_cs ? vga_mode_dout :
+                 ukp_cs      ? ukp_dout :
                  8'hFF;
 endmodule
