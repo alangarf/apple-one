@@ -4,7 +4,7 @@ This adds support for building the Apple One design for [Ulx4m](https://intergal
 
 ## Peripheral support
 
-HDMI output on the built-in HDMI connector
+HDMI output on the first HDMI connector on a CM4 I/O board
 
 PS/2 keyboard via a Digilent PS2 keyboard PMOD on gpio[25] and gpio[26].
 
@@ -13,7 +13,7 @@ Install a recent ECP5 open source toolchain, and do:
 
 ```
 $ cd yosys
-$ make
+$ make dfu
 ```
 
 ## Use
