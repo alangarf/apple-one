@@ -16,7 +16,7 @@ Contributor supported boards (YMMV):
  <img src="media/apple-one.png" alt="Apple One Running">
 </p>
 
-This project borrows heavily from the *awesome* work of Andrew Holme and his ["Pool"](http://www.aholme.co.uk/6502/Main.htm) project and [Arlet Otten's](https://github.com/Arlet/verilog-6502) tiny 6502 core. Also many special thanks to ["sbprojects.com"](https://www.sbprojects.com/projects/apple1/index.php) for the wealth of information I gleaned from there.
+This project borrows heavily from the *awesome* work of Andrew Holme and his ["Pool"](http://www.aholme.co.uk/6502/Main.htm) project and [Arlet Otten's](https://github.com/Arlet/verilog-6502) tiny 6502 core. Also many special thanks to [sbprojects.com](https://www.sbprojects.net/projects/apple1/index.php) for the wealth of information I gleaned from there.
 
 ## Memory Map
  
