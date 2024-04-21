@@ -1,4 +1,4 @@
-# TinyFPGA B2 support
+# ICE40UPDev Board support
 
 ![ICE40UPDevBoard board render](images/ICE40UPDevBoard.png)
 
