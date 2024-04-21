@@ -1,0 +1,35 @@
+### UART - This is the first 3 userheader pins, USER0 through 2 on the board
+set_io uart_rx   45
+set_io uart_tx   46 
+set_io uart_cts  47
+
+### LEDs
+set_io led[0]   38
+set_io led[1]   39
+set_io led[2]   40
+
+set_io vga_h_sync 9
+set_io vga_v_sync 10
+set_io vga_clk 11      # DAC clock
+set_io vga_blank_n 20  # Blanking pin
+
+set_io vga_r[3] 27
+set_io vga_r[2] 28
+set_io vga_r[1] 31
+set_io vga_r[0] 32
+set_io vga_g[3] 21
+set_io vga_g[2] 23
+set_io vga_g[1] 25
+set_io vga_g[0] 26
+set_io vga_b[3] 12
+set_io vga_b[2] 13
+set_io vga_b[1] 18
+set_io vga_b[0] 19
+
+set_io clk 44
+
+set_io ps2_din 36
+set_io ps2_clk 37
+
+set_io button 41
+
