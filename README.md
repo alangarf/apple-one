@@ -9,14 +9,14 @@ Contributor supported boards (YMMV):
 - [Blackice II](https://www.tindie.com/products/Folknology/blackice-ii/)
 - [icoBoard](http://icoboard.org/)
 - [Olimex iCE40HX8K with ICE40-IO](https://www.olimex.com/Products/FPGA/iCE40/iCE40HX8K-EVB/open-source-hardware)
-- [TinyFPGA B2](http://tinyfpga.com/)
-- [Upduino](http://gnarlygrey.atspace.cc/development-platform.html)
+- TinyFPGA B2
+- Upduino
 
 <p align="center">
  <img src="media/apple-one.png" alt="Apple One Running">
 </p>
 
-This project borrows heavily from the *awesome* work of Andrew Holme and his ["Pool"](http://www.aholme.co.uk/6502/Main.htm) project and [Arlet Otten's](https://github.com/Arlet/verilog-6502) tiny 6502 core. Also many special thanks to [sbprojects.com](https://www.sbprojects.net/projects/apple1/index.php) for the wealth of information I gleaned from there.
+This project borrows heavily from the *awesome* work of Andrew Holme and his ["Pool"](http://www.aholme.co.uk/6502/Main.htm) project and [Arlet Otten's](https://github.com/Arlet/verilog-6502) tiny 6502 core. Also many special thanks to [sbprojects.net](https://www.sbprojects.net/projects/apple1/index.php) for the wealth of information I gleaned from there.
 
 ## Memory Map
  
@@ -45,11 +45,13 @@ $ make
 ```
 
 ### Board READMEs
-- [iCE40HX8K-B-EVN breakout](boards/ice40hx8k-b-evn/README.md)
-- [Terasic DE0](boards/terasic_de0/README.md)
-- [Digilent Spartan-3E Starter Board](boards/spartan3e_starterkit/README.md)
 - [Blackice II](boards/blackice2/README.md)
+- [iCE40HX8K-B-EVN breakout](boards/ice40hx8k-b-evn/README.md)
+- [iCE40UpDEvBoard](boards/ice40updevboard/README.md)
+- [icoBoard](boards/icoboard)
 - [Olimex iCE40HX8K with ICE40-IO](boards/olimex_ice40hx8k_evb_ice40-io/README.md)
+- [Digilent Spartan-3E Starter Board](boards/spartan3e_starterkit/README.md)
+- [Terasic DE0](boards/terasic_de0/README.md)
 - [TinyFPGA B2](boards/tinyfpga_b2/README.md)
 - [Upduino](boards/upduino/README.md)
 
@@ -71,7 +73,6 @@ Depending on the board you can use serial to communicate with the Apple 1, some 
  
 A very basic hardware flow control is implemented. You should turn on CTS support as this will allow you to cut and paste code into the Woz Mon without the Apple 1 missing any bytes.
 
- 
 ## VGA / PS/2 Setup
  
 Most boards support PS/2 input and VGA output. This is the most support method, however all output is replicated to the UART (if available) and the PS/2 keyboard input can be replaced with the UART out if the "toggle" mode buttons is selected.
@@ -104,6 +105,6 @@ These controls are mapped to memory locations you can tweak using WozMon and are
  
 ## Helping
  
-All PRs and suggestions happily accepted! Please any support us most welcome, and it would be good to have this as feature complete as possible with the real Apple1. I'd like to implement the cassette interface next with the basic electronics to talk to the headphone/mic jack of a mobile phone to upload and download recordings as a means to save programs.
+All PRs and suggestions happily accepted! Please, any support us most welcome. It would be good to have this Apple 1 as feature complete as possible with the real Apple 1. I'd like to implement the cassette interface with the basic electronics to talk to the headphone/mic jack of a mobile phone to upload and download recordings as a means to save programs.
  
 But yes, help happily accepted!
