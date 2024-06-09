@@ -1,0 +1,38 @@
+# For the Blackice Mx board
+
+### UART 
+set_io uart_rx   61
+set_io uart_tx   62 
+set_io uart_cts  29
+
+### LEDs
+set_io led[0]   55
+set_io led[1]   56
+set_io led[2]   34
+set_io led[3]   33
+
+### VGA Display
+set_io vga_h_sync 1
+set_io vga_v_sync 2
+set_io vga_r[3] 139
+set_io vga_r[2] 138
+set_io vga_r[1] 142
+set_io vga_r[0] 141
+set_io vga_g[3] 4
+set_io vga_g[2] 3
+set_io vga_g[1] 144
+set_io vga_g[0] 143
+set_io vga_b[3] 135
+set_io vga_b[2] 134
+set_io vga_b[1] 137
+set_io vga_b[0] 136
+
+set_io clk25 60
+
+set_io ps2_din 19
+set_io ps2_clk 23
+
+### Buttons
+set_io -pullup yes button[0] 49
+set_io -pullup yes button[1] 52
+
