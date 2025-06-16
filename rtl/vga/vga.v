@@ -32,6 +32,7 @@ module vga #(
     output vga_red,         // red VGA signal
     output vga_grn,         // green VGA signal
     output vga_blu,         // blue VGA signal
+    output vga_de,       // VGA blanking signal
     input address,          // address bus
     input w_en,             // active high write enable strobe
     input [7:0] din,        // 8-bit data bus (input)
@@ -93,6 +94,8 @@ module vga #(
     wire v_active;
     assign h_active = (h_cnt >= hbp && h_cnt < hfp);
     assign v_active = (v_cnt >= vbp && v_cnt < vfp);
+
+    assign vga_de = (h_active && v_active);
 
     //////////////////////////////////////////////////////////////////////////
     // VGA Sync Generation

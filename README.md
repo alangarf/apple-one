@@ -48,6 +48,7 @@ $ make
 - [Blackice II](boards/blackice2/README.md)
 - [iCE40HX8K-B-EVN breakout](boards/ice40hx8k-b-evn/README.md)
 - [iCE40UpDEvBoard](boards/ice40updevboard/README.md)
+- [Icepi Zero](boards/icepi_zero/README.md)
 - [icoBoard](boards/icoboard)
 - [Olimex iCE40HX8K with ICE40-IO](boards/olimex_ice40hx8k_evb_ice40-io/README.md)
 - [Digilent Spartan-3E Starter Board](boards/spartan3e_starterkit/README.md)

@@ -49,6 +49,7 @@ module apple1 #(
     output vga_grn,             // green VGA signal
     output vga_blu,             // blue VGA signal
     input vga_cls,              // clear screen button
+    output vga_de,              // display enable
 
     // Debugging ports
     output [15:0] pc_monitor    // spy for program counter / debugging
@@ -216,6 +217,7 @@ module apple1 #(
         .vga_red(vga_red),
         .vga_grn(vga_grn),
         .vga_blu(vga_blu),
+        .vga_de(vga_de),
 
         .address(ab[0]),
         .w_en(we & vga_cs),
