@@ -47,7 +47,7 @@ module apple1_top #(
 
     // Debugging ports
     output [3:0] led,
-    input button
+    input  [1:0] button
 );
     wire uart_cts; // No CTS pin
 
@@ -74,8 +74,17 @@ module apple1_top #(
     debounce reset_button (
         .clk25(clkp),
         .rst(1'b0),
-        .sig_in(button),
+        .sig_in(button[0]),
         .sig_out(reset_n)
+    );
+
+    // debounce clear button
+    wire cls;
+    debounce cls_button (
+        .clk25(clkp),
+        .rst(1'b1),
+        .sig_in(~button[1]),
+        .sig_out(cls)
     );
 
     // apple one main system
@@ -101,7 +110,7 @@ module apple1_top #(
         .vga_h_sync(hsync),
         .vga_v_sync(vsync),
         .vga_red(vga_bit),
-        .vga_cls(~reset_n),
+        .vga_cls(~cls),
 	.vga_de(de)
     );
 
