@@ -32,8 +32,8 @@ module apple1_top #(
     input  clk,               // 50 MHz board clock
 
     // I/O interface to computer
-    input  usb_tx,            // asynchronous serial data input from computer
-    output usb_rx,            // asynchronous serial data output to computer
+    input  usb_rx,            // asynchronous serial data input from computer
+    output usb_tx,            // asynchronous serial data output to computer
 
     // I/O interface to keyboard
     input [1:0] usb_dp,       // PS/2 keyboard serial clock input
@@ -98,8 +98,8 @@ module apple1_top #(
         .clk25(clkp),
         .rst_n(reset_n),
 
-        .uart_rx(usb_tx),
-        .uart_tx(usb_rx),
+        .uart_rx(usb_rx),
+        .uart_tx(usb_tx),
         .uart_cts(uart_cts),
 
         .ps2_clk(usb_dp[0]),
