@@ -10,10 +10,10 @@ module vga2tmds (
 	input  wire  [7:0] b,
 	output logic [3:0] tmds
 );
-	assign tmds[3] = bts[0];
-	assign tmds[2] = gts[0];
-	assign tmds[1] = rts[0];
-	assign tmds[0] = clkp;   // Third is clock signal
+	assign tmds[0] = bts[0];
+	assign tmds[1] = gts[0];
+	assign tmds[2] = rts[0];
+	assign tmds[3] = clkp;   // Third is clock signal
 
 	logic [3:0] counter;
 	logic       load;
