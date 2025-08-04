@@ -46,7 +46,7 @@ module apple1_top #(
     output [3:0] gpdi_dp,
 
     // Debugging ports
-    output [3:0] led,
+    output [4:0] led,
     input  [1:0] button
 );
     wire uart_cts; // No CTS pin
@@ -61,6 +61,7 @@ module apple1_top #(
     assign led[1] = reset_n;
     assign led[2] = hsync;
     assign led[3] = 1'b1;
+    assign led[4] = 1'b0;
 
     wire vga_bit;
 
@@ -82,7 +83,7 @@ module apple1_top #(
     wire cls;
     debounce cls_button (
         .clk25(clkp),
-        .rst(1'b1),
+        .rst(1'b0),
         .sig_in(~button[1]),
         .sig_out(cls)
     );
@@ -110,8 +111,8 @@ module apple1_top #(
         .vga_h_sync(hsync),
         .vga_v_sync(vsync),
         .vga_red(vga_bit),
-        .vga_cls(~cls),
-	.vga_de(de)
+        .vga_cls(cls),
+        .vga_de(de)
     );
 
     assign usb_pull_dn[0] = 1'b1; // PS/2 emulation mode
