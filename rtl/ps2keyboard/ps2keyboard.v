@@ -44,7 +44,7 @@ module ps2keyboard (
 
     wire ps2_clkdb;         // debounced PS/2 clock signal
     reg  prev_ps2_clkdb;    // previous clock state (in clk25 domain)
-    
+
     // keyboard translation signals
     reg [7:0]  ascii;       // ASCII code of received character
     reg ascii_rdy;          // new ASCII character received
@@ -70,7 +70,7 @@ module ps2keyboard (
         else
         begin
             rx_flag <= 1'b0;  // reset the new data flag register
-            
+
             // check for negative edge of PS/2 clock
             // and sample the state of the PS/2 data line
             if ((prev_ps2_clkdb == 1'b1) && (ps2_clkdb == 1'b0))
@@ -84,7 +84,7 @@ module ps2keyboard (
                     // scan code here, including
                     // start, parity and stop bits.
                     rxcnt <= 0;
-                    
+
                     // signal new data is present
                     // note: this signal will only remain high for one 
                     // clock cycle!
@@ -93,13 +93,13 @@ module ps2keyboard (
                     rx_flag <= 1'b1;
                 end
             end
-            
+
             // update previous clock state
             prev_ps2_clkdb <= ps2_clkdb;            
-            
+
         end
     end
-    
+
 //
 // IBM Keyboard code page translation
 // state machine for US keyboard layout
@@ -138,11 +138,11 @@ module ps2keyboard (
                     dout <= {ascii_rdy, 7'b0};
                 end
             end
-            
+
             // keyboard translation state machine
             if (rx_flag == 1'b1)
-            begin                
-                // latch data from the serial buffer into 
+            begin
+                // latch data from the serial buffer into
                 // the rx scancode buffer.
                 rx <= rxshiftbuf[8:1];
                 case(cur_state)
@@ -154,26 +154,26 @@ module ps2keyboard (
                                 next_state = S_KEYE0;
                             else
                             begin
-                                // check the debounce timer, if this is 
+                                // check the debounce timer, if this is
                                 // not zero, a new key arrived too quickly
                                 // and we simply discard it. For better
                                 // debouncing, we should check if the key
                                 // is actually the same as the previous received/
                                 // key, but let's try this first to see if it works
                                 // ok...
-                                
+
                                 //if (debounce_timer == 16'd0)
                                 //begin
                                     ascii_rdy <= 1'b1;  // new key has arrived!
                                     //debounce_timer <= 16'hFFFF; // reset the debounce timer
                                 //end
-                                
+
                                 // check for a SHIFT key
                                 if ((rx == 8'h59) || (rx == 8'h12))
                                 begin
                                     shift <= 1'b1;
                                     ascii_rdy <= 1'b0;  // shift is not a key!
-                                end                            
+                                end
                                 else begin
                                     if (!shift)
                                         case(rx)
@@ -218,7 +218,7 @@ module ps2keyboard (
                                             8'h4E:  ascii <= "-";
                                             8'h55:  ascii <= "=";
                                             8'h5D:  ascii <= 8'h34;     // backslash
-                                            8'h66:  ascii <= "_";      // backspace
+                                            8'h66:  ascii <= "_";       // backspace
                                             8'h29:  ascii <= " ";
 
                                             8'h5A:  ascii <= 8'd13;     // enter
@@ -229,7 +229,7 @@ module ps2keyboard (
                                             8'h41:  ascii <= ",";
                                             8'h49:  ascii <= ".";
                                             8'h4A:  ascii <= "/";
-                                            default: 
+                                            default:
                                                 // unsupported key!
                                                 begin
                                                     ascii_rdy <= 1'b0;  // shift is not a key!
@@ -291,7 +291,7 @@ module ps2keyboard (
                                             8'h41:  ascii <= "<";
                                             8'h49:  ascii <= ">";
                                             8'h4A:  ascii <= "?";
-                                            default: 
+                                            default:
                                                 // unsupported key!
                                                 begin
                                                     ascii_rdy <= 1'b0;  // shift is not a key!

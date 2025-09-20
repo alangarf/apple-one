@@ -37,10 +37,17 @@ module apple1 #(
     output uart_tx,             // asynchronous serial data output to computer
     output uart_cts,            // clear to send flag to computer
 
-    // I/O interface to keyboard
+    // I/O interface to PS/2 keyboard
     input ps2_clk,              // PS/2 keyboard serial clock input
     input ps2_din,              // PS/2 keyboard serial data input
     input ps2_select,           // Input to select the PS/2 keyboard instead of the UART
+
+    // I/O interface to USB keyboard
+    input usb_clk,              // 12MHz USB clock
+    inout usb_dm,               // USB data minus signal
+    inout usb_dp,               // USB data plus signal
+    output usb_led_err,         // USB connection error LED
+    output usb_led_act,         // USB activity LED
 
     // Outputs to VGA display
     output vga_h_sync,          // hozizontal VGA sync pulse
@@ -119,6 +126,9 @@ module apple1 #(
     // select PS/2 keyboard input when selected.
     wire ps2kb_cs = ps2_select & rx_cs;
 
+    // select PS/2 keyboard input when selected.
+    wire usb_cs = rx_cs;
+
     // VGA always get characters when they are sent.
     wire vga_cs   = tx_cs;
 
@@ -186,9 +196,23 @@ module apple1 #(
         .dout(uart_dout)
     );
 
+    // USB Keyboard
+    wire [7:0] usb_dout;
+    usb_keyboard my_usb_keyboard(
+        .usb_clk(usb_clk),
+        .rst(rst),
+        .usb_dm(usb_dm),
+        .usb_dp(usb_dp),
+        .cs(usb_cs),
+        .address(ab[0]),
+        .dout(usb_dout),
+        .led_connerr(usb_led_err),
+        .led_activity(usb_led_act)
+    );
+
     // PS/2 keyboard interface
     wire [7:0] ps2_dout;
-    ps2keyboard keyboard(
+    ps2keyboard my_ps2_keyboard(
         .clk25(clk25),
         .rst(rst),
         .key_clk(ps2_clk),
