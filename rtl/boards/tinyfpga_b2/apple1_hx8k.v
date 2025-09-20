@@ -34,7 +34,7 @@ module apple1_top #(
     // Outputs to VGA display
     output pin4,          // hozizontal VGA sync pulse
     output pin5,          // vertical VGA sync pulse
-    
+
     input  pin6,          // PS/2 data input
     input  pin7,          // PS/2 clock
 
@@ -42,7 +42,7 @@ module apple1_top #(
     input  pin11,         // asynchronous serial data input from computer
     output pin12,         // asynchronous serial data output to computer
     output pin13,         // clear to send flag to computer
-    
+
     output reg pin24,     // red VGA signal
     output reg pin23,     // red VGA signal
     output reg pin22,     // green VGA signal
@@ -84,7 +84,7 @@ module apple1_top #(
         .ps2_select(1'b0), // change to 1 in order to test with keyboard
         .uart_rx(pin11),
         .uart_tx(pin12),
-        .uart_cts(pin13),        
+        .uart_cts(pin13),
         .vga_h_sync(pin4),
         .vga_v_sync(pin5),
         .vga_red(vga_red),

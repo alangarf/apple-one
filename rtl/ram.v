@@ -44,4 +44,4 @@ module ram #(
     end
 
 endmodule
-     
+

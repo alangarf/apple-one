@@ -19,7 +19,7 @@
 //
 // Author.....: Niels A. Moseley
 // Date.......: 26-1-2018
-// 
+//
 
 module segmentdisplay (
     clk,
@@ -35,7 +35,7 @@ module segmentdisplay (
     always @(posedge clk)
     begin
         if (latch == 1)
-        begin 
+        begin
             case (hexdigit_in)
                 4'b0000:
                     display_out <= 7'b1000000;
@@ -66,11 +66,11 @@ module segmentdisplay (
                 4'b1101:
                     display_out <= 7'b0100001;
                 4'b1110:
-                    display_out <= 7'b0000110;    
+                    display_out <= 7'b0000110;
                 4'b1111:
                     display_out <= 7'b0001110;
             endcase
-        end                                                                                                   
+        end
     end
 endmodule
 

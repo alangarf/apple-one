@@ -87,5 +87,5 @@ module apple1_top #(
         .pc_monitor(leds),
 	.ps2_select(1'b0), // no ps2 keyboard right now
     );
-    
+
 endmodule

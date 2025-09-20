@@ -22,7 +22,17 @@
 //
 module vga #(
     parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin",
-    parameter FONT_ROM_FILENAME   = "../../../roms/vga_font_bitreversed.hex"
+    parameter FONT_ROM_FILENAME   = "../../../roms/vga_font_bitreversed.hex",
+
+    // video structure constants
+    parameter h_pixels = 799,   // horizontal pixels per line
+    parameter v_lines = 520,    // vertical lines per frame
+    parameter h_pulse = 96,     // hsync pulse length
+    parameter v_pulse = 2,      // vsync pulse length
+    parameter hbp = 144,        // end of horizontal back porch
+    parameter hfp = 784,        // beginning of horizontal front porch
+    parameter vbp = 31,         // end of vertical back porch
+    parameter vfp = 511         // beginning of vertical front porch
 ) (
     input clk25,            // clock signal
     input enable,           // clock enable strobe,
@@ -32,7 +42,7 @@ module vga #(
     output vga_red,         // red VGA signal
     output vga_grn,         // green VGA signal
     output vga_blu,         // blue VGA signal
-    output vga_de,       // VGA blanking signal
+    output vga_de,          // VGA blanking signal
     input address,          // address bus
     input w_en,             // active high write enable strobe
     input [7:0] din,        // 8-bit data bus (input)
@@ -43,17 +53,7 @@ module vga #(
 );
 
     //////////////////////////////////////////////////////////////////////////
-    // Registers and Parameters
-
-    // video structure constants
-    parameter h_pixels = 799;   // horizontal pixels per line
-    parameter v_lines = 520;    // vertical lines per frame
-    parameter h_pulse = 96;     // hsync pulse length
-    parameter v_pulse = 2;      // vsync pulse length
-    parameter hbp = 144;        // end of horizontal back porch
-    parameter hfp = 784;        // beginning of horizontal front porch
-    parameter vbp = 31;         // end of vertical back porch
-    parameter vfp = 511;        // beginning of vertical front porch
+    // Registers
 
     // registers for storing the horizontal & vertical counters
     reg [9:0] h_cnt;
@@ -111,7 +111,7 @@ module vga #(
         else
         begin
             if (h_cnt < h_pixels)
-                h_cnt <= h_cnt + 1;
+                h_cnt <= h_cnt + 1'd1;
 
             else
             begin
@@ -120,15 +120,15 @@ module vga #(
 
                 if (v_cnt < v_lines)
                 begin
-                    v_cnt <= v_cnt + 1;
+                    v_cnt <= v_cnt + 1'd1;
 
                     // count 20 rows, so 480px / 20 = 24 rows
                     if (v_active)
                     begin
-                        v_dot <= v_dot + 1;
+                        v_dot <= v_dot + 1'd1;
 
                         if (v_dot == 5'd19)
-                            v_dot <= 0;
+                            v_dot <= 1'd0;
                     end
                 end
                 else
@@ -184,15 +184,15 @@ module vga #(
             // start the pipeline for reading vram and font details
             // 3 pixel clock cycles early
             if (h_dot == 4'hC)
-                vram_h_addr <= vram_h_addr + 'd1;
+                vram_h_addr <= vram_h_addr + 1'd1;
 
             // advance to next row when last display line is reached for row
             if (v_dot == 5'd19 && h_cnt == 10'd0)
-                vram_v_addr <= vram_v_addr + 'd1;
+                vram_v_addr <= vram_v_addr + 1'd1;
 
             // clear the address registers if we're not in visible area
             if (~h_active)
-                vram_h_addr <= 'd0;
+                vram_h_addr <= 1'd0;
             if (~v_active)
                 vram_v_addr <= vram_start_addr;
         end
@@ -206,10 +206,10 @@ module vga #(
     always @(posedge clk25 or posedge rst)
     begin
         if (rst)
-            blink_div <= 0;
+            blink_div <= 1'd0;
         else
         begin
-            blink_div <= blink_div + 1;
+            blink_div <= blink_div + 1'd1;
 
             if (blink_div == 23'd0)
                 blink <= ~blink;
@@ -224,7 +224,7 @@ module vga #(
     assign vram_r_addr = {vram_v_addr, vram_h_addr};
 
     assign font_char = (vram_r_addr != cursor) ? vram_dout : (blink) ? 6'd0 : 6'd32;
-    assign font_pixel = h_dot + 1; // offset by one to get pixel into right cycle,
+    assign font_pixel = h_dot + 1'd1; // offset by one to get pixel into right cycle,
                                    // font output one pixel clk behind
     assign font_line = v_dot;
 
@@ -253,7 +253,7 @@ module vga #(
         end
         else
         begin
-            vram_w_en <= 0;
+            vram_w_en <= 1'd0;
 
             if (clr_screen)
             begin
@@ -267,7 +267,7 @@ module vga #(
                 // clear the screen
                 vram_w_addr <= {vram_v_addr, vram_h_addr};
                 vram_din <= 6'd32;
-                vram_w_en <= 1;
+                vram_w_en <= 1'd1;
             end
             else
             begin
@@ -275,13 +275,13 @@ module vga #(
                 if (h_cursor == 6'd40)
                 begin
                     h_cursor <= 6'd0;
-                    v_cursor <= v_cursor + 'd1;
+                    v_cursor <= v_cursor + 1'd1;
                 end
 
                 if (v_cursor == vram_end_addr)
                 begin
-                    vram_start_addr <= vram_start_addr + 'd1;
-                    vram_end_addr <= vram_end_addr + 'd1;
+                    vram_start_addr <= vram_start_addr + 1'd1;
+                    vram_end_addr <= vram_end_addr + 1'd1;
                 end
 
                 if (address == 1'b0) // address low == TX register
@@ -289,14 +289,14 @@ module vga #(
                     if (enable & w_en & ~char_seen)
                     begin
                         // incoming character
-                        char_seen <= 1;
+                        char_seen <= 1'd1;
 
                         case(din)
                         8'h0D,
                         8'h8D: begin
                             // handle carriage return
-                            h_cursor <= 0;
-                            v_cursor <= v_cursor + 'd1;
+                            h_cursor <= 1'd0;
+                            v_cursor <= v_cursor + 1'd1;
                         end
 
                         8'h00,
@@ -304,25 +304,25 @@ module vga #(
                         8'h9B,
                         8'h7F: begin
                             // ignore the escape key
-                            h_cursor <= 0;
+                            h_cursor <= 1'd0;
                         end
 
                         default: begin
                             vram_w_addr <= cursor;
                             vram_din <= {~din[6], din[4:0]};
-                            vram_w_en <= 1;
-                            h_cursor <= h_cursor + 1;
+                            vram_w_en <= 1'd1;
+                            h_cursor <= h_cursor + 1'd1;
                         end
                         endcase
                     end
                     else if(~enable & ~w_en)
-                        char_seen <= 0;
+                        char_seen <= 1'd0;
                 end
                 else
                 begin
                     vram_w_addr <= {vram_clr_addr, vram_h_addr};
                     vram_din <= 6'd32;
-                    vram_w_en <= 1;
+                    vram_w_en <= 1'd1;
                 end
             end
         end

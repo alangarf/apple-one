@@ -112,13 +112,13 @@ module apple1 #(
     // TX: Always VGA and UART output
     wire rx_cs = (ab[15:1]  == 15'b110100000001000);     // 0xD010 -> 0xD011
     wire tx_cs = (ab[15:1]  == 15'b110100000001001);     // 0xD012 -> 0xD013
-    
+
     // select UART on transmit but only receive when PS/2 is not selected.
     wire uart_cs = tx_cs | ((~ps2_select) & rx_cs);
 
     // select PS/2 keyboard input when selected.
     wire ps2kb_cs = ps2_select & rx_cs;
-    
+
     // VGA always get characters when they are sent.
     wire vga_cs   = tx_cs;
 
