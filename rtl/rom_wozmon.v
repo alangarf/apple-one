@@ -23,21 +23,19 @@
 //
 
 module rom_wozmon #(
-    parameter WOZMON_ROM_FILENAME = "../../../roms/wozmon.hex"
+    parameter string WOZMON_ROM_FILENAME = "../../../roms/wozmon.hex"
 ) (
-    input clk,              // clock signal
-    input [7:0] address,    // address bus
-    output reg [7:0] dout   // 8-bit data bus (output)
+    input            clk,      // clock signal
+    input      [7:0] address,  // address bus
+    output reg [7:0] dout      // 8-bit data bus (output)
 );
 
-    reg [7:0] rom_data[0:255];
+  reg [7:0] rom_data[256];
 
-    initial
-        $readmemh(WOZMON_ROM_FILENAME, rom_data, 0, 255);
+  initial $readmemh(WOZMON_ROM_FILENAME, rom_data, 0, 255);
 
-    always @(posedge clk)
-        dout <= rom_data[address];
+  always @(posedge clk) dout <= rom_data[address];
 
 endmodule
-    
-    
+
+

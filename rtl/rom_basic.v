@@ -23,19 +23,17 @@
 //
 
 module rom_basic #(
-    parameter BASIC_FILENAME = "../../../roms/basic.hex"
+    parameter string BASIC_FILENAME = "../../../roms/basic.hex"
 ) (
-    input clk,              // clock signal
-    input [11:0] address,   // address bus
-    output reg [7:0] dout   // 8-bit data bus (output)
+    input             clk,      // clock signal
+    input      [11:0] address,  // address bus
+    output reg [ 7:0] dout      // 8-bit data bus (output)
 );
 
-    reg [7:0] rom_data[0:4095];
+  reg [7:0] rom_data[4096];
 
-    initial
-        $readmemh(BASIC_FILENAME, rom_data, 0, 4095);
+  initial $readmemh(BASIC_FILENAME, rom_data, 0, 4095);
 
-    always @(posedge clk)
-        dout <= rom_data[address];
+  always @(posedge clk) dout <= rom_data[address];
 
 endmodule

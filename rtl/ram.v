@@ -23,25 +23,23 @@
 //
 
 module ram #(
-    parameter RAM_FILENAME        = "../../../roms/ram.hex"
+    parameter string RAM_FILENAME = "../../../roms/ram.hex"
 ) (
-    input clk,              // clock signal
-    input [12:0] address,   // address bus
-    input w_en,             // active high write enable strobe
-    input [7:0] din,        // 8-bit data bus (input)
-    output reg [7:0] dout   // 8-bit data bus (output)
+    input             clk,      // clock signal
+    input      [12:0] address,  // address bus
+    input             w_en,     // active high write enable strobe
+    input      [ 7:0] din,      // 8-bit data bus (input)
+    output reg [ 7:0] dout      // 8-bit data bus (output)
 );
 
-    reg [7:0] ram_data[0:8191];
+  reg [7:0] ram_data[8192];
 
-    initial
-        $readmemh(RAM_FILENAME, ram_data, 0, 8191);
+  initial $readmemh(RAM_FILENAME, ram_data, 0, 8191);
 
-    always @(posedge clk)
-    begin
-        dout <= ram_data[address];
-        if (w_en) ram_data[address] <= din;
-    end
+  always @(posedge clk) begin
+    dout <= ram_data[address];
+    if (w_en) ram_data[address] <= din;
+  end
 
 endmodule
 

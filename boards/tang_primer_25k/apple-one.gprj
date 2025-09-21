@@ -16,11 +16,13 @@
         <File path="../../rtl/ram.v" type="file.verilog" enable="1"/>
         <File path="../../rtl/rom_basic.v" type="file.verilog" enable="1"/>
         <File path="../../rtl/rom_wozmon.v" type="file.verilog" enable="1"/>
-        <File path="../../rtl/uart/async_tx_rx.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/uart/async_receiver.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/uart/async_transmitter.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/uart/baud_tick_gen.v" type="file.verilog" enable="1"/>
         <File path="../../rtl/uart/uart.v" type="file.verilog" enable="1"/>
         <File path="../../rtl/usbkeyboard/usb_hid_host.v" type="file.verilog" enable="1"/>
-        <File path="../../rtl/usbkeyboard/usb_keyboard.v" type="file.verilog" enable="1"/>
         <File path="../../rtl/usbkeyboard/usb_hid_host_rom.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/usbkeyboard/usb_keyboard.v" type="file.verilog" enable="1"/>
         <File path="../../rtl/vga/font_rom.v" type="file.verilog" enable="1"/>
         <File path="../../rtl/vga/vga.v" type="file.verilog" enable="1"/>
         <File path="../../rtl/vga/vram.v" type="file.verilog" enable="1"/>

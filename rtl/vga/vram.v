@@ -23,26 +23,24 @@
 //
 
 module vram #(
-    parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin"
+    parameter string VRAM_FILENAME = "../../../roms/vga_vram.bin"
 ) (
-    input clk,                  // clock signal
-    input [10:0] read_addr,      // read address bus
-    input [10:0] write_addr,     // write address bus
-    input r_en,                 // active high read enable strobe
-    input w_en,                 // active high write enable strobe
-    input [5:0] din,            // 6-bit data bus (input)
-    output reg [5:0] dout       // 6-bit data bus (output)
+    input             clk,         // clock signal
+    input      [10:0] read_addr,   // read address bus
+    input      [10:0] write_addr,  // write address bus
+    input             r_en,        // active high read enable strobe
+    input             w_en,        // active high write enable strobe
+    input      [ 5:0] din,         // 6-bit data bus (input)
+    output reg [ 5:0] dout         // 6-bit data bus (output)
 );
 
-    reg [5:0] ram_data[0:2047];
+  reg [5:0] ram_data[2048];
 
-    initial
-        $readmemb(VRAM_FILENAME, ram_data, 0, 2047);
+  initial $readmemb(VRAM_FILENAME, ram_data, 0, 2047);
 
-    always @(posedge clk)
-    begin
-        if (r_en) dout <= ram_data[read_addr];
-        if (w_en) ram_data[write_addr] <= din;
-    end
+  always @(posedge clk) begin
+    if (r_en) dout <= ram_data[read_addr];
+    if (w_en) ram_data[write_addr] <= din;
+  end
 
 endmodule

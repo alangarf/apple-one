@@ -8,3 +8,7 @@ synlog.tcl
 *_tb
 *.vcd
 build
+webpack_ise
+gwsynthesis
+pnr
+temp
