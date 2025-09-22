@@ -8,3 +8,6 @@ synlog.tcl
 *_tb
 *.vcd
 build
+gwsynthesis
+pnr
+temp

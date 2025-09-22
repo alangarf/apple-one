@@ -1,0 +1,34 @@
+<?xml version="1" encoding="UTF-8"?>
+<!DOCTYPE gowin-fpga-project>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <Device name="GW5A-25A" pn="GW5A-LV25MG121NES">gw5a25a-000</Device>
+    <FileList>
+        <File path="../../rtl/apple1.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/clock.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/cpu/arlet/ALU.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/cpu/arlet/cpu.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/cpu/arlet_6502.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/ps2keyboard/debounce.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/ps2keyboard/ps2keyboard.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/pwr_reset.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/ram.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/rom_basic.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/rom_wozmon.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/uart/async_tx_rx.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/uart/uart.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/usbkeyboard/usb_hid_host.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/usbkeyboard/usb_keyboard.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/usbkeyboard/usb_hid_host_rom.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/vga/font_rom.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/vga/vga.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/vga/vram.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/boards/tang_primer_25k/apple1_primer.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/boards/tang_primer_25k/pll/gowin_pll.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/boards/tang_primer_25k/pll/pll_init.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/boards/tang_primer_25k/pll/gowin_pll_mod.v" type="file.verilog" enable="1"/>
+        <File path="../../rtl/boards/tang_primer_25k/apple1.cst" type="file.cst" enable="1"/>
+        <File path="../../rtl/boards/tang_primer_25k/apple1.sdc" type="file.sdc" enable="1"/>
+    </FileList>
+</Project>
