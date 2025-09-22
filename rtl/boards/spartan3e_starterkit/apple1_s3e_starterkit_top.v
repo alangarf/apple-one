@@ -20,7 +20,7 @@
 //
 // Author.....: Niels A. Moseley
 // Date.......: 11-2-2018
-// 
+//
 
 
 module apple1_s3e_starterkit_top #(
@@ -29,64 +29,63 @@ module apple1_s3e_starterkit_top #(
     parameter RAM_FILENAME        = "../../../roms/ram.hex",
     parameter VRAM_FILENAME       = "../../../roms/vga_vram.bin",
     parameter WOZMON_ROM_FILENAME = "../../../roms/wozmon.hex"
-) (    
-    input   CLK_50MHZ,      // the 50 MHz master clock
+) (
+    input CLK_50MHZ,  // the 50 MHz master clock
 
     // UART I/O signals
-    output  UART_TXD,       // UART transmit pin on board
-    input   UART_RXD,       // UART receive pin on board
-        
-    input   PS2_KBCLK,
-    input   PS2_KBDAT,
+    output UART_TXD,  // UART transmit pin on board
+    input  UART_RXD,  // UART receive pin on board
 
-    input   BUTTON,         // Button for RESET
-    input   SWITCH,         // Switch between PS/2 input and UART
+    input PS2_KBCLK,
+    input PS2_KBDAT,
 
-    output  VGA_R,
-    output  VGA_G,
-    output  VGA_B,
-    output  VGA_HS,
-    output  VGA_VS    
+    input BUTTON,  // Button for RESET
+    input SWITCH,  // Switch between PS/2 input and UART
+
+    output VGA_R,
+    output VGA_G,
+    output VGA_B,
+    output VGA_HS,
+    output VGA_VS
 );
 
-    //////////////////////////////////////////////////////////////////////////    
-    // Registers and Wires
-    reg clk25;
-    wire [15:0] pc_monitor;
+  //////////////////////////////////////////////////////////////////////////
+  // Registers and Wires
+  reg clk25;
+  wire [15:0] pc_monitor;
 
-    wire rst_n;    
-    assign rst_n = ~BUTTON;
+  wire rst_n;
+  assign rst_n = ~BUTTON;
 
-    // generate 25MHz clock from 50MHz master clock
-    always @(posedge CLK_50MHZ)
-    begin
-        clk25 <= ~clk25;
-    end    
-    
-    //////////////////////////////////////////////////////////////////////////    
-    // Core of system
-    apple1 #(
-        .BASIC_FILENAME (BASIC_FILENAME),
-        .FONT_ROM_FILENAME (FONT_ROM_FILENAME),
-        .RAM_FILENAME (RAM_FILENAME),
-        .VRAM_FILENAME (VRAM_FILENAME),
-        .WOZMON_ROM_FILENAME (WOZMON_ROM_FILENAME)
-    ) apple1_top(
-        .clk25(clk25),
-        .rst_n(rst_n),         // we don't have any reset pulse..
-        .uart_rx(UART_RXD),
-        .uart_tx(UART_TXD),
-        //.uart_cts(UART_CTS),  // there is no CTS on the board :(
-        .ps2_clk(PS2_KBCLK),
-        .ps2_din(PS2_KBDAT),
-        .ps2_select(SWITCH),
-        .vga_h_sync(VGA_HS),
-        .vga_v_sync(VGA_VS),
-        .vga_red(VGA_R),
-        .vga_grn(VGA_G),
-        .vga_blu(VGA_B),
-        .vga_cls(~rst_n),
-        .pc_monitor(pc_monitor)
-    );
-    
+  // generate 25MHz clock from 50MHz master clock
+  always @(posedge CLK_50MHZ) begin
+    clk25 <= ~clk25;
+  end
+
+  //////////////////////////////////////////////////////////////////////////
+  // Core of system
+  apple1 #(
+      .BASIC_FILENAME(BASIC_FILENAME),
+      .FONT_ROM_FILENAME(FONT_ROM_FILENAME),
+      .RAM_FILENAME(RAM_FILENAME),
+      .VRAM_FILENAME(VRAM_FILENAME),
+      .WOZMON_ROM_FILENAME(WOZMON_ROM_FILENAME)
+  ) apple1_top (
+      .clk25     (clk25),
+      .rst_n     (rst_n),                   // we don't have any reset pulse..
+      .uart_rx   (UART_RXD),
+      .uart_tx   (UART_TXD),
+      //.uart_cts(UART_CTS),  // there is no CTS on the board :(
+      .ps2_clk   (PS2_KBCLK),
+      .ps2_din   (PS2_KBDAT),
+      .key_select(SWITCH ? 2'b10 : 2'b00),  // PS/2 or UART with switch
+      .vga_h_sync(VGA_HS),
+      .vga_v_sync(VGA_VS),
+      .vga_red   (VGA_R),
+      .vga_grn   (VGA_G),
+      .vga_blu   (VGA_B),
+      .vga_cls   (~rst_n),
+      .pc_monitor(pc_monitor)
+  );
+
 endmodule
